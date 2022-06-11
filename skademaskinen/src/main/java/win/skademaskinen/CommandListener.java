@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class CommandListener extends ListenerAdapter {
-    final private String[] colors = {"blue", "green", "gray", "yellow", "orange", "red", "white", "purple", "pink", "darkgreen"};
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
     private DatabaseHandler databaseHandler;
 
@@ -43,17 +42,6 @@ public class CommandListener extends ListenerAdapter {
         switch (event.getName().toLowerCase()) {
             case "ping":
                 event.reply("Pong").queue();
-                break;
-
-            case "color":
-                for(String color : colors){
-                    if(author.getRoles().contains(guild.getRolesByName(color, true).get(0))){
-                        System.out.println("Removing role" + color);
-                        guild.removeRoleFromMember(author, guild.getRolesByName(color, true).get(0)).queue();
-                    }
-                }
-                guild.addRoleToMember(author, guild.getRolesByName(event.getOption("color").getAsString(), true).get(0)).queue();
-                event.reply("Set color to " + event.getOption("color").getAsString()).queue();
                 break;
 
             //music
