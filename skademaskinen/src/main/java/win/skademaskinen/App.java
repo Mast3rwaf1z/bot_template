@@ -35,8 +35,6 @@ public class App
         }*/
         jda.updateCommands().addCommands(
             Commands.slash("ping", "send a pong back"),
-            Commands.slash("color", "Pick a color for your name")
-                .addOption(OptionType.STRING, "color", "Pick a color (Options: Green, Red, Blue, Gray, Yellow, Orange, White, Purple, Pink and Darkgreen)", true),
             Commands.slash("play", "Play a song from youtube")
                 .addOption(OptionType.STRING, "url", "Youtube link to the song or playlist", true),
             Commands.slash("skip", "Skip to the next song"),
@@ -46,7 +44,25 @@ public class App
             Commands.slash("disconnect", "Disconnect the bot from voice"),
             Commands.slash("pause", "Pause the bot"),
             Commands.slash("clear", "Clear the song queue"),
-            Commands.slash("help", "Show a list of commands")
+            Commands.slash("help", "Show a list of commands"),
+            Commands.slash("announcement", "Compose an announcement message")
+                .addOption(OptionType.ATTACHMENT, "file", "Announcement text in markdown", true),
+            Commands.slash("application", "Send an application to the raid team")
+                .addOption(OptionType.STRING, "name", "Your character name", true)
+                .addOption(OptionType.STRING, "classspec", "Your class and/or spec", true)
+                .addOption(OptionType.INTEGER, "ilvl", "Specify your ilvl", true)
+                .addOption(OptionType.BOOLEAN, "raidtimes", "Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", true),
+            Commands.slash("roll", "roll a d100 for each entry")
+                .addOption(OptionType.STRING, "entry1", "entry", true)
+                .addOption(OptionType.STRING, "entry2", "entry", false)
+                .addOption(OptionType.STRING, "entry3", "entry", false)
+                .addOption(OptionType.STRING, "entry4", "entry", false)
+                .addOption(OptionType.STRING, "entry5", "entry", false)
+                .addOption(OptionType.STRING, "entry6", "entry", false)
+                .addOption(OptionType.STRING, "entry7", "entry", false)
+                .addOption(OptionType.STRING, "entry8", "entry", false)
+                .addOption(OptionType.STRING, "entry9", "entry", false)
+                .addOption(OptionType.STRING, "entry10", "entry", false)
             ).queue();
     }
 }

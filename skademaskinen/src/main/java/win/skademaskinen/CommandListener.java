@@ -1,10 +1,13 @@
 package win.skademaskinen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.json.simple.parser.ParseException;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -13,8 +16,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -128,6 +131,36 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("Queue cleared!").queue();
                 }
                 break;
+            case "roll":
+                ArrayList<String> entries = new ArrayList<>();
+                for(OptionMapping option : event.getOptions()){
+                    entries.add(option.getAsString());
+                }
+                EmbedBuilder builder = new EmbedBuilder();
+                HashMap<String, Integer> results = new HashMap<String, Integer>();
+                for(String entry : entries){
+                    int roll = (int) (Math.random()*100);
+                    results.put(entry, roll);
+                    builder.appendDescription("**"+entry+"**: "+roll+"\n");
+                }
+                int winnerValue = Collections.max(results.values());
+                String winner = "";
+                for(String key : results.keySet()){
+                    if(results.get(key).equals(winnerValue)){
+                        winner = key;
+                    }
+                }
+                builder.addField("", "**"+winner+"** has won the roll", false);
+                builder.setColor(Color.blue);
+                builder.setThumbnail("https://cdn.discordapp.com/attachments/692410386657574955/889818089066221578/dice.png");
+                builder.setTitle("Rolls");
+                event.replyEmbeds(builder.build()).queue();
+                break;
+            case "application":
+                break;
+            case "announcement":
+                break;
+
         }
     }
 
@@ -153,10 +186,23 @@ public class CommandListener extends ListenerAdapter {
             System.out.println("Attachment:             " + url.getUrl());
         }
         System.out.println();
+        
+        Message message = event.getMessage();
+        if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
+            double roll = Math.random() * 100;
+            if(roll > 99 - (Math.exp(message.getContentRaw().length()/175))){
+                message.addReaction("\uD83D\uDCA9").queue();
+                try {
+                    databaseHandler.addPoopToMember(event.getMember());
+                } catch (SQLException e) {
+                    try {
+                        databaseHandler.createPoopTable(event.getGuild());
+                        databaseHandler.addPoopToMember(event.getMember());
+                    } catch (SQLException e1) {
+                    }
+                }
+            }
+        }
     }
 
-    public void onGuildJoined(GuildJoinEvent event) throws SQLException{
-        databaseHandler.createPoopTable(event.getGuild());
-
-    }
 }
