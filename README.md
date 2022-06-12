@@ -1,5 +1,5 @@
 # bot_template
-A template to use for discord bots, i fork them for my own private projects
+A template to use for discord bots, i branch them for my own private projects
 
 add a .config file containing the following JSON:
 
