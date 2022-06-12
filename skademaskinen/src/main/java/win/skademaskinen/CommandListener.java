@@ -19,19 +19,23 @@ import java.sql.SQLException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandListener extends ListenerAdapter {
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
     private DatabaseHandler databaseHandler;
+    Runtime runtime = Runtime.getRuntime();
 
 
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
@@ -149,120 +153,153 @@ public class CommandListener extends ListenerAdapter {
                 builder.setTitle("Rolls");
                 event.replyEmbeds(builder.build()).queue();
                 break;
-            case "apply":
-                String characterName = event.getOption("name").getAsString();
-                String characterServer = event.getOption("server").getAsString();
-                String characterClass = event.getOption("class").getAsString();
-                String characterRole = event.getOption("role").getAsString();
-                String characterItemLevel = event.getOption("ilvl").getAsString();
-                boolean raidtimes = event.getOption("raidtimes").getAsBoolean();
-                builder.setTitle("Raid team application");
-                builder.setDescription("Raid team application for " +"["+characterName+"](https://worldofwarcraft.com/en-gb/character/eu/"+characterServer+"/"+characterName+")");
-                builder.addField("Class/Role", characterClass+"/"+characterRole, false);
-                builder.addField("Item Level", characterItemLevel, false);
-                if(raidtimes){
-                    builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "Yes", false);
-                }
-                else{
-                    builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "No", false);
-                }
+                case "apply":
+                    try {
+                        //first we initialize the wow api
+                        JSONObject wowApi = (JSONObject) Config.getConfig().get("wow_api");
+                        String clientId = (String) wowApi.get("client_id");
+                        String clientSecret = (String) wowApi.get("client_secret");
+                        String command = "curl -u "+clientId+":"+clientSecret+" -d grant_type=client_credentials https://eu.battle.net/oauth/token";
+                        JSONParser parser = new JSONParser();
+                        Process p1 = runtime.exec(command);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(p1.getInputStream()));
+                        p1.waitFor();
+                        JSONObject token_file = (JSONObject) parser.parse(reader);
+                        String token = (String) token_file.get("access_token");
 
-                //automated response
-                int score = 0;
-                try {
-                    JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_application_form");
-                    long requiredIlvl = (long) applicationData.get("minimum_ilvl");
-                    JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
-                    JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
-                    JSONArray neededClasses = (JSONArray) applicationData.get("needed_classes");
-                    ArrayList<Field> fields = new ArrayList<Field>();
-                    if(!filledRoles.contains(characterRole.toLowerCase())){
+                        //get the first bits of data from the wow API
+                        String characterName = event.getOption("name").getAsString();
+                        String characterServer = event.getOption("server").getAsString();
+                        String characterClass = "invalid";
+                        String characterRole = event.getOption("role").getAsString();
+                        String characterItemLevel = "invalid";
+                        String characterItemLevelAverage = "invalid";
+                        boolean raidtimes = event.getOption("raidtimes").getAsBoolean();
 
-                        if(Integer.parseInt(characterItemLevel)>=requiredIlvl){
-                            score++;
-                        }
-                        else{
-                            fields.add(new Field("", "Your item level is too low, we have a requirement of 252 (you need"+(requiredIlvl-Long.parseLong(characterItemLevel))+")", false));
-                        }
-                        if(preferredRoles.contains(characterRole.toLowerCase())){
-                            score++;
-                        }
-                        else{
-                            fields.add(new Field("", "We are not actively looking for " + characterRole + "s", true));
-                        }
-                        if(neededClasses.contains(characterClass.toLowerCase())){
-                            score++;
-                        }
-                        else{
-                            fields.add(new Field("", "We are not actively looking for " + characterClass + "s", true));
-                        }
+                        command = "curl https://eu.api.blizzard.com/profile/wow/character/"+characterServer.toLowerCase()+"/"+characterName.toLowerCase()+"?namespace=profile-eu&locale=en_GB&access_token="+token;
+                        Process p2 = runtime.exec(command);
+                        BufferedReader reader2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+                        p2.waitFor();
+                        JSONObject characterData = (JSONObject) parser.parse(reader2);
+                        JSONObject characterClassData = (JSONObject) characterData.get("character_class");
+                        characterClass = (String) characterClassData.get("name");
+                        characterItemLevel = String.valueOf(characterData.get("equipped_item_level"));
+                        characterItemLevelAverage = String.valueOf(characterData.get("average_item_level"));
+                        JSONObject characterSpecData = (JSONObject) characterData.get("active_spec");
+                        String characterSpec = (String) characterSpecData.get("name");
+
+                        builder.setTitle("Raid team application");
+                        builder.setDescription("Raid team application for " +"["+characterName+"](https://worldofwarcraft.com/en-gb/character/eu/"+characterServer+"/"+characterName+")");
+                        builder.setFooter(characterName);
+                        builder.addField("Class/Role", characterClass+"/"+characterSpec + " ("+characterRole+")", false);
+                        builder.addField("Item Level", "Equipped: "+characterItemLevel+ " Average: "+characterItemLevelAverage, false);
                         if(raidtimes){
-                            score++;
+                            builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "Yes", false);
                         }
-
-                    }
-                    else{
-                        fields.add(new Field("", "we do not need any more " + characterRole + "s", true));
-                    }
-                    String color = "";
-                    if(score >= 3){
-                        builder.setColor(Color.green);
-                        color = "green";
-                    }
-                    else if(score == 2){
-                        builder.setColor(Color.yellow);
-                        color = "yellow";
-                    }
-                    else if(score <= 1){
-                        builder.setColor(Color.red);
-                        color = "red";
-                    }
-                    if(fields.size() >= 1){
-                        builder.addField("Your application is " + color + " because:", "", false);
-                        for(Field field : fields){
-                            builder.addField(field);
+                        else{
+                            builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "No", false);
                         }
+                    
+                        //automated response
+                        int score = 0;
+                        JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_application_form");
+                        long requiredIlvl = (long) applicationData.get("minimum_ilvl");
+                        JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
+                        JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
+                        JSONArray neededClasses = (JSONArray) applicationData.get("needed_classes");
+                        ArrayList<Field> fields = new ArrayList<Field>();
+                        if(!filledRoles.contains(characterRole.toLowerCase())){
+                            if(Integer.parseInt(characterItemLevel)>=requiredIlvl){
+                                score++;
+                            }
+                            else{
+                                fields.add(new Field("", "Your item level is too low, we have a requirement of 252 (you need"+(requiredIlvl-Long.parseLong(characterItemLevel))+")", false));
+                            }
+                            if(preferredRoles.contains(characterRole.toLowerCase())){
+                                score++;
+                            }
+                            else{
+                                fields.add(new Field("", "We are not actively looking for " + characterRole + "s", true));
+                            }
+                            if(neededClasses.contains(characterClass.toLowerCase())){
+                                score++;
+                            }
+                            else{
+                                fields.add(new Field("", "We are not actively looking for " + characterClass + "s", true));
+                            }
+                            if(raidtimes){
+                                score++;
+                            }
+                        }
+                        else{
+                            fields.add(new Field("", "we do not need any more " + characterRole + "s", true));
+                        }
+                        String color = "";
+                        if(score >= 3){
+                            builder.setColor(Color.green);
+                            color = "green";
+                        }
+                        else if(score == 2){
+                            builder.setColor(Color.yellow);
+                            color = "yellow";
+                        }
+                        else if(score <= 1){
+                            builder.setColor(Color.red);
+                            color = "red";
+                        }
+                        if(fields.size() >= 1){
+                            builder.addField("Your application is " + color + " because:", "", false);
+                            for(Field field : fields){
+                                builder.addField(field);
+                            }
+                        }
+                        if(color == "green"){
+                            event.getChannel().sendMessage(guild.getMemberById("214752462769356802").getAsMention()).queue();
+                        }
+                    
+                        //finally lets do some interesting profile picture getting
+                        command = "curl https://eu.api.blizzard.com/profile/wow/character/"+characterServer.toLowerCase()+"/"+characterName.toLowerCase()+"/character-media?namespace=profile-eu&locale=en_GB&access_token="+token;
+                        Process p3 = runtime.exec(command);
+                        BufferedReader reader3 = new BufferedReader(new InputStreamReader(p3.getInputStream()));
+                        p3.waitFor();
+                        JSONObject characterMedia = (JSONObject) parser.parse(reader3);
+                        JSONArray assets = (JSONArray) characterMedia.get("assets");
+                        JSONObject avatarObject = (JSONObject) assets.get(0);
+                        String avatarUrl = (String) avatarObject.get("value");
+                        System.out.println(avatarUrl);
+                        builder.setThumbnail(avatarUrl);
+                    } catch (IOException | ParseException | InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    if(color == "green"){
-                        event.getChannel().sendMessage(guild.getMemberById("214752462769356802").getAsMention()).queue();
-                    }
-                } catch (IOException | ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
 
-                //finally lets do some interesting profile picture getting
-                try {
-                    Runtime runtime = Runtime.getRuntime();
-                    JSONObject wowApi = (JSONObject) Config.getConfig().get("wow_api");
-                    String clientId = (String) wowApi.get("client_id");
-                    String clientSecret = (String) wowApi.get("client_secret");
-                    String command = "curl -u "+clientId+":"+clientSecret+" -d grant_type=client_credentials https://eu.battle.net/oauth/token";
-                    JSONParser parser = new JSONParser();
-                    Process p1 = runtime.exec(command);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(p1.getInputStream()));
-                    p1.waitFor();
-                    JSONObject token_file = (JSONObject) parser.parse(reader);
-                    String token = (String) token_file.get("access_token");
-                    command = "curl https://eu.api.blizzard.com/profile/wow/character/"+characterServer.toLowerCase()+"/"+characterName.toLowerCase()+"/character-media?namespace=profile-eu&locale=en_GB&access_token="+token;
-                    Process p2 = runtime.exec(command);
-                    BufferedReader reader2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
-                    p2.waitFor();
-                    JSONObject characterMedia = (JSONObject) parser.parse(reader2);
-                    JSONArray assets = (JSONArray) characterMedia.get("assets");
-                    JSONObject avatarObject = (JSONObject) assets.get(0);
-                    String avatarUrl = (String) avatarObject.get("value");
-                    System.out.println(avatarUrl);
-                    builder.setThumbnail(avatarUrl);
-                } catch (IOException | ParseException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    event.replyEmbeds(builder.build()).addActionRow(Button.primary("approve_button", "Approve"), Button.primary("decline_button", "Decline")).queue();
 
-                event.replyEmbeds(builder.build()).queue();
                 break;
             case "announcement":
                 break;
 
+        }
+    }
+
+    public void onButtonInteraction(ButtonInteractionEvent event){
+        switch (event.getButton().getId()) {
+            case "approve_button":
+                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
+                }
+                else{
+                    event.deferEdit().queue();
+                }
+                break;
+        
+            case "decline_button":
+                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
+                }
+                else{
+                    event.deferEdit().queue();
+                }
+                break;
         }
     }
 
@@ -288,23 +325,6 @@ public class CommandListener extends ListenerAdapter {
             System.out.println("Attachment:             " + url.getUrl());
         }
         System.out.println();
-        
-        Message message = event.getMessage();
-        if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
-            double roll = Math.random() * 100;
-            if(roll > 99 - (Math.exp(message.getContentRaw().length()/175))){
-                message.addReaction("\uD83D\uDCA9").queue();
-                try {
-                    databaseHandler.addPoopToMember(event.getMember());
-                } catch (SQLException e) {
-                    try {
-                        databaseHandler.createPoopTable(event.getGuild());
-                        databaseHandler.addPoopToMember(event.getMember());
-                    } catch (SQLException e1) {
-                    }
-                }
-            }
-        }
     }
 
 }
