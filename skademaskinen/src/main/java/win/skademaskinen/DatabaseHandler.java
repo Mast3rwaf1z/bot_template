@@ -19,7 +19,9 @@ public class DatabaseHandler {
     DatabaseHandler() throws ClassNotFoundException, SQLException, IOException, ParseException{
         JSONObject config = (JSONObject) Config.getConfig().get("database");
 
+        System.out.println("Connecting to mysql...");
         connection = DriverManager.getConnection(config.get("database").toString(), config.get("username").toString(), config.get("password").toString());
+        System.out.println("Connected to mysql!");
     }
 
     public ResultSet getPoopsForGuild(Guild guild) throws SQLException{

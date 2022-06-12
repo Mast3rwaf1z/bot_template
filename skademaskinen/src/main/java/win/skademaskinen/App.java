@@ -19,12 +19,15 @@ public class App
 {
     static private JDA jda;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
+        System.out.println("Starting bot");
         JSONObject config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
         jda.addEventListener(new CommandListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("v2.0"));
+        System.out.println("await");
         jda.awaitReady();
+        System.out.println("finished await");
         setCommands();
 
     }

@@ -38,6 +38,7 @@ public class CommandListener extends ListenerAdapter {
 
 
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
+        System.out.println("Creating database handler");
         databaseHandler = new DatabaseHandler();
 
     }
