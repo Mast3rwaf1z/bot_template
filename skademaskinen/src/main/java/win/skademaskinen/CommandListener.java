@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -202,7 +201,7 @@ public class CommandListener extends ListenerAdapter {
                     
                         //automated response
                         int score = 0;
-                        JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_application_form");
+                        JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_form");
                         long requiredIlvl = (long) applicationData.get("minimum_ilvl");
                         JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
                         JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
