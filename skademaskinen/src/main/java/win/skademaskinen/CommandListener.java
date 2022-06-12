@@ -254,7 +254,7 @@ public class CommandListener extends ListenerAdapter {
                             }
                         }
                         if(color == "green"){
-                            event.getChannel().sendMessage(guild.getMemberById("214752462769356802").getAsMention()).queue();
+                            event.getChannel().sendMessage(event.getJDA().getRoleById("756106691946217542").getAsMention()).queue();
                         }
                     
                         //finally lets do some interesting profile picture getting
