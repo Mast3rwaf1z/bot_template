@@ -175,6 +175,7 @@ public class CommandListener extends ListenerAdapter {
                     event.replyEmbeds(builder2.build()).queue();
                 } catch (SQLException e) {
                     // TODO Auto-generated catch block
+                    event.reply("This server does not seem to have a leaderboard yet").queue();
                     e.printStackTrace();
                 }
 
