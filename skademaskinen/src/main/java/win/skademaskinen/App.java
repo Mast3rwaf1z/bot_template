@@ -47,10 +47,12 @@ public class App
             Commands.slash("help", "Show a list of commands"),
             Commands.slash("announcement", "Compose an announcement message")
                 .addOption(OptionType.ATTACHMENT, "file", "Announcement text in markdown", true),
-            Commands.slash("application", "Send an application to the raid team")
-                .addOption(OptionType.STRING, "name", "Your character name", true)
-                .addOption(OptionType.STRING, "classspec", "Your class and/or spec", true)
-                .addOption(OptionType.INTEGER, "ilvl", "Specify your ilvl", true)
+            Commands.slash("apply", "Send an application to the raid team")
+                .addOption(OptionType.STRING, "name", "Your character name (this works best if you give your EXACT name)", true)
+                .addOption(OptionType.STRING, "server", "Which server is this character on? (put - instead of space)", true)
+                .addOption(OptionType.STRING, "class", "The class of your given character", true)
+                .addOption(OptionType.STRING, "role", "Your role (Options: Healer, Tank, Ranged Damage, Melee Damage)", true)
+                .addOption(OptionType.INTEGER, "ilvl", "Specify your item level", true)
                 .addOption(OptionType.BOOLEAN, "raidtimes", "Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", true),
             Commands.slash("roll", "roll a d100 for each entry")
                 .addOption(OptionType.STRING, "entry1", "entry", true)

@@ -18,4 +18,13 @@ public class Config {
             return null;
         }
     }
+    
+    public static JSONObject getFile(String file) throws IOException, ParseException{
+        JSONParser parser = new JSONParser();
+        try(FileReader reader = new FileReader(file)){
+            return (JSONObject) parser.parse(reader);
+        }catch(FileNotFoundException e){
+            return null;
+        }
+    }
 }
