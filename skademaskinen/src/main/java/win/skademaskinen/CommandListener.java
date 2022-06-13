@@ -232,7 +232,7 @@ public class CommandListener extends ListenerAdapter {
     }
     
     public ModalCallbackAction error_message(SlashCommandInteractionEvent event, String message){
-        Builder modal = Modal.create("", "Error:\n"+message);
+        Builder modal = Modal.create("error", "Error:\n"+message);
         return event.replyModal(modal.build());
     }
 
