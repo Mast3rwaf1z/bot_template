@@ -194,7 +194,7 @@ public class CommandListener extends ListenerAdapter {
                         String characterSpec = (String) characterSpecData.get("name");
 
                         builder.setTitle("Raid team application");
-                        builder.setDescription("Raid team application for " +"["+characterName+"](https://worldofwarcraft.com/en-gb/character/eu/"+characterServer+"/"+characterName+")");
+                        builder.setDescription("Raid team application for " +"["+characterName+"](https://worldofwarcraft.com/en-gb/character/eu/"+characterServer+"/"+characterName+") ("+characterServer+")");
                         builder.setFooter(characterName);
                         builder.addField("Class/Role", characterClass+"/"+characterSpec + " ("+characterRole+")", false);
                         builder.addField("Item Level", "Equipped: "+characterItemLevel+ " Average: "+characterItemLevelAverage, false);
