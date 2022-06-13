@@ -212,32 +212,32 @@ public class CommandListener extends ListenerAdapter {
                         JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
                         JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
                         JSONArray neededClasses = (JSONArray) applicationData.get("needed_classes");
-                        ArrayList<Field> fields = new ArrayList<Field>();
+                        ArrayList<String> fields = new ArrayList<String>();
                         if(!filledRoles.contains(characterRole.toLowerCase())){
                             if(Integer.parseInt(characterItemLevel)>=requiredIlvl){
                                 score++;
                             }
                             else{
-                                fields.add(new Field("", "Your item level is too low, we have a requirement of 252 (you need to be "+(requiredIlvl-Long.parseLong(characterItemLevel))+" higher)", true));
+                                fields.add("Your item level is too low, we have a requirement of 252 (you need to be "+(requiredIlvl-Long.parseLong(characterItemLevel))+" higher)");
                             }
                             if(preferredRoles.contains(characterRole.toLowerCase())){
                                 score++;
                             }
                             else{
-                                fields.add(new Field("", "We are not actively looking for " + characterRole + "s", true));
+                                fields.add("We are not actively looking for " + characterRole + "s");
                             }
                             if(neededClasses.contains(characterClass.toLowerCase())){
                                 score++;
                             }
                             else{
-                                fields.add(new Field("", "We are not actively looking for " + characterClass + "s", true));
+                                fields.add("We are not actively looking for " + characterClass + "s");
                             }
                             if(raidtimes){
                                 score++;
                             }
                         }
                         else{
-                            fields.add(new Field("", "we do not need any more " + characterRole + "s", true));
+                            fields.add("we do not need any more " + characterRole + "s");
                         }
                         String color = "";
                         if(score >= 3){
@@ -253,10 +253,12 @@ public class CommandListener extends ListenerAdapter {
                             color = "red";
                         }
                         if(fields.size() >= 1){
-                            builder.addField("Your application is " + color + " because:", "", false);
-                            for(Field field : fields){
-                                builder.addField(field);
+                            String title ="Your application is " + color + " because:";
+                            String final_field = "";
+                            for(String field : fields){
+                                final_field += field + '\n';
                             }
+                            builder.addField(title, final_field, false);
                         }
                         if(color == "green"){
                             //event.getChannel().sendMessage(event.getJDA().getRoleById("756106691946217542").getAsMention()).queue();
