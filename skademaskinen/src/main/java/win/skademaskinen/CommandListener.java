@@ -27,6 +27,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.components.Modal.Builder;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 
 public class CommandListener extends ListenerAdapter {
     final private String[] colors = {"blue", "green", "gray", "yellow", "orange", "red", "white", "purple", "pink", "darkgreen"};
@@ -226,6 +229,11 @@ public class CommandListener extends ListenerAdapter {
     public void onGuildJoined(GuildJoinEvent event) throws SQLException{
         databaseHandler.createPoopTable(event.getGuild());
 
+    }
+    
+    public ModalCallbackAction error_message(SlashCommandInteractionEvent event, String message){
+        Builder modal = Modal.create("", "Error:\n"+message);
+        return event.replyModal(modal.build());
     }
 
     private void jail(Member author, SlashCommandInteractionEvent event, Guild guild){
