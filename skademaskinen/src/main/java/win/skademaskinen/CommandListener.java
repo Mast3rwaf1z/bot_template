@@ -1,27 +1,32 @@
 package win.skademaskinen;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.components.Modal;
-import net.dv8tion.jda.api.interactions.components.Modal.Builder;
-import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 
 public class CommandListener extends ListenerAdapter {
     final private String[] colors = {"blue", "green", "gray", "yellow", "orange", "red", "white", "purple", "pink", "darkgreen"};
@@ -44,6 +49,15 @@ public class CommandListener extends ListenerAdapter {
             case "ping":
                 event.reply("Pong").queue();
                 break;
+        
+            case "jail":
+                Thread thread = new Thread(){
+                    public void run(){
+                        jail(author, event, guild);
+                    }
+                };
+                thread.start();
+                break;
 
             case "color":
                 for(String color : colors){
@@ -63,7 +77,7 @@ public class CommandListener extends ListenerAdapter {
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
                 else if(event.getOptions().size() == 0){
-                    error_message(event, "Please specify a track").queue();
+                    event.reply("Please specify a track").queue();
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
@@ -131,6 +145,40 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("Queue cleared!").queue();
                 }
                 break;
+            case "poop":
+                int poops = 0;
+                try {
+                    poops = databaseHandler.getPoopsForMember(author);
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                event.reply("You currently have "+poops+" poops").queue();
+                break;
+            case "leaderboard":
+                try {
+                    ResultSet resultSet = databaseHandler.getPoopsForGuild(guild);
+                    HashMap<String, Integer> resultMap = new HashMap<String, Integer>();
+                    EmbedBuilder builder2 = new EmbedBuilder();
+                    builder2.setTitle("Poop leaderboard");
+                    builder2.setThumbnail("https://cdn.discordapp.com/attachments/692410386657574955/809730484640284682/lort.png");
+
+                    while(resultSet.next()){
+                        resultMap.put(resultSet.getString("id"), resultSet.getInt("count"));
+                    }
+
+                    Map<String, Integer> finalResult = resultMap.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+                    for(int i = finalResult.size(); i > 0; i--){
+                        String id = finalResult.keySet().toArray()[i - 1].toString();
+                        builder2.addField(guild.retrieveMemberById(id).complete().getEffectiveName(), finalResult.get(id).toString() + " Poop", false);
+                    }
+                    event.replyEmbeds(builder2.build()).queue();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    event.reply("This server does not seem to have a leaderboard yet").queue();
+                    e.printStackTrace();
+                }
+
         }
     }
 
@@ -156,14 +204,139 @@ public class CommandListener extends ListenerAdapter {
             System.out.println("Attachment:             " + url.getUrl());
         }
         System.out.println();
+        
+        Message message = event.getMessage();
+        if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
+            double roll = Math.random() * 100;
+            if(roll > 99 - (Math.exp(message.getContentRaw().length()/175))){
+                message.addReaction("\uD83D\uDCA9").queue();
+                try {
+                    databaseHandler.addPoopToMember(event.getMember());
+                } catch (SQLException e) {
+                    try {
+                        databaseHandler.createPoopTable(event.getGuild());
+                        databaseHandler.addPoopToMember(event.getMember());
+                    } catch (SQLException e1) {
+                    }
+                }
+            }
+        }
     }
 
     public void onGuildJoined(GuildJoinEvent event) throws SQLException{
         databaseHandler.createPoopTable(event.getGuild());
 
     }
-    public ModalCallbackAction error_message(SlashCommandInteractionEvent event, String message){
-        Builder modal = Modal.create("", "Error:\n"+message);
-        return event.replyModal(modal.build());
+
+    private void jail(Member author, SlashCommandInteractionEvent event, Guild guild){
+
+        Member who = author;
+        int time = -1;
+        String measurement = "seconds";
+
+        if(!author.hasPermission(Permission.ADMINISTRATOR)){
+            event.reply("You are not an administrator").queue();
+            return;
+        }
+
+        else if (guild.getTextChannelsByName("jail", true).size() == 0) {
+            event.reply("This server does not have a #jail channel").queue();
+            return;
+        }
+        else if(guild.getRolesByName("jailed", true).size() == 0){
+            event.reply("This server does not have an @jailed role").queue();
+            return;
+        }
+
+        for(OptionMapping option : event.getOptions()){
+            switch (option.getName()) {
+                case "who":
+                    who = option.getAsMember();
+                    break;
+            
+                case "time":
+                    time = option.getAsInt();
+                    break;
+
+                case "measurement":
+                    measurement = option.getAsString();
+                    break;
+            }
+        }
+        if(who.equals(event.getMember())){
+            event.reply("Please specify user to be jailed").queue();
+            return;
+        }
+        else if(time == -1){
+            event.reply("Please specify time to be jailed").queue();
+            return;
+        }
+        //everything went as planned
+        Role jailed = guild.getRolesByName("jailed", true).get(0);
+        TextChannel jail = guild.getTextChannelsByName("jail", true).get(0);
+        List<Role> previous_roles = who.getRoles();
+        for(Role role : previous_roles){
+            if(!role.getName().equalsIgnoreCase("Server Booster")){
+                guild.removeRoleFromMember(who, role).queue();
+            }
+        }
+        guild.addRoleToMember(who, jailed).queue();
+        event.reply("Successfully jailed " + who.getAsMention() + " for " + time + " " + measurement).queue();
+
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle(who.getEffectiveName() + " has been jailed!");
+        builder.setDescription(who.getAsMention() + " has been jailed for " + time + " " + measurement);
+        builder.setThumbnail(who.getAvatarUrl());
+        jail.sendMessageEmbeds(builder.build()).queue();
+
+        System.out.println("sleeping thread");
+        switch(measurement.toLowerCase()){
+            case "seconds":
+                System.out.println("Sleeping seconds");
+                try {
+                    Thread.sleep(time*1000);
+                } catch (InterruptedException e) {
+                    event.reply("Failed to sleep thread").queue();
+                    e.printStackTrace();
+                }
+                break;
+            case "minutes":
+                System.out.println("Sleeping minutes");
+                try {
+                    Thread.sleep((long)(time*6e4));
+                } catch (InterruptedException e) {
+                    event.reply("Failed to sleep thread").queue();
+                    e.printStackTrace();
+                }
+                break;
+            case "hours":
+                System.out.println("Sleeping hours");
+                try {
+                    Thread.sleep((long)(time*36e5));
+                } catch (InterruptedException e) {
+                    event.reply("Failed to sleep thread").queue();
+                    e.printStackTrace();
+                }
+                break;
+            case "days":
+                System.out.println("Sleeping days");
+                try {
+                    Thread.sleep((long)(time*864e5));
+                } catch (InterruptedException e) {
+                    event.reply("Failed to sleep thread").queue();
+                    e.printStackTrace();
+                }
+                break;
+        }
+
+        //read roles
+        guild.removeRoleFromMember(who, jailed).queue();
+        for(Role role : previous_roles){
+            if(!role.getName().equalsIgnoreCase("Server Booster")){
+                guild.addRoleToMember(who, role).queue();
+            }
+        }
+        System.out.println("Released " + who.getEffectiveName() + " From jail");
     }
+
 }
