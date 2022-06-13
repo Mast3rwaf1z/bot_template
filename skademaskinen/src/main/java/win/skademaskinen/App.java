@@ -35,6 +35,10 @@ public class App
         }*/
         jda.updateCommands().addCommands(
             Commands.slash("ping", "send a pong back"),
+            Commands.slash("jail", "Send a user to jail")
+                .addOption(OptionType.USER, "who", "Who to jail", true)
+                .addOption(OptionType.INTEGER, "time", "Time(Default: seconds)", true)
+                .addOption(OptionType.STRING, "measurement", "Seconds, minutes, hours, days", false),
             Commands.slash("color", "Pick a color for your name")
                 .addOption(OptionType.STRING, "color", "Pick a color (Options: Green, Red, Blue, Gray, Yellow, Orange, White, Purple, Pink and Darkgreen)", true),
             Commands.slash("play", "Play a song from youtube")
@@ -46,7 +50,9 @@ public class App
             Commands.slash("disconnect", "Disconnect the bot from voice"),
             Commands.slash("pause", "Pause the bot"),
             Commands.slash("clear", "Clear the song queue"),
-            Commands.slash("help", "Show a list of commands")
+            Commands.slash("help", "Show a list of commands"),
+            Commands.slash("poop", "Get current poop count for you"),
+            Commands.slash("leaderboard", "Get the leaderboard for the current server")
             ).queue();
     }
 }
