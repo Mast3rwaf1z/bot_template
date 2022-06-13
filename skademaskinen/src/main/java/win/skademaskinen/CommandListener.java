@@ -218,7 +218,7 @@ public class CommandListener extends ListenerAdapter {
                                 score++;
                             }
                             else{
-                                fields.add(new Field("", "Your item level is too low, we have a requirement of 252 (you need"+(requiredIlvl-Long.parseLong(characterItemLevel))+")", false));
+                                fields.add(new Field("", "Your item level is too low, we have a requirement of 252 (you need to be "+(requiredIlvl-Long.parseLong(characterItemLevel))+" higher)", true));
                             }
                             if(preferredRoles.contains(characterRole.toLowerCase())){
                                 score++;
