@@ -299,7 +299,7 @@ public class CommandListener extends ListenerAdapter {
         
             case "decline_button":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
+                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nPlease refer to your application for an explaination").queue();
                 }
                 else{
                     event.deferEdit().queue();
