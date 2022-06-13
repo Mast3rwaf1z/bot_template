@@ -46,6 +46,7 @@ public class CommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         System.out.println("Command:                " + event.getCommandString());
         System.out.println();
+        event.deferReply();
         Guild guild = event.getGuild();
         Member author = event.getMember();
         switch (event.getName().toLowerCase()) {
@@ -232,7 +233,7 @@ public class CommandListener extends ListenerAdapter {
     }
     
     public ModalCallbackAction error_message(SlashCommandInteractionEvent event, String message){
-        Builder modal = Modal.create("error", "Error:\n"+message);
+        Builder modal = Modal.create("", "Error:\n"+message);
         return event.replyModal(modal.build());
     }
 
