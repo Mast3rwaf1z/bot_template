@@ -52,8 +52,8 @@ public class App
                 .addOption(OptionType.ATTACHMENT, "file", "Announcement text in markdown", true),
             Commands.slash("apply", "Send an application to the raid team")
                 .addOption(OptionType.STRING, "name", "Your character name (this works best if you give your EXACT name)", true)
-                .addOption(OptionType.STRING, "server", "Which server is this character on? (put - instead of space)", true)
-                .addOption(OptionType.STRING, "role", "Your role (Options: Healer, Tank, Ranged Damage, Melee Damage)", true)
+                .addOption(OptionType.STRING, "server", "Which server is this character on? (put - instead of space)", true, true)
+                .addOption(OptionType.STRING, "role", "Your role (Options: Healer, Tank, Ranged Damage, Melee Damage)", true, true)
                 .addOption(OptionType.BOOLEAN, "raidtimes", "Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", true),
             Commands.slash("roll", "roll a d100 for each entry")
                 .addOption(OptionType.STRING, "entry1", "entry", true)

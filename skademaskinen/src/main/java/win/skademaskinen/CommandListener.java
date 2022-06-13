@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,10 +26,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
@@ -47,6 +51,7 @@ public class CommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         System.out.println("Command:                " + event.getCommandString());
         System.out.println();
+        event.deferReply();
         Guild guild = event.getGuild();
         Member author = event.getMember();
         EmbedBuilder builder = new EmbedBuilder();
@@ -62,7 +67,7 @@ public class CommandListener extends ListenerAdapter {
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
                 else if(event.getOptions().size() == 0){
-                    event.reply("Please specify a track").queue();
+                    event.reply("Please specify a track").setEphemeral(true).queue();
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
@@ -299,6 +304,30 @@ public class CommandListener extends ListenerAdapter {
                 else{
                     event.deferEdit().queue();
                 }
+                break;
+        }
+    }
+
+    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
+        switch(event.getName()){
+            case "apply":
+                if(event.getFocusedOption().getName().equalsIgnoreCase("role")){
+                    String[] choices = {"Tank", "Healer", "Ranged Damage", "Melee Damage"};
+                    List<Command.Choice> options = Stream.of(choices)
+                        .filter(choice -> choice.startsWith(event.getFocusedOption().getValue()))
+                        .map(choice -> new Command.Choice(choice, choice))
+                        .collect(Collectors.toList());
+                    event.replyChoices(options).queue();
+                }
+                else if(event.getFocusedOption().getName().equalsIgnoreCase("server")){
+                    String[] choices = {"argent-dawn"};
+                    List<Command.Choice> options = Stream.of(choices)
+                        .filter(choice -> choice.startsWith(event.getFocusedOption().getValue()))
+                        .map(choice -> new Command.Choice(choice, choice))
+                        .collect(Collectors.toList());
+                    event.replyChoices(options).queue();
+                }
+
                 break;
         }
     }
