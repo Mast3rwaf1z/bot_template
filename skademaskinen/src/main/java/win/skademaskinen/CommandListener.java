@@ -80,7 +80,7 @@ public class CommandListener extends ListenerAdapter {
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
                 else if(event.getOptions().size() == 0){
-                    event.reply("Please specify a track").queue();
+                    error_message(event, "Please specify a track").queue();
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
@@ -178,7 +178,7 @@ public class CommandListener extends ListenerAdapter {
                     event.replyEmbeds(builder2.build()).queue();
                 } catch (SQLException e) {
                     // TODO Auto-generated catch block
-                    event.reply("This server does not seem to have a leaderboard yet").queue();
+                    error_message(event, "This server does not seem to have a leaderboard yet").queue();
                     e.printStackTrace();
                 }
 
