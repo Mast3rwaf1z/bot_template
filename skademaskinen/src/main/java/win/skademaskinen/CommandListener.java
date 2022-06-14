@@ -50,7 +50,7 @@ public class CommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         System.out.println("Command:                " + event.getCommandString());
         System.out.println();
-        event.deferReply().queue();
+        //event.deferReply().queue();
         Guild guild = event.getGuild();
         Member author = event.getMember();
         EmbedBuilder builder = new EmbedBuilder();
