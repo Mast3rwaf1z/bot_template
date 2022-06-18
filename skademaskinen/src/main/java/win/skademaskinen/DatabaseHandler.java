@@ -10,12 +10,11 @@ import java.sql.Statement;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 
 
 public class DatabaseHandler {
     Connection connection;
+    private static DatabaseHandler activeHandler;
     DatabaseHandler() throws ClassNotFoundException, SQLException, IOException, ParseException{
         JSONObject config = (JSONObject) Config.getConfig().get("database");
 
@@ -24,47 +23,21 @@ public class DatabaseHandler {
         System.out.println("Connected to mysql!");
     }
 
-    public ResultSet getPoopsForGuild(Guild guild) throws SQLException{
-        Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery("select * from server_" + guild.getId() + ";");
-        return result;
-    }
-
-    public void createPoopTable(Guild guild) throws SQLException{
-        Statement statement = connection.createStatement();
-        statement.execute("create table server_" + guild.getId() + "(id bigint, count int);");
-    }
-
     void close() throws SQLException{
         connection.close();
     }
 
-    public void addPoopToMember(Member member) throws SQLException {
-        String guildId = member.getGuild().getId();
-        String memberId = member.getId();
+    public ResultSet getTable(String table) throws SQLException{
         Statement statement = connection.createStatement();
-        int current = getPoopsForMember(member);
-        current++;
-        if(current == 1){
-            statement.execute("insert into server_" + guildId + " values("+memberId+", "+current+");");
-        }
-        else{
-            statement.execute("update server_"+ guildId + " set count="+current+ " where id="+memberId+";");
-        }
-        System.out.println("Successfully incremented poop value to" + current);
-    }
+        ResultSet resultSet = statement.executeQuery("select * from " + table + ";");
+        return resultSet;
+    } 
 
-    public int getPoopsForMember(Member member) throws SQLException{
-        Statement statement = connection.createStatement();
-        try{
-            ResultSet result = statement.executeQuery("select count from server_" + member.getGuild().getId() + " where id="+member.getId()+";");
-            result.next();
-            return result.getInt(1);
-
-        }
-        catch(SQLException e){
-            return 0;
-        }
+    public static void registerHandler() throws ClassNotFoundException, SQLException, IOException, ParseException{
+        activeHandler = new DatabaseHandler();
     }
     
+    public static DatabaseHandler getHandler(){
+        return DatabaseHandler.activeHandler;
+    }
 }

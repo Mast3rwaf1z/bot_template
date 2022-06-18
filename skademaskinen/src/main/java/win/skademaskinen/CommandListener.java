@@ -36,13 +36,10 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandListener extends ListenerAdapter {
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
-    private DatabaseHandler databaseHandler;
     Runtime runtime = Runtime.getRuntime();
 
 
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
-        System.out.println("Creating database handler");
-        databaseHandler = new DatabaseHandler();
 
     }
 
