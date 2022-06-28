@@ -295,7 +295,7 @@ public class CommandListener extends ListenerAdapter {
             case "decline_button":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     String name = event.getMessage().getInteraction().getUser().getAsMention();
-                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nPlease refer to your application for an explaination").queue();
+                    event.reply(event.getMember().getAsMention()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nPlease refer to your application for an explaination").queue();
                 }
                 else{
                     event.deferEdit().queue();
