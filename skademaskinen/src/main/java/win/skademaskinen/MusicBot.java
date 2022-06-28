@@ -113,6 +113,9 @@ public class MusicBot {
     public void clear() {
         scheduler.emptyQueue();
     }
+    public void connectToVoiceChannel(AudioChannel channel) {
+        audioManager.openAudioConnection(channel);
+    }
 
 
 }
