@@ -60,6 +60,9 @@ public class CommandListener extends ListenerAdapter {
             case "play":
                 if (author.getVoiceState().inAudioChannel() && bots.containsKey(guild)) {
                     MusicBot bot = bots.get(guild);
+                    if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
+                        bot.connectToVoiceChannel(author.getVoiceState().getChannel());
+                    }
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
                 else if(event.getOptions().size() == 0){
