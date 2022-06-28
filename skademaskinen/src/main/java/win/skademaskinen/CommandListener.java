@@ -235,11 +235,11 @@ public class CommandListener extends ListenerAdapter {
                             fields.add("we do not need any more " + characterRole + "s");
                         }
                         String color = "";
-                        if(score >= 4){
+                        if(score > 3){
                             builder.setColor(Color.green);
                             color = "green";
                         }
-                        else if(score == 2){
+                        else if(score == 3){
                             builder.setColor(Color.yellow);
                             color = "yellow";
                         }
