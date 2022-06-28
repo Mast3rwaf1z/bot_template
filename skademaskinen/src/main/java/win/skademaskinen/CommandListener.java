@@ -191,7 +191,6 @@ public class CommandListener extends ListenerAdapter {
 
                         builder.setTitle("Raid team application");
                         builder.setDescription("Raid team application for " +"["+characterName+"](https://worldofwarcraft.com/en-gb/character/eu/"+characterServer+"/"+characterName+") ("+characterServer+")");
-                        builder.setFooter(characterName);
                         builder.addField("Class/Role", characterClass+"/"+characterSpec + " ("+characterRole+")", false);
                         builder.addField("Item Level", "Equipped: "+characterItemLevel+ " Average: "+characterItemLevelAverage, false);
                         if(raidtimes){
@@ -236,7 +235,7 @@ public class CommandListener extends ListenerAdapter {
                             fields.add("we do not need any more " + characterRole + "s");
                         }
                         String color = "";
-                        if(score >= 3){
+                        if(score >= 4){
                             builder.setColor(Color.green);
                             color = "green";
                         }
@@ -248,16 +247,13 @@ public class CommandListener extends ListenerAdapter {
                             builder.setColor(Color.red);
                             color = "red";
                         }
-                        if(fields.size() >= 1){
+                        if(!color.equalsIgnoreCase("green")){
                             String title ="Your application is " + color + " because:";
                             String final_field = "";
                             for(String field : fields){
                                 final_field += field + '\n';
                             }
                             builder.addField(title, final_field, false);
-                        }
-                        if(color == "green"){
-                            //event.getChannel().sendMessage(event.getJDA().getRoleById("756106691946217542").getAsMention()).queue();
                         }
                     
                         //finally lets do some interesting profile picture getting
@@ -288,7 +284,8 @@ public class CommandListener extends ListenerAdapter {
         switch (event.getButton().getId()) {
             case "approve_button":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
+                    String name = event.getMessage().getInteraction().getUser().getAsMention();
+                    event.reply(event.getMember().getAsMention()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
                 }
                 else{
                     event.deferEdit().queue();
@@ -297,7 +294,8 @@ public class CommandListener extends ListenerAdapter {
         
             case "decline_button":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + event.getMessage().getEmbeds().get(0).getFooter().getText()+"s application\nPlease refer to your application for an explaination").queue();
+                    String name = event.getMessage().getInteraction().getUser().getAsMention();
+                    event.reply(event.getMember().getNickname()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nPlease refer to your application for an explaination").queue();
                 }
                 else{
                     event.deferEdit().queue();
