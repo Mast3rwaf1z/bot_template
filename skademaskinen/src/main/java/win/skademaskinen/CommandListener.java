@@ -21,9 +21,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -51,6 +53,7 @@ public class CommandListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
+        EmbedBuilder builder = new EmbedBuilder();
         System.out.println("Command:                " + event.getCommandString());
         System.out.println();
         event.deferReply();
@@ -118,7 +121,6 @@ public class CommandListener extends ListenerAdapter {
                     else{
                         tracks = bots.get(guild).getQueue().subList(page*15, (page*15)+15);
                     }
-                    EmbedBuilder builder = new EmbedBuilder();
                     builder.setTitle("Track queue");
                     for(AudioTrack track : tracks){
                         builder.addField("", "["+track.getInfo().title+"]("+track.getInfo().uri+")\n Duration: "+getTime(track.getDuration()), false);
@@ -173,9 +175,8 @@ public class CommandListener extends ListenerAdapter {
                 try {
                     ResultSet resultSet = databaseHandler.getPoopsForGuild(guild);
                     HashMap<String, Integer> resultMap = new HashMap<String, Integer>();
-                    EmbedBuilder builder2 = new EmbedBuilder();
-                    builder2.setTitle("Poop leaderboard");
-                    builder2.setThumbnail("https://cdn.discordapp.com/attachments/692410386657574955/809730484640284682/lort.png");
+                    builder.setTitle("Poop leaderboard");
+                    builder.setThumbnail("https://cdn.discordapp.com/attachments/692410386657574955/809730484640284682/lort.png");
 
                     while(resultSet.next()){
                         resultMap.put(resultSet.getString("id"), resultSet.getInt("count"));
@@ -184,9 +185,9 @@ public class CommandListener extends ListenerAdapter {
                     Map<String, Integer> finalResult = resultMap.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
                     for(int i = finalResult.size(); i > 0; i--){
                         String id = finalResult.keySet().toArray()[i - 1].toString();
-                        builder2.addField(guild.retrieveMemberById(id).complete().getEffectiveName(), finalResult.get(id).toString() + " Poop", false);
+                        builder.addField(guild.retrieveMemberById(id).complete().getEffectiveName(), finalResult.get(id).toString() + " Poop", false);
                     }
-                    event.replyEmbeds(builder2.build()).queue();
+                    event.replyEmbeds(builder.build()).queue();
                 } catch (SQLException e) {
                     // TODO Auto-generated catch block
                     error_message(event, "This server does not seem to have a leaderboard yet").queue();
@@ -194,7 +195,6 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "rolepicker":
-                EmbedBuilder builder = new EmbedBuilder();
                 try {
                     roles = (JSONArray) Config.getConfig().get("aau_roles");
                     
@@ -218,6 +218,27 @@ public class CommandListener extends ListenerAdapter {
                 }
                 callbackAction.addActionRow(buttons);
                 callbackAction.queue();
+                break;
+            case "poll":
+                ArrayList<String> options = new ArrayList<>();
+                for(OptionMapping option : event.getOptions()){
+                    if(option.getName().contains("option")){
+                        options.add(option.getAsString());
+                    }
+                }
+                builder.setTitle(author.getEffectiveName()+"s poll");
+                builder.setDescription(event.getOption("message").getAsString());
+                builder.appendDescription("\n");
+                for(String option : options){
+                    builder.addField(option, "Votes: " + 0, false);
+                }
+                ReplyCallbackAction callbackAction2 = event.replyEmbeds(builder.build());
+                ArrayList<Button> buttons2 = new ArrayList<>();
+                for(String option : options){
+                    buttons2.add(Button.primary(option, option));
+                }
+                callbackAction2.addActionRow(buttons2);
+                callbackAction2.queue();
                 break;
 
         }
@@ -267,12 +288,37 @@ public class CommandListener extends ListenerAdapter {
     public void onButtonInteraction(ButtonInteractionEvent event){
         Guild guild = event.getGuild();
         Member member = event.getMember();
-        for(String roleId : roles){
-            Role role = guild.getRoleById(roleId);
-            if(event.getButton().getId().equals(role.getId())){
-                guild.addRoleToMember(member, role).queue();
+        switch(event.getMessage().getInteraction().getName()){
+            case "rolepicker":
+                for(String roleId : roles){
+                    Role role = guild.getRoleById(roleId);
+                    if(event.getButton().getId().equals(role.getId())){
+                        guild.addRoleToMember(member, role).queue();
+                        event.deferEdit().queue();
+                    }
+                }
+                break;
+            case "poll":
+                MessageEmbed embed = event.getMessage().getEmbeds().get(0);
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle(embed.getTitle());
+                builder.setDescription(embed.getDescription());
+
+                List<Field> fields = embed.getFields();
+                for(Field field: fields){
+                    if(field.getName().equals(event.getButton().getLabel())){
+                        int value = Integer.parseInt(field.getValue().split(" ")[1]);
+                        value++;
+                        String newValue = "Votes: " + value;
+                        field = new Field(field.getName(), newValue, false);
+
+                    }
+                    builder.addField(field);
+                }
+                event.getMessage().editMessageEmbeds(builder.build()).queue();
                 event.deferEdit().queue();
-            }
+                break;
+
         }
     }
 

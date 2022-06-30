@@ -52,7 +52,19 @@ public class App
             Commands.slash("clear", "Clear the song queue"),
             Commands.slash("help", "Show a list of commands"),
             Commands.slash("poop", "Get current poop count for you"),
-            Commands.slash("leaderboard", "Get the leaderboard for the current server")
+            Commands.slash("leaderboard", "Get the leaderboard for the current server"),
+            Commands.slash("poll", "Create a poll with entries")
+                .addOption(OptionType.STRING, "message", "Message for your poll", true)
+                .addOption(OptionType.STRING, "option1", "Poll option #1")
+                .addOption(OptionType.STRING, "option2", "Poll option #2")
+                .addOption(OptionType.STRING, "option3", "Poll option #3")
+                .addOption(OptionType.STRING, "option4", "Poll option #4")
+                .addOption(OptionType.STRING, "option5", "Poll option #5")
+                .addOption(OptionType.STRING, "option6", "Poll option #6")
+                .addOption(OptionType.STRING, "option7", "Poll option #7")
+                .addOption(OptionType.STRING, "option8", "Poll option #8")
+                .addOption(OptionType.STRING, "option9", "Poll option #9")
+                .addOption(OptionType.STRING, "option10", "Poll option #10")
             ).queue();
         jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
     }
