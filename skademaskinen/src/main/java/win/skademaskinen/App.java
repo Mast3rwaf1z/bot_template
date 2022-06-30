@@ -60,11 +60,6 @@ public class App
                 .addOption(OptionType.STRING, "option3", "Poll option #3")
                 .addOption(OptionType.STRING, "option4", "Poll option #4")
                 .addOption(OptionType.STRING, "option5", "Poll option #5")
-                .addOption(OptionType.STRING, "option6", "Poll option #6")
-                .addOption(OptionType.STRING, "option7", "Poll option #7")
-                .addOption(OptionType.STRING, "option8", "Poll option #8")
-                .addOption(OptionType.STRING, "option9", "Poll option #9")
-                .addOption(OptionType.STRING, "option10", "Poll option #10")
             ).queue();
         jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
     }
