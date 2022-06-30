@@ -195,14 +195,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "rolepicker":
-                try {
-                    roles = (JSONArray) Config.getConfig().get("aau_roles");
-                    
-
-                } catch (IOException | ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                roles = (JSONArray) Config.getConfig().get("aau_roles");
                 builder.setTitle("Role picker");
                 builder.setDescription("**Choose a role from the following:**");
                 builder.appendDescription("\n");
@@ -299,6 +292,18 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "poll":
+                if(Config.getPoll(event.getMessageId()) == null){
+                    Config.registerNewPoll(event.getMessageId());
+                }
+                ArrayList<String> entries = Config.getPoll(event.getMessageId());
+                if(entries.contains(member.getId())){
+                    event.deferEdit().queue();
+                    break;
+                }
+                else{
+                    Config.addMemberToPoll(member.getId(), event.getMessageId());
+
+                }
                 MessageEmbed embed = event.getMessage().getEmbeds().get(0);
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.setTitle(embed.getTitle());
