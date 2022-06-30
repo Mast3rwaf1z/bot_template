@@ -1,11 +1,13 @@
 package win.skademaskinen;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -24,22 +26,27 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.Modal.Builder;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 public class CommandListener extends ListenerAdapter {
     final private String[] colors = {"blue", "green", "gray", "yellow", "orange", "red", "white", "purple", "pink", "darkgreen"};
+    ArrayList<String> roles = new ArrayList<>();
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
     private DatabaseHandler databaseHandler;
-
-
+    
+    
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
         databaseHandler = new DatabaseHandler();
-
+        roles.add("992064457276653699");
+        
     }
 
     @Override
@@ -185,6 +192,33 @@ public class CommandListener extends ListenerAdapter {
                     error_message(event, "This server does not seem to have a leaderboard yet").queue();
                     e.printStackTrace();
                 }
+                break;
+            case "rolepicker":
+                EmbedBuilder builder = new EmbedBuilder();
+                try {
+                    roles = (JSONArray) Config.getConfig().get("aau_roles");
+                    
+
+                } catch (IOException | ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                builder.setTitle("Role picker");
+                builder.setDescription("**Choose a role from the following:**");
+                builder.appendDescription("\n");
+                for(String roleId : roles){
+                    Role role = guild.getRoleById(roleId);
+                    builder.appendDescription("\n" + role.getAsMention());
+                }
+                ReplyCallbackAction callbackAction =  event.replyEmbeds(builder.build());
+                ArrayList<Button> buttons = new ArrayList<>();
+                for(String roleId : roles){
+                    Role role = guild.getRoleById(roleId);
+                    buttons.add(Button.primary(role.getId(), role.getName()));
+                }
+                callbackAction.addActionRow(buttons);
+                callbackAction.queue();
+                break;
 
         }
     }
@@ -226,6 +260,18 @@ public class CommandListener extends ListenerAdapter {
                     } catch (SQLException e1) {
                     }
                 }
+            }
+        }
+    }
+
+    public void onButtonInteraction(ButtonInteractionEvent event){
+        Guild guild = event.getGuild();
+        Member member = event.getMember();
+        for(String roleId : roles){
+            Role role = guild.getRoleById(roleId);
+            if(event.getButton().getId().equals(role.getId())){
+                guild.addRoleToMember(member, role).queue();
+                event.deferEdit().queue();
             }
         }
     }

@@ -54,5 +54,6 @@ public class App
             Commands.slash("poop", "Get current poop count for you"),
             Commands.slash("leaderboard", "Get the leaderboard for the current server")
             ).queue();
+        jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
     }
 }
