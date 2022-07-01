@@ -40,7 +40,7 @@ public class App
                 .addOption(OptionType.INTEGER, "time", "Time(Default: seconds)", true)
                 .addOption(OptionType.STRING, "measurement", "Seconds, minutes, hours, days", false),
             Commands.slash("color", "Pick a color for your name")
-                .addOption(OptionType.STRING, "color", "Pick a color (Options: Green, Red, Blue, Gray, Yellow, Orange, White, Purple, Pink and Darkgreen)", true),
+                .addOption(OptionType.STRING, "color", "Pick a color", true, true),
             Commands.slash("play", "Play a song from youtube")
                 .addOption(OptionType.STRING, "url", "Youtube link to the song or playlist", true),
             Commands.slash("skip", "Skip to the next song"),

@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -27,10 +28,12 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.Modal.Builder;
@@ -324,6 +327,20 @@ public class CommandListener extends ListenerAdapter {
                 event.deferEdit().queue();
                 break;
 
+        }
+    }
+
+    //autocomplete here
+    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
+        switch(event.getName()){
+            case "color":
+                String[] choices = colors;
+                List<Command.Choice> options = Stream.of(choices)
+                    .filter(choice -> choice.startsWith(event.getFocusedOption().getValue()))
+                    .map(choice -> new Command.Choice(choice, choice))
+                    .collect(Collectors.toList());
+                event.replyChoices(options).queue();
+                break;
         }
     }
 
