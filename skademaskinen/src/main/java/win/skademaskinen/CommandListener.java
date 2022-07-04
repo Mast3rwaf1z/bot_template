@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -48,13 +47,14 @@ public class CommandListener extends ListenerAdapter {
     private DatabaseHandler databaseHandler;
     
     
-    public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
+    public CommandListener() throws ClassNotFoundException, SQLException, IOException{
         databaseHandler = new DatabaseHandler();
         roles.add("992064457276653699");
         
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         EmbedBuilder builder = new EmbedBuilder();
         System.out.println("Command:                " + event.getCommandString());
@@ -168,10 +168,7 @@ public class CommandListener extends ListenerAdapter {
                 int poops = 0;
                 try {
                     poops = databaseHandler.getPoopsForMember(author);
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                } catch (SQLException e) {}
                 event.reply("You currently have "+poops+" poops").queue();
                 break;
             case "leaderboard":
@@ -192,13 +189,11 @@ public class CommandListener extends ListenerAdapter {
                     }
                     event.replyEmbeds(builder.build()).queue();
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
                     error_message(event, "This server does not seem to have a leaderboard yet").queue();
-                    e.printStackTrace();
                 }
                 break;
             case "rolepicker":
-                roles = (JSONArray) Config.getConfig().get("aau_roles");
+                roles = (ArrayList) Config.getConfig().getJSONArray("aau_roles").toList();
                 builder.setTitle("Role picker");
                 builder.setDescription("**Choose a role from the following:**");
                 builder.appendDescription("\n");
@@ -295,11 +290,11 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "poll":
-            if(Config.getPoll(event.getMessageId()) == null){
+            if(!Config.getJSON("polls.json").has(event.getMessageId())){
                 Config.registerNewPoll(event.getMessageId());
             }
-                Map<String, ArrayList<String>> poll = Config.getPoll(event.getMessageId());
-                if(!poll.containsKey(member.getId())){
+                JSONObject poll = Config.getPoll(event.getMessageId());
+                if(!poll.has(member.getId())){
                     Config.addMemberToPoll(member.getId(), event.getMessageId());
                 }
                 Config.modifyPollEntryForMember(member.getId(), event.getMessageId(), event.getButton().getId());
@@ -312,8 +307,8 @@ public class CommandListener extends ListenerAdapter {
                 List<Field> fields = embed.getFields();
                 for(Field field: fields){
                     int value = 0;
-                    for(ArrayList<String> buttonIds: poll.values()){
-                        if(buttonIds.contains(field.getName())){
+                    for(String key: poll.keySet()){
+                        if(poll.getJSONArray(key).toList().contains(field.getName())){
                             value++;
                         }
                     }

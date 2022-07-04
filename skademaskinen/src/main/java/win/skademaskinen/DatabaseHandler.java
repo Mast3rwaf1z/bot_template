@@ -7,8 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -16,7 +15,7 @@ import net.dv8tion.jda.api.entities.Member;
 
 public class DatabaseHandler {
     Connection connection;
-    DatabaseHandler() throws ClassNotFoundException, SQLException, IOException, ParseException{
+    DatabaseHandler() throws ClassNotFoundException, SQLException, IOException{
         JSONObject config = (JSONObject) Config.getConfig().get("database");
 
         connection = DriverManager.getConnection(config.get("database").toString(), config.get("username").toString(), config.get("password").toString());

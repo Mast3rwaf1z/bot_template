@@ -5,8 +5,7 @@ import java.sql.SQLException;
 
 import javax.security.auth.login.LoginException;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 public class App 
 {
     static private JDA jda;
-    public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
+    public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException{
         JSONObject config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
         jda.addEventListener(new CommandListener());
