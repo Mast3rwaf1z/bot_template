@@ -295,18 +295,15 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "poll":
-                if(Config.getPoll(event.getMessageId()) == null){
-                    Config.registerNewPoll(event.getMessageId());
-                }
-                ArrayList<String> entries = Config.getPoll(event.getMessageId());
-                if(entries.contains(member.getId())){
-                    event.deferEdit().queue();
-                    break;
-                }
-                else{
+            if(Config.getPoll(event.getMessageId()) == null){
+                Config.registerNewPoll(event.getMessageId());
+            }
+                Map<String, ArrayList<String>> poll = Config.getPoll(event.getMessageId());
+                if(!poll.containsKey(member.getId())){
                     Config.addMemberToPoll(member.getId(), event.getMessageId());
-
                 }
+                Config.modifyPollEntryForMember(member.getId(), event.getMessageId(), event.getButton().getId());
+                poll = Config.getPoll(event.getMessageId());
                 MessageEmbed embed = event.getMessage().getEmbeds().get(0);
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.setTitle(embed.getTitle());
@@ -314,13 +311,14 @@ public class CommandListener extends ListenerAdapter {
 
                 List<Field> fields = embed.getFields();
                 for(Field field: fields){
-                    if(field.getName().equals(event.getButton().getLabel())){
-                        int value = Integer.parseInt(field.getValue().split(" ")[1]);
-                        value++;
-                        String newValue = "Votes: " + value;
-                        field = new Field(field.getName(), newValue, false);
-
+                    int value = 0;
+                    for(ArrayList<String> buttonIds: poll.values()){
+                        if(buttonIds.contains(field.getName())){
+                            value++;
+                        }
                     }
+                    String newValue = "Votes: " + String.valueOf(value);
+                    field = new Field(field.getName(), newValue, false);
                     builder.addField(field);
                 }
                 event.getMessage().editMessageEmbeds(builder.build()).queue();

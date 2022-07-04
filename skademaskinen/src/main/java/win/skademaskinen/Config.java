@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,11 +27,11 @@ public class Config {
         }
     }
 
-    public static ArrayList<String> getPoll(String id){
+    public static Map<String, ArrayList<String>> getPoll(String id){
         JSONParser parser = new JSONParser();
         try(FileReader reader = new FileReader("polls.json")){
             JSONObject json = (JSONObject) parser.parse(reader);
-            return (ArrayList<String>) json.get(id);
+            return (Map<String, ArrayList<String>>) json.get(id);
         }catch(IOException | ParseException e){
             return null;
         }
@@ -38,24 +39,38 @@ public class Config {
 
     public static void registerNewPoll(String id){
         JSONObject current = getJSON("polls.json");
-        current.put(id, new JSONArray());
+        current.put(id, new JSONObject());
         try(FileWriter writer = new FileWriter("polls.json")){
             writer.write(current.toJSONString());
             writer.flush();
-        }catch(IOException e){
-        }
+        }catch(IOException e){}
     }
     public static void addMemberToPoll(String memberId, String pollId){
-        ArrayList<String> poll = getPoll(pollId);
-        poll.add(memberId);
+        Map<String, ArrayList<String>> poll = getPoll(pollId);
+        poll.put(memberId, new ArrayList<>());
         JSONObject current = getJSON("polls.json");
         current.put(pollId, poll);
         try(FileWriter writer = new FileWriter("polls.json")){
             writer.write(current.toJSONString());
             writer.flush();
-        }catch(IOException e){
-
+        }catch(IOException e){}
+    }
+    public static void modifyPollEntryForMember(String memberId, String pollId, String buttonId){
+        Map<String, ArrayList<String>> poll = getPoll(pollId);
+        if(poll.get(memberId).contains(buttonId)){
+            poll.get(memberId).remove(buttonId);
         }
-
+        else{
+            poll.get(memberId).add(buttonId);
+        }
+        JSONObject current = getJSON("polls.json");
+        current.put(pollId, poll);
+        try(FileWriter writer = new FileWriter("polls.json")){
+            writer.write(current.toJSONString());
+            writer.flush();
+        }catch(IOException e){}
+    }
+    public static ArrayList<String> getPollEntriesForMember(String memberId, String pollId){
+        return getPoll(pollId).get(memberId);
     }
 }
