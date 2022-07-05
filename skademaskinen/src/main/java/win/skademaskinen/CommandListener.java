@@ -10,7 +10,10 @@ import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -45,6 +48,7 @@ public class CommandListener extends ListenerAdapter {
     ArrayList<String> roles = new ArrayList<>();
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
     private DatabaseHandler databaseHandler;
+    Runtime runtime = Runtime.getRuntime();
     
     
     public CommandListener() throws ClassNotFoundException, SQLException, IOException{
@@ -231,6 +235,19 @@ public class CommandListener extends ListenerAdapter {
                 callbackAction2.addActionRow(buttons2);
                 callbackAction2.queue();
                 break;
+            case "brainfuck":
+                try(FileWriter writer = new FileWriter("bf.bf")){
+                    writer.write(event.getOption("code").getAsString());
+                    writer.flush();
+                }catch(IOException e){}
+                try {
+                    Process p = runtime.exec("brainfuck bf.bf");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    p.waitFor();
+                    event.reply(reader.readLine()).queue();
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
 
         }
     }

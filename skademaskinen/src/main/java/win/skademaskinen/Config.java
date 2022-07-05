@@ -67,4 +67,13 @@ public class Config {
     public static JSONArray getPollEntriesForMember(String memberId, String pollId){
         return getPoll(pollId).getJSONArray(memberId);
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T> ArrayList<T> JSONArrayToList(JSONArray json){
+        ArrayList<T> result = new ArrayList<>();
+        for(int i = 0; i < json.length(); i++){
+            result.add((T) json.get(i));
+        }
+        return result;
+    }
 }
