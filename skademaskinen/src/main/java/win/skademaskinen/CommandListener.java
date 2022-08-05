@@ -8,9 +8,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,6 +40,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -248,6 +255,64 @@ public class CommandListener extends ListenerAdapter {
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
+            case "results":
+                String message_id = event.getOption("messageid").getAsString();
+                try {
+                    Message message = event.getTextChannel().getHistoryAround(message_id, 1).complete(true).getMessageById(message_id);
+                    JSONParser parser = new JSONParser();
+                    FileReader reader = new FileReader("polls.json");
+                    JSONObject polls = (JSONObject) parser.parse(reader);
+                    String out = "";
+                    HashMap<String, ArrayList<String>> result = new HashMap<>();
+                    JSONObject poll = (JSONObject) polls.get(message_id);
+                    System.out.println("results for poll #" + message.getId() + " with name: " + message.getEmbeds().get(0).getDescription());
+                    out += "results for poll #" + message.getId() + " with name: " + message.getEmbeds().get(0).getDescription() + "\n";
+                    for(Object reply_key : poll.keySet()){
+                        Member member = guild.retrieveMemberById(reply_key.toString()).complete();
+                        JSONArray replies = (JSONArray) poll.get(reply_key.toString());
+                        if (member == null) {
+                            continue;
+                        }
+                        System.out.println(member.getEffectiveName());
+                        out += member.getEffectiveName() +"\n";
+                        for(Object reply : replies){
+                            System.out.println("\t" + reply.toString());
+                            out += "\t" + reply.toString() + "\n";
+                            ArrayList<String> list = result.get(reply.toString());
+                            if(list == null){
+                                list = new ArrayList<>();
+                                list.add(member.getEffectiveName());
+                                result.put(reply.toString(), list);
+                            }
+                            else{
+                                result.get(reply.toString()).add(member.getEffectiveName());
+                            }
+                        }
+                    }
+                    System.out.println("Formatted results for poll #" + message_id);
+                    out += "Formatted results for poll #" + message_id + "\n";
+                    for(String key : result.keySet()){
+                        System.out.println(key);
+                        out += key + "\n";
+                        ArrayList<String> list = result.get(key);
+                        for(String element : list){
+                            System.out.println("\t" + element);
+                            out += "\t" + element + "\n";
+                        }
+                    }
+                    FileWriter writer = new FileWriter("out.txt");
+                    writer.write(out);
+                    writer.close();
+                    reader.close();
+                    event.getUser().openPrivateChannel().complete().sendFile(new File("out.txt")).queue();
+                    event.deferReply(true).queue();
+
+
+                } catch (IOException | ParseException | RateLimitedException e) {
+                    e.printStackTrace();
+                }
+                break;
 
         }
     }
@@ -276,7 +341,7 @@ public class CommandListener extends ListenerAdapter {
         System.out.println();
         
         Message message = event.getMessage();
-        if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
+        /*if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
             double roll = Math.random() * 100;
             if(roll > 99 - (Math.exp(message.getContentRaw().length()/175))){
                 message.addReaction("\uD83D\uDCA9").queue();
@@ -290,7 +355,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
             }
-        }
+        }*/
     }
 
     public void onButtonInteraction(ButtonInteractionEvent event){

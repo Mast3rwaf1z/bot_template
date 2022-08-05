@@ -60,7 +60,9 @@ public class App
                 .addOption(OptionType.STRING, "option4", "Poll option #4")
                 .addOption(OptionType.STRING, "option5", "Poll option #5"),
             Commands.slash("brainfuck", "execute a brainfuck string")
-                .addOption(OptionType.STRING, "code", "Code to be executed", true)
+                .addOption(OptionType.STRING, "code", "Code to be executed", true),
+            Commands.slash("results", "Get results from poll")
+                .addOption(OptionType.STRING, "messageid", "id of the poll message", true)
             ).queue();
         jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
     }
