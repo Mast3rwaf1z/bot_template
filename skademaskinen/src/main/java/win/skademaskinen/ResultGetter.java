@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 
 public class ResultGetter {
 	void run(SlashCommandInteractionEvent event) throws IOException, ParseException, RateLimitedException{
+		event.deferReply(true).queue();
 		Guild guild = event.getGuild();
 		String message_id = event.getOption("messageid").getAsString();
 		Message message = event.getTextChannel().getHistoryAround(message_id, 1).complete(true).getMessageById(message_id);
@@ -68,6 +69,5 @@ public class ResultGetter {
 		writer.close();
 		reader.close();
 		event.getUser().openPrivateChannel().complete().sendFile(new File("out.txt")).queue();
-		event.deferReply(true).queue();
 	}
 }
