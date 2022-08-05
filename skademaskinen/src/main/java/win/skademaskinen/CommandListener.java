@@ -235,12 +235,15 @@ public class CommandListener extends ListenerAdapter {
                     builder.addField(option, "Votes: " + 0, false);
                 }
                 ReplyCallbackAction callbackAction2 = event.replyEmbeds(builder.build());
-                try {
-                    ThreadChannel threadChannel = event.getTextChannel().createThreadChannel(author.getEffectiveName()+"s poll chat").complete(true);
-                    threadChannel.sendMessage("You can chat about " + author.getEffectiveName()+"s poll here").queue();
-                } catch (RateLimitedException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                if(event.getOption("haschat").getAsBoolean()){
+
+                    try {
+                        ThreadChannel threadChannel = event.getTextChannel().createThreadChannel(author.getEffectiveName()+"s poll chat").complete(true);
+                        threadChannel.sendMessage("You can chat about " + author.getEffectiveName()+"s poll here").queue();
+                    } catch (RateLimitedException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                 }
                 ArrayList<Button> buttons2 = new ArrayList<>();
                 for(String option : options){
