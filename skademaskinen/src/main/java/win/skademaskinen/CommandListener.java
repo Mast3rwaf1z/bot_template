@@ -235,7 +235,8 @@ public class CommandListener extends ListenerAdapter {
                     builder.addField(option, "Votes: " + 0, false);
                 }
                 ReplyCallbackAction callbackAction2 = event.replyEmbeds(builder.build());
-                if(event.getOption("haschat").getAsBoolean()){
+                OptionMapping haschat = event.getOption("haschat");
+                if(haschat != null && haschat.getAsBoolean()){
 
                     try {
                         ThreadChannel threadChannel = event.getTextChannel().createThreadChannel(author.getEffectiveName()+"s poll chat").complete(true);
