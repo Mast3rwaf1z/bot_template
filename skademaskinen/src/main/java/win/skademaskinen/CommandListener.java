@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -234,12 +235,20 @@ public class CommandListener extends ListenerAdapter {
                     builder.addField(option, "Votes: " + 0, false);
                 }
                 ReplyCallbackAction callbackAction2 = event.replyEmbeds(builder.build());
+                try {
+                    ThreadChannel threadChannel = event.getTextChannel().createThreadChannel(author.getEffectiveName()+"s poll chat").complete(true);
+                    threadChannel.sendMessage("You can chat about " + author.getEffectiveName()+"s poll here").queue();
+                } catch (RateLimitedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 ArrayList<Button> buttons2 = new ArrayList<>();
                 for(String option : options){
                     buttons2.add(Button.primary(option, option));
                 }
                 callbackAction2.addActionRow(buttons2);
                 callbackAction2.queue();
+                event.reply("Created poll thread");
                 break;
             case "brainfuck":
                 try(FileWriter writer = new FileWriter("bf.bf")){
