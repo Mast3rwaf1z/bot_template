@@ -279,7 +279,9 @@ public class CommandListener extends ListenerAdapter {
     }
 
     public void onMessageReceived(MessageReceivedEvent event){
-        System.out.println("Server:                 " + event.getGuild().getName());
+        if(event.isFromGuild()){
+            System.out.println("Server:                 " + event.getGuild().getName());
+        }
         System.out.println("Channel:                " + event.getChannel().getName());
         System.out.println("Author:                 " + event.getAuthor().getName());
         System.out.println("Message:                " + event.getMessage().getContentDisplay());
