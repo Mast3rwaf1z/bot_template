@@ -289,7 +289,7 @@ public class CommandListener extends ListenerAdapter {
         }
         System.out.println();
         
-        Message message = event.getMessage();
+        //Message message = event.getMessage();
         /*if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
             double roll = Math.random() * 100;
             if(roll > 99 - (Math.exp(message.getContentRaw().length()/175))){
