@@ -54,12 +54,12 @@ public class App
             Commands.slash("leaderboard", "Get the leaderboard for the current server"),
             Commands.slash("poll", "Create a poll with entries")
                 .addOption(OptionType.STRING, "message", "Message for your poll", true)
+                .addOption(OptionType.BOOLEAN, "haschat", "Should this poll have chat?", true)
                 .addOption(OptionType.STRING, "option1", "Poll option #1")
                 .addOption(OptionType.STRING, "option2", "Poll option #2")
                 .addOption(OptionType.STRING, "option3", "Poll option #3")
                 .addOption(OptionType.STRING, "option4", "Poll option #4")
-                .addOption(OptionType.STRING, "option5", "Poll option #5")
-                .addOption(OptionType.BOOLEAN, "haschat", "Should this poll have chat?", true),
+                .addOption(OptionType.STRING, "option5", "Poll option #5"),
             Commands.slash("brainfuck", "execute a brainfuck string")
                 .addOption(OptionType.STRING, "code", "Code to be executed", true),
             Commands.slash("results", "Get results from poll")
