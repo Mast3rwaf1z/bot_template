@@ -22,17 +22,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.18</maven.compiler.source>
-    <maven.compiler.target>1.18</maven.compiler.target>
+    <maven.compiler.source>18</maven.compiler.source>
+    <maven.compiler.target>18</maven.compiler.target>
   </properties>
 
   <dependencies>
-
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20220320</version>
-    </dependency>
 
 
     <dependency>
@@ -66,6 +60,12 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20220320</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -91,7 +91,16 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.1.0</version>
+		  <configuration>
+			<outputDirectory>..</outputDirectory>
+			<archive>
+			  <manifest>
+				<addClasspath>true</addClasspath>
+				<mainClass>win.skademaskinen.App</mainClass>
+			  </manifest>
+			</archive>
+		  </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>

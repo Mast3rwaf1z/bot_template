@@ -1,0 +1,11 @@
+win/skademaskinen/MusicBot$1.class
+win/skademaskinen/CommandListener$1.class
+win/skademaskinen/MusicBot.class
+win/skademaskinen/ResultGetter.class
+win/skademaskinen/TrackScheduler$1.class
+win/skademaskinen/DatabaseHandler.class
+win/skademaskinen/AudioPlayerSendHandler.class
+win/skademaskinen/Config.class
+win/skademaskinen/TrackScheduler.class
+win/skademaskinen/CommandListener.class
+win/skademaskinen/App.class
