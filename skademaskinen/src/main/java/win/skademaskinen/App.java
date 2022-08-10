@@ -122,8 +122,9 @@ public class App
                 .addOption(OptionType.STRING, "entry6", "entry", false)
                 .addOption(OptionType.STRING, "entry7", "entry", false)
                 .addOption(OptionType.STRING, "entry8", "entry", false)
-                .addOption(OptionType.STRING, "entry9", "entry", false)
-                .addOption(OptionType.STRING, "entry10", "entry", false)
+			    .addOption(OptionType.STRING, "entry9", "entry", false)
+			    .addOption(OptionType.STRING, "entry10", "entry", false),
+			Commands.slash("welcomemessage", "ADMIN COMMAND: create an interactive welcome message")
             ).queue();
     }
 }

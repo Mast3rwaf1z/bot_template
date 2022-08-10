@@ -1,0 +1,81 @@
+{
+    "token":"NjkzNDkwODYxOTI0ODEwODAy.Xn91sQ.phnzotGWtfxgp3qXi7Z_X0O5v7w",
+    "database":{
+        "username":"mast3r_bots",
+        "password":"sekr3t_p4ssw0rd",
+        "database":"jdbc:mysql://skademaskinen.win:41896/discord"
+    },
+    "raid_form":{
+        "minimum_ilvl":252,
+        "filled_roles":[
+            "tank"
+        ],
+        "preferred_roles":[
+            "healer", 
+            "ranged damage"
+        ],
+        "needed_classes":[
+            "shaman", 
+            "warrior", 
+            "warlock", 
+            "mage"
+        ],
+        "composition":[
+            {
+                "tanks":2,
+                "healers":2,
+                "ranged_damage":3,
+                "melee_damage":3
+            },
+            {
+                "tanks":2,
+                "healers":3,
+                "ranged_damage":5,
+                "melee_damage":4
+            },
+            {
+                "tanks":2,
+                "healers":4,
+                "ranged_damage":7,
+                "melee_damage":7
+            }
+        ]
+    },
+    "rbg_form":{
+        "minimum_ilvl":252,
+        "filled_roles":[
+        ],
+        "preferred_roles":[
+            "melee damage", 
+            "ranged damage", 
+            "healer", 
+            "tank"
+        ],
+        "needed_classes":[
+            "shaman", 
+            "demon hunter", 
+            "death knight", 
+            "warrior", 
+            "priest", 
+            "mage", 
+            "warlock", 
+            "monk", 
+            "hunter", 
+            "paladin", 
+            "rogue"
+        ],
+        "composition":[
+            {
+                "tanks":1,
+                "healers":3,
+                "ranged_damage":3,
+                "melee_damage":3
+            }
+        ]
+    },
+    "wow_api":{
+        "client_id":"7de448fb13804e21b9a4b862bed029ba",
+        "client_secret":"94Dlf3fafszsUnE3o17Cn45ZUS3E2WsB"
+    },
+    "aau_roles":["992064457276653699"]
+}

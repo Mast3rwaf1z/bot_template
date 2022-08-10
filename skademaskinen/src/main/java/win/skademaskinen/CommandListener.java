@@ -3,6 +3,7 @@ package win.skademaskinen;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,15 +25,24 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+
 
 public class CommandListener extends ListenerAdapter {
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
@@ -279,7 +289,62 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "announcement":
                 break;
+		    case "welcomemessage":
+				if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
+					builder.setTitle("Welcome to The Nut Hut");
+					builder.setDescription(
+							"The World of Warcraft guild The Nut Hut - <Argent Dawn> welcomes you to our discord server!\nYou can find our rules in "
+									+ guild.getTextChannelById("642853163774509116").getAsMention()
+									+ "\nBelow you can choose the roles you need in this discord server!");
+					builder.setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif");
+						
+					SelectMenu type_menu = SelectMenu.create("type_menu")
+						.setPlaceholder("PvE and/or PvP")
+						.setMinValues(0)
+						.setMaxValues(2)
+						.addOption("PvE", "pve")
+						.addOption("PvP", "pvp")
+						.build();
+
+					SelectMenu role_menu = SelectMenu.create("role_menu")
+						.setPlaceholder("Choose your role(s)")
+						.setMinValues(0)
+						.setMaxValues(3)
+						.addOption("Tank", "tank", Emoji.fromCustom("Tank", 869171302307610695L, false))
+						.addOption("Healer", "healer", Emoji.fromCustom("Healer", 869171419458707506L, false))
+						.addOption("DPS", "dps", Emoji.fromCustom("Dps", 869171471992360990L, false))
+						.build();
+
+					SelectMenu other_games_menu = SelectMenu.create("other_games_menu")
+						.setPlaceholder("Choose accces to other games channels")
+						.setMaxValues(11)
+						.setMinValues(0)
+						//.addOption("Among Us", "amongus", Emoji.fromCustom("amongus", 777507568251043880L, false))
+						.addOption("Minecraft", "minecraft", Emoji.fromCustom("minecraft", 777508556429459477L, false))
+						//.addOption("Terraria", "terraria", Emoji.fromCustom("terraria", 777509181481549844L, false))
+						.addOption("League of Legends", "leagueoflegends", Emoji.fromCustom("league", 852537658252984330L, false))
+						.addOption("From Software Games", "fromsoftgames", Emoji.fromCustom("fromsoftware", 777624293948915773L, false))
+						.addOption("Rockstar Games", "rockstargames", Emoji.fromCustom("Rockstar", 847213407681773578L, false))
+						.addOption("Blizzard Games", "blizzardgames", Emoji.fromCustom("blizzard", 854794855968145409L, false))
+						.addOption("EA Games", "eagames", Emoji.fromCustom("EA", 854794890218569738L, false))
+						//.addOption("Ubisoft Games", "ubisoftgames", Emoji.fromCustom("Ubisoft", 854794796962676736L, false))
+						.addOption("Square Enix Games", "squareenixgames", Emoji.fromCustom("SE", 867691313191977009L, false))
+						.addOption("Nintendo Games", "nintendogames", Emoji.fromCustom("Nintendo", 916271940870762506L, false))
+						.build();
+
+					SelectMenu misc_menu = SelectMenu.create("misc_menu")
+						.setPlaceholder("Choose misc roles")
+						.setMaxValues(4)
+						.addOption("Mount Whore", "mountwhore", Emoji.fromCustom("Panties", 652562519470374933L, false))
+						.addOption("Meme Dealer", "memedealer", Emoji.fromCustom("Unicorndab", 645342104557584394L, false))
+						.addOption("Artist", "artist")
+						.addOption("NSFW", "nsfw", Emoji.fromCustom("lewd", 656973114793525258L, false))
+						.build();
+					
+					event.replyEmbeds(builder.build()).addActionRow(type_menu).addActionRow(role_menu).addActionRow(other_games_menu).addActionRow(misc_menu).queue();
+				}
+				break;
         }
     }
 
@@ -304,7 +369,7 @@ public class CommandListener extends ListenerAdapter {
                     event.deferEdit().queue();
                 }
                 break;
-        }
+		    }
     }
 
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
@@ -354,5 +419,114 @@ public class CommandListener extends ListenerAdapter {
         }
         System.out.println();
     }
+
+	public Role findRole(Member member, String name) {
+    List<Role> roles = member.getRoles();
+    return roles.stream()
+                .filter(role -> role.getName().equals(name)) // filter by role name
+                .findFirst() // take first result
+                .orElse(null); // else return null
+	}
+
+	
+	public void onSelectMenuInteraction(SelectMenuInteractionEvent event){
+		String menu_id = event.getComponentId();
+		List<String> values = event.getValues();
+		Guild guild = event.getGuild();
+		EmbedBuilder builder = new EmbedBuilder();
+		HashMap<String, String> types = new HashMap<String, String>();
+		types.put("pve", "776204665524191232");
+		types.put("pvp", "776207123515441162");
+		HashMap<String, String> roles = new HashMap<String, String>();
+		roles.put("tank", "776184488077950977");
+		roles.put("healer", "776184278832381962");
+		roles.put("dps", "776184402132336661");
+		HashMap<String, String> other_games = new HashMap<String, String>();
+		other_games.put("amongus", "777502866377015326");
+		other_games.put("minecraft", "777503152605364248");
+		other_games.put("terraria", "777502989304725505");
+		other_games.put("leagueoflegends", "777539954195562497");
+		other_games.put("fromsoftgames", "777623985851465808");
+		other_games.put("rockstargames", "847212557404340224");
+		other_games.put("blizzardgames", "854792211563413515");
+		other_games.put("eagames", "854791884332335185");
+		other_games.put("ubisoftgames", "854795088008708136");
+		other_games.put("squareenixgames", "867696118498721842");
+		other_games.put("nintendogames", "916271612498690049");
+		HashMap<String, String> misc = new HashMap<String, String>();
+		misc.put("mountwhore", "776187232918568980");
+		misc.put("memedealer", "776726601874014218");
+		misc.put("artist", "785636073040642048");
+		misc.put("nsfw", "970614921354174474");
+		ArrayList<String> added_roles = new ArrayList<String>();
+		switch(menu_id){
+		case "type_menu":
+			for(String role : types.keySet()){
+				if(values.contains(role)){
+					guild.addRoleToMember(event.getMember(), guild.getRoleById(types.get(role))).queue();
+					added_roles.add(guild.getRoleById(types.get(role)).getName());
+				}
+				else{
+					guild.removeRoleFromMember(event.getMember(), guild.getRoleById(types.get(role))).queue();
+				}
+			}
+			builder.setTitle("Confirmation message: Roles in category");
+			for(String role : added_roles){
+				builder.appendDescription(role + "\n");
+			}
+			event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+			break;
+			
+		case "role_menu":
+			for(String role : roles.keySet()){
+				if(values.contains(role)){
+					guild.addRoleToMember(event.getMember(), guild.getRoleById(roles.get(role))).queue();
+					added_roles.add(guild.getRoleById(roles.get(role)).getName());
+				}
+				else{
+					guild.removeRoleFromMember(event.getMember(), guild.getRoleById(roles.get(role))).queue();
+				}
+			}
+			builder.setTitle("Confirmation message: Roles in category");
+			for(String role : added_roles){
+				builder.appendDescription(role + "\n");
+			}
+			event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+			break;
+			
+		case "other_games_menu":
+			for(String role : other_games.keySet()){
+				if(values.contains(role)){
+					guild.addRoleToMember(event.getMember(), guild.getRoleById(other_games.get(role))).queue();
+					added_roles.add(guild.getRoleById(other_games.get(role)).getName());
+				}
+				else{
+					guild.removeRoleFromMember(event.getMember(), guild.getRoleById(other_games.get(role))).queue();
+				}
+			}
+			builder.setTitle("Confirmation message: Roles in category");
+			for(String role : added_roles){
+				builder.appendDescription(role + "\n");
+			}
+			event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+			break;
+		case "misc_menu":
+			for(String role : misc.keySet()){
+				if(values.contains(role)){
+					guild.addRoleToMember(event.getMember(), guild.getRoleById(misc.get(role))).queue();
+					added_roles.add(guild.getRoleById(misc.get(role)).getName());
+				}
+				else{
+					guild.removeRoleFromMember(event.getMember(), guild.getRoleById(misc.get(role))).queue();
+				}
+			}
+			builder.setTitle("Confirmation message: Roles in category");
+			for(String role : added_roles){
+				builder.appendDescription(role + "\n");
+			}
+			event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+			break;
+		}
+	}
 
 }
