@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class MusicBot {
     static private AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
@@ -42,37 +43,46 @@ public class MusicBot {
         }
     }
     public void play(String url, SlashCommandInteractionEvent event) {
+		EmbedBuilder builder = new EmbedBuilder();
         playerManager.loadItem(url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
+				builder.setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")");
                 if(player.getPlayingTrack() != null){
                     scheduler.enqueue(track);
-                    event.reply("Track queued").queue(); 
+					builder.setTitle("Track queued");
                 }
                 else{
                     player.startTrack(track, false);
-                    event.reply("Track started").queue();
+					builder.setTitle("Track started");
                 }
+				event.replyEmbeds(builder.build()).queue();
+				System.out.println("replied");
             } 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                event.reply("Playlist loaded").queue();
+				builder.setTitle("Playlist loaded");
                 List<AudioTrack> tracks = playlist.getTracks();
                 for(AudioTrack track : tracks){
+					builder.appendDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
                     scheduler.enqueue(track);
                 }
                 if(player.getPlayingTrack() == null){
                     player.startTrack(scheduler.dequeue(), false);
                 }
+				event.replyEmbeds(builder.build()).queue();
             }
             @Override
             public void noMatches() {
-                event.reply("No matches").queue();
+				builder.setTitle("No matches");
+				event.replyEmbeds(builder.build()).queue();
             }
             @Override
             public void loadFailed(FriendlyException e) {
-                event.reply(e.getMessage()).queue();
-                System.out.println(e.severity);
+				builder.setTitle("Load failed");
+				builder.appendDescription("Error code:\n");
+				builder.appendDescription(e.getMessage());
+				event.replyEmbeds(builder.build()).queue();
             }
         });
     }
