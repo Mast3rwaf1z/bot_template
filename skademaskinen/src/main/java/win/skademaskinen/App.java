@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -35,6 +36,10 @@ public class App
         jda.awaitReady();
         System.out.println("finished await");
         setCommands();
+
+        for(Guild guild : jda.getGuilds()){
+            RaidTeamManager.update(guild);
+        }
 
 
 
@@ -76,7 +81,15 @@ public class App
 			    .addOption(OptionType.STRING, "entry10", "entry", false),
 			Commands.slash("welcomemessage", "ADMIN COMMAND: create an interactive welcome message"),
 			Commands.slash("version", "Show the current version of the bot software (ephemeral message)"),
-			Commands.slash("applicationform", "ADMIN COMMAND: Apply to the raid team")
+			Commands.slash("applicationform", "ADMIN COMMAND: Apply to the raid team"),
+            Commands.slash("removeraider", "ADMIN COMMAND: Remove a raider from the raid team")
+                .addOption(OptionType.USER, "raider", "user to be deleted", true),
+            Commands.slash("addraider", "ADMIN COMMAND: Add a raider to the raid team manually")
+                .addOption(OptionType.USER, "raider", "Mention of the raider", true)
+                .addOption(OptionType.STRING, "name", "Character name", true)
+                .addOption(OptionType.STRING, "server", "Character server", true, true)
+                .addOption(OptionType.STRING, "role", "Character role", true, true)
+                .addOption(OptionType.BOOLEAN, "raidtimes", "Can they raid on our raid times", true)
             ).queue();
     }
 }

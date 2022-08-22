@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 public class RaidTeamManager {
@@ -56,16 +59,68 @@ public class RaidTeamManager {
 				.setDescription("This is the raid team, this message will get updated with raid team members!")
 				.setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif");
 			
-			
+			ArrayList<String> tanks = new ArrayList<String>();
+			ArrayList<String> healers = new ArrayList<String>();
+			ArrayList<String> ranged = new ArrayList<String>();
+			ArrayList<String> melee = new ArrayList<String>();
 			for(Object key : team.keySet()){
-				Object value = team.get(key);
-				JSONObject raider = (JSONObject) value;
-				builder.appendDescription("\n" + guild.retrieveMemberById((String) key).complete().getAsMention());
-				builder.appendDescription(": " + (String) raider.get("name"));
-				builder.appendDescription(" | **" + (String) raider.get("class")+"**");
-				builder.appendDescription(" - **" + (String) raider.get("spec") + "**");
-				builder.appendDescription("\nItem level: " +  String.valueOf(raider.get("ilvl")) + "/" + String.valueOf(raider.get("avg_ilvl")));
+				JSONObject raider = (JSONObject) team.get(key);
+				switch(raider.get("role").toString().toLowerCase()){
+					case "melee damage":
+						melee.add((String)key);
+						break;
+					case "ranged damage":
+						ranged.add((String)key);
+						break;
+					case "tank":
+						tanks.add((String)key);
+						break;
+					case "healer":
+						healers.add((String)key);
+
+				}
 			}
+			String tanksMessage = "";
+			for(String key : tanks){
+				JSONObject raider = (JSONObject) team.get(key);
+				tanksMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				tanksMessage+= "\n" + raider.get("name");
+				tanksMessage+= "\n" + raider.get("class");
+				tanksMessage+= "\n" + raider.get("spec");
+				tanksMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+			}
+			builder.addField("Tanks:", tanksMessage, true); 
+			String healersMessage = "";
+			for(String key : healers){
+				JSONObject raider = (JSONObject) team.get(key);
+				healersMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				healersMessage+= "\n" + raider.get("name");
+				healersMessage+= "\n" + raider.get("class");
+				healersMessage+= "\n" + raider.get("spec");
+				healersMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+			}
+			builder.addField("Healers:", healersMessage, true);
+			builder.addBlankField(false); 
+			String rangedMessage = "";
+			for(String key : ranged){
+				JSONObject raider = (JSONObject) team.get(key);
+				rangedMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				rangedMessage+= "\n" + raider.get("name");
+				rangedMessage+= "\n" + raider.get("class");
+				rangedMessage+= "\n" + raider.get("spec");
+				rangedMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+			}
+			builder.addField("Ranged Damage:", rangedMessage, true); 
+			String meleeMessage = "";
+			for(String key : melee){
+				JSONObject raider = (JSONObject) team.get(key);
+				meleeMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				meleeMessage+= "\n" + raider.get("name");
+				meleeMessage+= "\n" + raider.get("class");
+				meleeMessage+= "\n" + raider.get("spec");
+				meleeMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+			}
+			builder.addField("Melee Damage:", meleeMessage, true); 
 			message.editMessageEmbeds(builder.build()).queue();
 			
 		} catch (IOException | ParseException e) {
@@ -217,6 +272,59 @@ public class RaidTeamManager {
 			raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			team.put(userid, raider);
+			try(FileWriter writer = new FileWriter("team.json")){
+				writer.write(team.toJSONString());
+			}
+			update(guild);
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void removeRaider(Member member) {
+		try {
+			JSONObject team = Config.getFile("team.json");
+			team.remove(member.getId());
+			try(FileWriter writer = new FileWriter("team.json")){
+				writer.write(team.toJSONString());
+			}
+			update(member.getGuild());
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public static void addRaiderOption(List<OptionMapping> options, String id, Guild guild) {
+		try {
+			JSONObject team = Config.getFile("team.json");
+			JSONObject raider = new JSONObject();
+			for(OptionMapping value : options){
+				switch(value.getName()){
+					case "name":
+						raider.put("name", value.getAsString());
+						break;
+					case "server":
+						raider.put("server", value.getAsString());
+						break;
+					case "role":
+						raider.put("role", value.getAsString());
+						break;
+					case "raidtimes":
+						if(value.getAsString().equalsIgnoreCase("yes")){
+							raider.put("raid_times", true);
+						}
+						else{
+							raider.put("raid_times", false);
+						}
+						break;
+				}
+			}
+			raider.put("class", get_class((String)raider.get("name"), (String) raider.get("server")));
+			raider.put("spec", get_spec((String)raider.get("name"), (String)raider.get("server")));
+			raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
+			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
+			team.put(id, raider);
 			try(FileWriter writer = new FileWriter("team.json")){
 				writer.write(team.toJSONString());
 			}

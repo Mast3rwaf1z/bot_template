@@ -351,7 +351,7 @@ public class CommandListener extends ListenerAdapter {
 				}
 				break;
 		    case "version":
-				String msg = "**Changelog**\n```\nAdded the version command\nAdded more verbose commands\n```";
+				String msg = "**Changelog**\n```\nRedesigned application form```";
 				event.reply(msg).setEphemeral(true).queue();
 				break;
 		    case "applicationform":
@@ -366,7 +366,26 @@ public class CommandListener extends ListenerAdapter {
                 else{
                     event.reply("You are not an administrator!").setEphemeral(true).queue();
                 }
+                break;
+            case "removeraider":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
 
+                    Member member = event.getOption("raider").getAsMember();
+                    RaidTeamManager.removeRaider(member);
+                    event.reply("Successfully removed raider from the raid team!").setEphemeral(true).queue();
+                }
+                else{
+                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                }
+                break;
+            case "addraider":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
+                    RaidTeamManager.addRaiderOption(event.getOptions(), event.getOption("raider").getAsMember().getId(), guild);
+                    event.reply("Successfully added raider to the team!").setEphemeral(true).queue();
+                }
+                else{
+                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                }
         }
     }
 
@@ -415,6 +434,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 event.reply(event.getMember().getAsMention() + " declined " + modal.getMember().getAsMention() + "s application").queue();
+                event.getMessage().delete().complete();
             }
             else if(event.getButton().getId().contains("add_button")){
                 String id = event.getButton().getId().replace("add_button", "");
@@ -426,8 +446,8 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 RaidTeamManager.addRaider(modal.getValues(), modal.getMember().getId(), event.getGuild());
-                event.reply("Successfully added raider to the team!").setEphemeral(true).queue();
-
+                event.reply("Successfully added raider to the team and deleted application!").setEphemeral(true).queue();
+                event.getMessage().delete().complete();
             }
         }
         else{
@@ -438,6 +458,7 @@ public class CommandListener extends ListenerAdapter {
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
         switch(event.getName()){
             case "apply":
+            case "addraider":
                 if(event.getFocusedOption().getName().equalsIgnoreCase("role")){
                     String[] choices = {"Tank", "Healer", "Ranged Damage", "Melee Damage"};
                     List<Command.Choice> options = Stream.of(choices)
@@ -466,6 +487,10 @@ public class CommandListener extends ListenerAdapter {
         String server = event.getValue("server").getAsString();
         String role = event.getValue("role").getAsString();
         boolean raidtimes = event.getValue("raidtimes").getAsString().equalsIgnoreCase("yes") ? true : false;
+        System.out.println("Name:       " + name);
+        System.out.println("Server:     " + server);
+        System.out.println("Role:       " + role);
+        System.out.println("raidtimes:  " + raidtimes);
         try{
             String _class = RaidTeamManager.get_class(name, server);
             String ilvl = RaidTeamManager.get_ilvl(name, server);
