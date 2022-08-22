@@ -89,7 +89,8 @@ public class App
                 .addOption(OptionType.STRING, "name", "Character name", true)
                 .addOption(OptionType.STRING, "server", "Character server", true, true)
                 .addOption(OptionType.STRING, "role", "Character role", true, true)
-                .addOption(OptionType.BOOLEAN, "raidtimes", "Can they raid on our raid times", true)
+                .addOption(OptionType.BOOLEAN, "raidtimes", "Can they raid on our raid times", true),
+            Commands.slash("updateteam", "ADMIN COMMAND: update the raid team list")
             ).queue();
     }
 }

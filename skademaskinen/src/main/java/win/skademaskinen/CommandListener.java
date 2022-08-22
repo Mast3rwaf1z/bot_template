@@ -387,6 +387,13 @@ public class CommandListener extends ListenerAdapter {
                 else{
                     event.getHook().editOriginal("You are not an administrator!").queue();
                 }
+                break;
+            case "updateteam":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
+                    event.deferReply(true).queue();
+                    RaidTeamManager.update(event.getGuild());
+                    event.getHook().editOriginal("updated raid team").queue();
+                }
         }
     }
 
