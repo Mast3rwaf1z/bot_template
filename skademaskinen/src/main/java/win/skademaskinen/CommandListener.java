@@ -413,8 +413,8 @@ public class CommandListener extends ListenerAdapter {
                 TextInput role = TextInput.create("role", "Your role", TextInputStyle.SHORT)
                     .setPlaceholder("Healer, Tank, Ranged Damage or Melee Damage")
                     .build();
-                TextInput raidtimes = TextInput.create("raidtimes", "Wednesday and Sunday 19:30 - 22:30 server time", TextInputStyle.SHORT)
-                    .setPlaceholder("(yes/no)")
+                TextInput raidtimes = TextInput.create("raidtimes", "Wednesday and Sunday 19:30 - 22:30?", TextInputStyle.SHORT)
+                    .setPlaceholder("Can you raid with us? (yes/no)")
                     .setValue("yes")
                     .build();
 
