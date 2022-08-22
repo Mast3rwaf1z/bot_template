@@ -130,6 +130,7 @@
 		  <version>3.3.0</version>
 		  <executions>
 			<execution>
+			  <?m2e ignore?>
 			  <id>copy-dependencies</id>
 			  <goals>
 				<goal>copy-dependencies</goal>

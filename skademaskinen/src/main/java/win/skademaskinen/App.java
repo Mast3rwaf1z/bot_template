@@ -2,23 +2,17 @@ package win.skademaskinen;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.security.auth.login.LoginException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
@@ -30,6 +24,10 @@ public class App
         JSONObject config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
         jda.addEventListener(new CommandListener());
+        jda.addEventListener(new ModalListener());
+        jda.addEventListener(new ButtonListener());
+        jda.addEventListener(new AutoCompleteListener());
+        jda.addEventListener(new SelectMenuListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("v2.0"));
         System.out.println("await ready");
@@ -61,11 +59,6 @@ public class App
             Commands.slash("pause", "Pause the bot"),
             Commands.slash("clear", "Clear the song queue"),
             Commands.slash("help", "Show a list of commands"),
-            Commands.slash("apply", "Send an application to the raid team")
-                .addOption(OptionType.STRING, "name", "Your character name (this works best if you give your EXACT name)", true)
-                .addOption(OptionType.STRING, "server", "Which server is this character on? (put - instead of space)", true, true)
-                .addOption(OptionType.STRING, "role", "Your role (Options: Healer, Tank, Ranged Damage, Melee Damage)", true, true)
-                .addOption(OptionType.BOOLEAN, "raidtimes", "Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", true),
             Commands.slash("roll", "roll a d100 for each entry")
                 .addOption(OptionType.STRING, "entry1", "entry", true)
                 .addOption(OptionType.STRING, "entry2", "entry", false)
