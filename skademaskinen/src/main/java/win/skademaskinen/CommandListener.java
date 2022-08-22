@@ -519,10 +519,12 @@ public class CommandListener extends ListenerAdapter {
                     Modal imageModal = Modal.create("image_modal", "Set image").addActionRows(ActionRow.of(url), ActionRow.of(messageId)).build();
                     event.replyModal(imageModal).queue();
                 }
+                break;
             case "clear_embed":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     event.getMessage().editMessageEmbeds(new EmbedBuilder().setTitle("Empty embed").build()).queue();
                 }
+                break;
                 
 		}
         if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
