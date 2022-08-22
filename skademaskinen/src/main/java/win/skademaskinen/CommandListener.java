@@ -538,7 +538,6 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 event.reply("Approved " + modal.getMember().getAsMention() + "s application, you should have a dps/heal/tanking check!").setEphemeral(true).queue();
-                event.getMessage().delete().complete();
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been approved, you will need to have a dps, healing or tanking check to join!").queue();
             }
             else if(event.getButton().getId().contains("decline_button")){
@@ -551,6 +550,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 event.reply("Declined " + modal.getMember().getAsMention() + "s application").setEphemeral(true).queue();
+                event.getMessage().delete().complete();
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been declined, please refer to your application below:").queue();
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
             }
