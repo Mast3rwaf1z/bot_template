@@ -85,6 +85,9 @@ public class RaidTeamManager {
 				JSONObject raider = (JSONObject) team.get(key);
 				tanksMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				tanksMessage+= "\n" + raider.get("name");
+				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
+					tanksMessage+= " (" + raider.get("server") + ")";
+				}
 				tanksMessage+= "\n" + raider.get("class");
 				tanksMessage+= "\n" + raider.get("spec");
 				tanksMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
@@ -95,6 +98,9 @@ public class RaidTeamManager {
 				JSONObject raider = (JSONObject) team.get(key);
 				healersMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				healersMessage+= "\n" + raider.get("name");
+				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
+					healersMessage+= " (" + raider.get("server") + ")";
+				}
 				healersMessage+= "\n" + raider.get("class");
 				healersMessage+= "\n" + raider.get("spec");
 				healersMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
@@ -106,6 +112,9 @@ public class RaidTeamManager {
 				JSONObject raider = (JSONObject) team.get(key);
 				rangedMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				rangedMessage+= "\n" + raider.get("name");
+				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
+					rangedMessage+= " (" + raider.get("server") + ")";
+				}
 				rangedMessage+= "\n" + raider.get("class");
 				rangedMessage+= "\n" + raider.get("spec");
 				rangedMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
@@ -116,6 +125,9 @@ public class RaidTeamManager {
 				JSONObject raider = (JSONObject) team.get(key);
 				meleeMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				meleeMessage+= "\n" + raider.get("name");
+				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
+					meleeMessage+= " (" + raider.get("server") + ")";
+				}
 				meleeMessage+= "\n" + raider.get("class");
 				meleeMessage+= "\n" + raider.get("spec");
 				meleeMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
