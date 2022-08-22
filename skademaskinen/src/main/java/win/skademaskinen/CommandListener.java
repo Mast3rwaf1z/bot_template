@@ -451,6 +451,7 @@ public class CommandListener extends ListenerAdapter {
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
             }
             else if(event.getButton().getId().contains("add_button")){
+                event.deferReply(true).queue();
                 String id = event.getButton().getId().replace("add_button", "");
                 ModalInteraction modal = null;
                 for(ModalInteraction m : modals){
@@ -460,7 +461,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 RaidTeamManager.addRaider(modal.getValues(), modal.getMember().getId(), event.getGuild());
-                event.reply("Successfully added raider to the team and deleted application!").setEphemeral(true).queue();
+                event.getHook().editOriginal("Successfully added raider to the team and deleted application!").queue();
                 event.getMessage().delete().complete();
             }
         }
