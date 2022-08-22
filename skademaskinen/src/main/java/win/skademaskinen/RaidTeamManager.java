@@ -249,7 +249,8 @@ public class RaidTeamManager {
 			for(ModalMapping value : values){
 				switch(value.getId()){
 					case "name":
-						raider.put("name", value.getAsString());
+					String cap = value.getAsString().substring(0, 1).toUpperCase() + value.getAsString().substring(1);
+						raider.put("name", cap);
 						break;
 					case "server":
 						raider.put("server", value.getAsString());
@@ -302,7 +303,8 @@ public class RaidTeamManager {
 			for(OptionMapping value : options){
 				switch(value.getName()){
 					case "name":
-						raider.put("name", value.getAsString());
+						String cap = value.getAsString().substring(0, 1).toUpperCase() + value.getAsString().substring(1);
+						raider.put("name", cap);
 						break;
 					case "server":
 						raider.put("server", value.getAsString());
