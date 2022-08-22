@@ -90,7 +90,16 @@ public class App
                 .addOption(OptionType.STRING, "server", "Character server", true, true)
                 .addOption(OptionType.STRING, "role", "Character role", true, true)
                 .addOption(OptionType.BOOLEAN, "raidtimes", "Can they raid on our raid times", true),
-            Commands.slash("updateteam", "ADMIN COMMAND: update the raid team list")
+            Commands.slash("updateteam", "ADMIN COMMAND: update the raid team list"),
+            Commands.slash("spawnmessage", "ADMIN COMMAND: spawn an empty message"),
+            Commands.slash("editmessage", "ADMIN COMMAND: edit a custom embed")
+                .addOption(OptionType.STRING, "messageid", "ID of the message to be edited", true)
+                .addOption(OptionType.STRING, "description", "set a description")
+                .addOption(OptionType.STRING, "title", "Set a title")
+                .addOption(OptionType.STRING, "field", "Add a field, can be paired with inline option")
+                .addOption(OptionType.BOOLEAN, "inline", "whether a field is put inline")
+                .addOption(OptionType.STRING, "fieldname", "name for a field")
+                .addOption(OptionType.STRING, "imageurl", "image url for the embed")
             ).queue();
     }
 }
