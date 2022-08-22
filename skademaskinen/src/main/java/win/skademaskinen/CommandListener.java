@@ -25,20 +25,25 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -46,8 +51,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 public class CommandListener extends ListenerAdapter {
     private HashMap<Guild, MusicBot> bots = new HashMap<>();
+    private ArrayList<ModalInteraction> modals = new ArrayList<ModalInteraction>();
     Runtime runtime = Runtime.getRuntime();
-
 
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
 
@@ -345,31 +350,89 @@ public class CommandListener extends ListenerAdapter {
 					event.replyEmbeds(builder.build()).addActionRow(type_menu).addActionRow(role_menu).addActionRow(other_games_menu).addActionRow(misc_menu).queue();
 				}
 				break;
+		    case "version":
+				String msg = "**Changelog**\n```\nAdded the version command\nAdded more verbose commands\n```";
+				event.reply(msg).setEphemeral(true).queue();
+				break;
+		    case "applicationform":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
+                    MessageEmbed embed = new EmbedBuilder()
+                        .setTitle("Apply to The Nut Hut raid team!")
+                        .setDescription("Hi, here you can apply to the raid team!\nYou will receive a pop-up form to add your character's details.")
+                        .setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif")
+                        .build();
+                    event.replyEmbeds(embed).addActionRow(Button.primary("apply_button", "Apply here!")).queue();
+                }
+                else{
+                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                }
+
         }
     }
 
     public void onButtonInteraction(ButtonInteractionEvent event){
         switch (event.getButton().getId()) {
-            case "approve_button":
-                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    String name = event.getMessage().getInteraction().getUser().getAsMention();
-                    event.reply(event.getMember().getAsMention()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nThe next step would be to have a DPS/Healing/Tanking check").queue();
-                }
-                else{
-                    event.deferEdit().queue();
-                }
+            case "apply_button":
+				TextInput name = TextInput.create("name", "Character name", TextInputStyle.SHORT)
+                    .setPlaceholder("Your character name")
+                    .build();
+                TextInput server = TextInput.create("server", "Character server", TextInputStyle.SHORT)
+                    .setPlaceholder("Your character server, example: argent-dawn")
+                    .build();
+                TextInput role = TextInput.create("role", "Your role", TextInputStyle.SHORT)
+                    .setPlaceholder("Healer, Tank, Ranged Damage or Melee Damage")
+                    .build();
+                TextInput raidtimes = TextInput.create("raidtimes", "Can you raid with us? (yes/no)", TextInputStyle.SHORT)
+                    .setPlaceholder("Wednesday and Sunday at 19:30 - 22:30 server time?")
+                    .build();
+
+                Modal modal = Modal.create("Application form", "application")
+                    .addActionRows(ActionRow.of(name), ActionRow.of(server), ActionRow.of(role), ActionRow.of(raidtimes))
+                    .build();
+
+                event.replyModal(modal).queue();
                 break;
-        
-            case "decline_button":
-                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    String name = event.getMessage().getInteraction().getUser().getAsMention();
-                    event.reply(event.getMember().getAsMention()+ " "+ event.getButton().getLabel() + "d " + name +"s application\nPlease refer to your application for an explaination").queue();
+		}
+        if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+            if (event.getButton().getId().contains("approve_button")) {
+                String id = event.getButton().getId().replace("approve_button", "");
+                ModalInteraction modal = null;
+                for(ModalInteraction m : modals){
+                    if (m.getId().equals(id)){
+                        modal = m;
+                        break;
+                    }
                 }
-                else{
-                    event.deferEdit().queue();
+                event.reply(event.getMember().getAsMention() + " approved " + modal.getMember().getAsMention() + "s application, you should have a dps/heal/tanking check!").queue();
+            }
+            else if(event.getButton().getId().contains("decline_button")){
+                String id = event.getButton().getId().replace("decline_button", "");
+                ModalInteraction modal = null;
+                for(ModalInteraction m : modals){
+                    if (m.getId().equals(id)){
+                        modal = m;
+                        break;
+                    }
                 }
-                break;
-		    }
+                event.reply(event.getMember().getAsMention() + " declined " + modal.getMember().getAsMention() + "s application").queue();
+            }
+            else if(event.getButton().getId().contains("add_button")){
+                String id = event.getButton().getId().replace("add_button", "");
+                ModalInteraction modal = null;
+                for(ModalInteraction m : modals){
+                    if (m.getId().equals(id)){
+                        modal = m;
+                        break;
+                    }
+                }
+                RaidTeamManager.addRaider(modal.getValues(), modal.getMember().getId(), event.getGuild());
+                event.reply("Successfully added raider to the team!").setEphemeral(true).queue();
+
+            }
+        }
+        else{
+            event.reply("You are not an administrator!").setEphemeral(true).queue();
+        }
     }
 
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
@@ -394,6 +457,106 @@ public class CommandListener extends ListenerAdapter {
 
                 break;
         }
+    }
+    
+    public void onModalInteraction(ModalInteractionEvent event){
+        event.deferReply().queue();
+        
+        String name = event.getValue("name").getAsString();
+        String server = event.getValue("server").getAsString();
+        String role = event.getValue("role").getAsString();
+        boolean raidtimes = event.getValue("raidtimes").getAsString().equalsIgnoreCase("yes") ? true : false;
+        try{
+            String _class = RaidTeamManager.get_class(name, server);
+            String ilvl = RaidTeamManager.get_ilvl(name, server);
+            String avgIlvl = RaidTeamManager.get_avg_ilvl(name, server);
+            String spec = RaidTeamManager.get_spec(name, server);
+            EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("Raid team application")
+                .setDescription("**Application by:** "+event.getMember().getAsMention()+"\nRaid team application for " +"["+name+"](https://worldofwarcraft.com/en-gb/character/eu/"+server+"/"+name+") ("+server+")")
+                .addField("Class/Role", _class+"/"+spec + " ("+role+")", false)
+                .addField("Item Level", "Equipped: "+ilvl+ " Average: "+avgIlvl, false);
+            if(raidtimes){
+                builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "Yes", false);
+            }
+            else{
+                builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "No", false);
+            }
+
+            int score = 0;
+            JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_form");
+            long reqIlvl = (long) applicationData.get("minimum_ilvl");
+            JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
+            JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
+            JSONArray neededClasses = (JSONArray) applicationData.get("needed_classes");
+            ArrayList<String> fields = new ArrayList<String>();
+            
+            
+            if(!filledRoles.contains(role.toLowerCase())){
+                if(Integer.parseInt(ilvl)>=reqIlvl){
+                    score++;
+                }
+                else{
+                    fields.add("Your item level is too low, we have a requirement of 252 (you need to be "+(reqIlvl-Long.parseLong(ilvl))+" higher)");
+                }
+                if(preferredRoles.contains(role.toLowerCase())){
+                    score++;
+                }
+                else{
+                    fields.add("We are not actively looking for " + role + "s");
+                }
+                if(neededClasses.contains(_class.toLowerCase())){
+                    score++;
+                }
+                else{
+                    fields.add("We are not actively looking for " + _class + "s");
+                }
+                if(raidtimes){
+                    score++;
+                }
+            }
+            else{
+                fields.add("we do not need any more " + role + "s");
+            }
+            String color = "";
+            if(score > 3){
+                builder.setColor(Color.green);
+                color = "green";
+            }
+            else if(score == 3){
+                builder.setColor(Color.yellow);
+                color = "yellow";
+            }
+            else if(score <= 2){
+                builder.setColor(Color.red);
+                color = "red";
+            }
+            if(!color.equalsIgnoreCase("green")){
+                String title ="Your application is " + color + " because:";
+                String final_field = "";
+                for(String field : fields){
+                    final_field += field + '\n';
+                }
+                builder.addField(title, final_field, false);
+            }
+        
+            //finally lets do some interesting profile picture getting
+            String avatarUrl = RaidTeamManager.get_image(name, server);
+            builder.setThumbnail(avatarUrl);
+
+            event.getHook()
+                .editOriginalEmbeds(builder.build())
+                .setActionRow(
+                    Button.success(event.getInteraction().getId()+"approve_button", "Approve"), 
+                    Button.danger(event.getInteraction().getId()+"decline_button", "Decline"), 
+                    Button.secondary(event.getInteraction().getId()+"add_button", "Add to team"))
+                .queue();
+            modals.add(event.getInteraction());
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private String getTime(long duration) {

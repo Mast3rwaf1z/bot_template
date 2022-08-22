@@ -35,58 +35,8 @@ public class App
         jda.awaitReady();
         System.out.println("finished await");
         setCommands();
-        DatabaseHandler.registerHandler();
-        Message raidTeamMessage = jda.getGuildById("642852517197250560")
-            .getTextChannelById("987475931004284978")
-            .getHistoryAround("987484728724705360", 1)
-            .complete()
-            .getMessageById("987484728724705360");
 
-        Map<Member, Character> raidTeam = RaidTeamManager.getTeam(jda.getGuildById("642852517197250560"));
 
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setDescription("This is the raid team!\nIn this embedded message, you can view an updated list of all raid team members\n");
-        ArrayList<String> tanks = new ArrayList<>();
-        ArrayList<String> healers = new ArrayList<>();
-        ArrayList<String> rangedDamage = new ArrayList<>();
-        ArrayList<String> meleeDamage = new ArrayList<>();
-        for(Entry<Member, Character> entry : raidTeam.entrySet()){
-            Character character = entry.getValue();
-            String text = entry.getKey().getAsMention() + ": " + character.main() + " | **" + character.characterClass() + " - " + character.specialization() + "**\n";
-            switch (character.role()) {
-                case "Tank":
-                    tanks.add(text);
-                    break;
-                case "Healer":
-                    healers.add(text);
-                    break;
-                case "Ranged Damage":
-                    rangedDamage.add(text);
-                    break;
-                case "Melee Damage":
-                    meleeDamage.add(text);
-                    break;
-            }
-
-        }
-        builder.appendDescription("**Tanks**\n");
-        for(String tank : tanks){
-            builder.appendDescription(tank);
-        }
-        builder.appendDescription("**Healers**\n");
-        for(String healer : healers){
-            builder.appendDescription(healer);
-        }
-        builder.appendDescription("**Ranged Damage**\n");
-        for(String ranged : rangedDamage){
-            builder.appendDescription(ranged);
-        }
-        builder.appendDescription("**Melee Damage**\n");
-        for(String melee : meleeDamage){
-            builder.appendDescription(melee);
-        }
-        builder.setTitle("Raid Team");
-        raidTeamMessage.editMessageEmbeds(builder.build()).queue();
 
     }
     static private void setCommands(){
@@ -124,7 +74,9 @@ public class App
                 .addOption(OptionType.STRING, "entry8", "entry", false)
 			    .addOption(OptionType.STRING, "entry9", "entry", false)
 			    .addOption(OptionType.STRING, "entry10", "entry", false),
-			Commands.slash("welcomemessage", "ADMIN COMMAND: create an interactive welcome message")
+			Commands.slash("welcomemessage", "ADMIN COMMAND: create an interactive welcome message"),
+			Commands.slash("version", "Show the current version of the bot software (ephemeral message)"),
+			Commands.slash("applicationform", "ADMIN COMMAND: Apply to the raid team")
             ).queue();
     }
 }
