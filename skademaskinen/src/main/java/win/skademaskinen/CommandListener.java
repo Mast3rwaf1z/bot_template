@@ -408,16 +408,18 @@ public class CommandListener extends ListenerAdapter {
                     .build();
                 TextInput server = TextInput.create("server", "Character server", TextInputStyle.SHORT)
                     .setPlaceholder("Your character server, example: argent-dawn")
+                    .setValue("argent-dawn")
                     .build();
                 TextInput role = TextInput.create("role", "Your role", TextInputStyle.SHORT)
                     .setPlaceholder("Healer, Tank, Ranged Damage or Melee Damage")
                     .build();
                 TextInput raidtimes = TextInput.create("raidtimes", "Can you raid with us? (yes/no)", TextInputStyle.SHORT)
                     .setPlaceholder("Wednesday and Sunday at 19:30 - 22:30 server time?")
+                    .setValue("yes")
                     .build();
 
                 Modal modal = Modal.create("Application form", "application")
-                    .addActionRows(ActionRow.of(name), ActionRow.of(server), ActionRow.of(role), ActionRow.of(raidtimes))
+                    .addActionRows(ActionRow.of(name), ActionRow.of(role), ActionRow.of(server), ActionRow.of(raidtimes))
                     .build();
                 event.replyModal(modal).queue();
                 break;
