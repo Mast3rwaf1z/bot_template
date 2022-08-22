@@ -4,12 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,24 +22,6 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 public class RaidTeamManager {
 	static private String raidTeamMessageId = "987484728724705360";
-	public static Map<Member, Character> getTeam(Guild guild) throws SQLException{
-		//Name:	[id, main, class, spec, role, status, average ilvl, equipped ilvl]
-		HashMap<Member, Character> team = new HashMap<>();
-		DatabaseHandler databaseHandler = DatabaseHandler.getHandler();
-		ResultSet raid_teamResultSet = databaseHandler.getTable("raid_team");
-		while(raid_teamResultSet.next()){
-			System.out.println(raid_teamResultSet.getString("id"));
-			team.put(guild.retrieveMemberById(raid_teamResultSet.getString("id")).complete(), new Character(
-				raid_teamResultSet.getString("main"), 
-				raid_teamResultSet.getString("class"), 
-				raid_teamResultSet.getString("specialization"), 
-				raid_teamResultSet.getInt("role"), 
-				raid_teamResultSet.getInt("status"), 
-				raid_teamResultSet.getInt("average"), 
-				raid_teamResultSet.getInt("equipped")));
-		}
-		return team;
-	}
 	public static void update(Guild guild){
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
@@ -133,7 +111,6 @@ public class RaidTeamManager {
 			message.editMessageEmbeds(builder.build()).queue();
 			
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -151,7 +128,6 @@ public class RaidTeamManager {
 			process.waitFor();
 			token = (String) ((JSONObject) parser.parse(new BufferedReader(new InputStreamReader(process.getInputStream())))).get("access_token");
 		} catch (IOException | ParseException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return token;
@@ -169,7 +145,6 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
 		} catch (IOException | InterruptedException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return _class;
@@ -187,7 +162,6 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
 		} catch (IOException | InterruptedException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return spec;
@@ -205,7 +179,6 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			ilvl = String.valueOf(data.get("equipped_item_level"));
 		} catch (IOException | InterruptedException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ilvl;
@@ -223,7 +196,6 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
 		} catch (IOException | InterruptedException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return avg_ilvl;
@@ -241,7 +213,6 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
 		} catch (IOException | InterruptedException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return image;
@@ -287,7 +258,6 @@ public class RaidTeamManager {
 			}
 			update(guild);
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -300,7 +270,6 @@ public class RaidTeamManager {
 			}
 			update(member.getGuild());
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -341,7 +310,6 @@ public class RaidTeamManager {
 			}
 			update(guild);
 		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
