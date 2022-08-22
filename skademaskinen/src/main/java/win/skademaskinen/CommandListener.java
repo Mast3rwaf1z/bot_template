@@ -294,8 +294,6 @@ public class CommandListener extends ListenerAdapter {
                     event.replyEmbeds(builder.build()).addActionRow(Button.primary("approve_button", "Approve"), Button.primary("decline_button", "Decline")).queue();
 
                 break;
-            case "announcement":
-                break;
 		    case "welcomemessage":
 				if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 
@@ -407,7 +405,8 @@ public class CommandListener extends ListenerAdapter {
                     Button.secondary("set_title", "Set Title"),
                     Button.secondary("set_description", "Set Description"),
                     Button.secondary("add_field", "Add Field"),
-                    Button.secondary("add_image", "Add Image")
+                    Button.secondary("add_image", "Add Image"),
+                    Button.danger("clear_embed", "Clear")
                     ).queue();
                 }
                 else{
@@ -454,6 +453,11 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("You are not an administrator!").setEphemeral(true).queue();
                 }
                 break;
+            case "announcement":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
+                    Message announcement = event.getMessageChannel().getHistoryAround(event.getOption("message_id").getAsString(), 1).complete().getMessageById(event.getOption("message_id").getAsString());
+                    event.replyEmbeds(announcement.getEmbeds().get(0)).queue();
+                }
         }
     }
     
@@ -482,26 +486,26 @@ public class CommandListener extends ListenerAdapter {
                 event.replyModal(modal).queue();
                 break;
             case "finish_button":
-                if(event.getMember().equals(event.getInteraction().getMember())){
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
                     event.getMessage().editMessageComponents().queue();
                 }
                 break;
             case "set_title":
-                if(event.getMember().equals(event.getInteraction().getMember())){
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
                     TextInput titleInput = TextInput.create("title_input", "New Title", TextInputStyle.SHORT).build();
                     Modal titleModal = Modal.create("title_modal", "Set title").addActionRows(ActionRow.of(titleInput), ActionRow.of(messageId)).build();
                     event.replyModal(titleModal).queue();
                 }
                 break;
             case "set_description":
-                if(event.getMember().equals(event.getInteraction().getMember())){
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
                     TextInput descriptionInput = TextInput.create("description_input", "New description", TextInputStyle.PARAGRAPH).build();
                     Modal descriptionModal = Modal.create("description_modal", "Set description").addActionRows(ActionRow.of(descriptionInput), ActionRow.of(messageId)).build();
                     event.replyModal(descriptionModal).queue();
                 }
                 break;
             case "add_field":
-                if(event.getMember().equals(event.getInteraction().getMember())){
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
                     TextInput inline = TextInput.create("inline_input", "inline?", TextInputStyle.SHORT).setValue("yes").build();
                     TextInput title = TextInput.create("field_title", "Field title", TextInputStyle.SHORT).build();
                     TextInput body = TextInput.create("field_body", "Field Body", TextInputStyle.PARAGRAPH).build();
@@ -510,10 +514,14 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "add_image":
-                if(event.getMember().equals(event.getInteraction().getMember())){
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
                     TextInput url = TextInput.create("url_input", "Image url", TextInputStyle.SHORT).build();
                     Modal imageModal = Modal.create("image_modal", "Set image").addActionRows(ActionRow.of(url), ActionRow.of(messageId)).build();
                     event.replyModal(imageModal).queue();
+                }
+            case "clear_embed":
+                if(event.getMember().equals(event.getMessage().getInteraction().getMember())){
+                    event.getMessage().editMessageEmbeds(new EmbedBuilder().setTitle("Empty embed").build()).queue();
                 }
                 
 		}

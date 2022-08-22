@@ -61,8 +61,6 @@ public class App
             Commands.slash("pause", "Pause the bot"),
             Commands.slash("clear", "Clear the song queue"),
             Commands.slash("help", "Show a list of commands"),
-            Commands.slash("announcement", "Compose an announcement message")
-                .addOption(OptionType.ATTACHMENT, "file", "Announcement text in markdown", true),
             Commands.slash("apply", "Send an application to the raid team")
                 .addOption(OptionType.STRING, "name", "Your character name (this works best if you give your EXACT name)", true)
                 .addOption(OptionType.STRING, "server", "Which server is this character on? (put - instead of space)", true, true)
@@ -99,7 +97,9 @@ public class App
                 .addOption(OptionType.STRING, "field", "Add a field, can be paired with inline option")
                 .addOption(OptionType.BOOLEAN, "inline", "whether a field is put inline")
                 .addOption(OptionType.STRING, "fieldname", "name for a field")
-                .addOption(OptionType.STRING, "imageurl", "image url for the embed")
+                .addOption(OptionType.STRING, "imageurl", "image url for the embed"),
+            Commands.slash("announcement", "ADMIN COMMAND: create an announcement from an embed")
+                .addOption(OptionType.STRING, "message_id", "announcement message", true)
             ).queue();
     }
 }
