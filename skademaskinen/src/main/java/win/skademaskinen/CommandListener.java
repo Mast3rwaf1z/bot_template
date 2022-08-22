@@ -551,7 +551,6 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 event.reply("Declined " + modal.getMember().getAsMention() + "s application").setEphemeral(true).queue();
-                event.getMessage().delete().complete();
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been declined, please refer to your application below:").queue();
                 modal.getMember().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
             }
