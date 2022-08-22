@@ -419,7 +419,6 @@ public class CommandListener extends ListenerAdapter {
                 Modal modal = Modal.create("Application form", "application")
                     .addActionRows(ActionRow.of(name), ActionRow.of(server), ActionRow.of(role), ActionRow.of(raidtimes))
                     .build();
-
                 event.replyModal(modal).queue();
                 break;
 		}
@@ -433,7 +432,9 @@ public class CommandListener extends ListenerAdapter {
                         break;
                     }
                 }
-                event.reply(event.getMember().getAsMention() + " approved " + modal.getMember().getAsMention() + "s application, you should have a dps/heal/tanking check!").queue();
+                event.reply("Approved " + modal.getMember().getAsMention() + "s application, you should have a dps/heal/tanking check!").setEphemeral(true).queue();
+                event.getMessage().delete().complete();
+                modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been approved, you will need to have a dps, healing or tanking check to join!").queue();
             }
             else if(event.getButton().getId().contains("decline_button")){
                 String id = event.getButton().getId().replace("decline_button", "");
@@ -444,8 +445,10 @@ public class CommandListener extends ListenerAdapter {
                         break;
                     }
                 }
-                event.reply(event.getMember().getAsMention() + " declined " + modal.getMember().getAsMention() + "s application").queue();
+                event.reply("Declined " + modal.getMember().getAsMention() + "s application").setEphemeral(true).queue();
                 event.getMessage().delete().complete();
+                modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been declined, please refer to your application below:").queue();
+                modal.getMember().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
             }
             else if(event.getButton().getId().contains("add_button")){
                 String id = event.getButton().getId().replace("add_button", "");
