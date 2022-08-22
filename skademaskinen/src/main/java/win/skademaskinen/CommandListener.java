@@ -405,8 +405,8 @@ public class CommandListener extends ListenerAdapter {
                     Button.secondary("set_title", "Set Title"),
                     Button.secondary("set_description", "Set Description"),
                     Button.secondary("add_field", "Add Field"),
-                    Button.secondary("add_image", "Add Image"),
-                    Button.danger("clear_embed", "Clear")
+                    Button.secondary("add_image", "Add Image"))
+                    .addActionRow(Button.danger("clear_embed", "Clear")
                     ).queue();
                 }
                 else{
