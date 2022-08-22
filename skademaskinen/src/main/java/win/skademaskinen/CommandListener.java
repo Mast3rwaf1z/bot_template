@@ -379,12 +379,13 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "addraider":
+            event.deferReply(true).queue();
                 if(author.hasPermission(Permission.ADMINISTRATOR)){
                     RaidTeamManager.addRaiderOption(event.getOptions(), event.getOption("raider").getAsMember().getId(), guild);
-                    event.reply("Successfully added raider to the team!").setEphemeral(true).queue();
+                    event.getHook().editOriginal("Successfully added raider to the team!").queue();
                 }
                 else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                    event.getHook().editOriginal("You are not an administrator!").queue();
                 }
         }
     }
