@@ -312,7 +312,23 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "message":
                 if(author.hasPermission(Permission.ADMINISTRATOR)){
-                    Message announcement = event.getMessageChannel().getHistoryAround(event.getOption("message_id").getAsString(), 1).complete().getMessageById(event.getOption("message_id").getAsString());
+                    Message announcement;
+                    if(event.getOption("channel_id") != null){
+                        announcement = event.getMessageChannel()
+                            .getHistoryAround(event.getOption("message_id")
+                            .getAsString(), 1)
+                            .complete()
+                            .getMessageById(event.getOption("message_id")
+                            .getAsString());
+                    }
+                    else{
+                        announcement = guild.getTextChannelById(event.getOption("channel_id").getAsString())
+                            .getHistoryAround(event.getOption("message_id")
+                            .getAsString(), 1)
+                            .complete()
+                            .getMessageById(event.getOption("message_id")
+                            .getAsString());
+                    }
                     event.reply(announcement).queue();
                 }
         }

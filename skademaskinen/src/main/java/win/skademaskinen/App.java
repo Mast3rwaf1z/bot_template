@@ -1,6 +1,7 @@
 package win.skademaskinen;
 
 import java.io.IOException;
+import java.lang.StackWalker.Option;
 import java.sql.SQLException;
 
 import javax.security.auth.login.LoginException;
@@ -92,6 +93,7 @@ public class App
                 .addOption(OptionType.STRING, "imageurl", "image url for the embed"),
             Commands.slash("message", "ADMIN COMMAND: create an announcement from an embed")
                 .addOption(OptionType.STRING, "message_id", "announcement message", true)
+                .addOption(OptionType.STRING, "channel_id", "optionally a different textchannel", false)
             ).queue();
     }
     public static void setStatus(String message){
