@@ -29,15 +29,14 @@ public class App
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new SelectMenuListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-        jda.getPresence().setActivity(Activity.playing("v2.0"));
+        setStatus("Jezdiboi");
         System.out.println("await ready");
         jda.awaitReady();
         System.out.println("finished await");
         setCommands();
 
-        for(Guild guild : jda.getGuilds()){
-            RaidTeamManager.update(guild);
-        }
+
+        RaidTeamManager.update(jda.getGuildById("642852517197250560"));
 
 
 
@@ -91,8 +90,11 @@ public class App
                 .addOption(OptionType.BOOLEAN, "inline", "whether a field is put inline")
                 .addOption(OptionType.STRING, "fieldname", "name for a field")
                 .addOption(OptionType.STRING, "imageurl", "image url for the embed"),
-            Commands.slash("announcement", "ADMIN COMMAND: create an announcement from an embed")
+            Commands.slash("message", "ADMIN COMMAND: create an announcement from an embed")
                 .addOption(OptionType.STRING, "message_id", "announcement message", true)
             ).queue();
+    }
+    public static void setStatus(String message){
+        jda.getPresence().setActivity(Activity.playing(message));
     }
 }

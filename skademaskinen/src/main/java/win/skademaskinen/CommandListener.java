@@ -310,10 +310,10 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("You are not an administrator!").setEphemeral(true).queue();
                 }
                 break;
-            case "announcement":
+            case "message":
                 if(author.hasPermission(Permission.ADMINISTRATOR)){
                     Message announcement = event.getMessageChannel().getHistoryAround(event.getOption("message_id").getAsString(), 1).complete().getMessageById(event.getOption("message_id").getAsString());
-                    event.replyEmbeds(announcement.getEmbeds().get(0)).queue();
+                    event.reply(announcement).queue();
                 }
         }
     }

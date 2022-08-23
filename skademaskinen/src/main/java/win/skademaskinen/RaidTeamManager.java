@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 public class RaidTeamManager {
 	static private String raidTeamMessageId = "987484728724705360";
 	public static void update(Guild guild){
+
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
 			guild.getTextChannelById("889964274229854248").getHistoryAround("1011047944075628714", 1).complete().getMessageById("1011047944075628714");
@@ -55,6 +56,8 @@ public class RaidTeamManager {
 
 				}
 			}
+
+			App.setStatus("Raid team: " + tanks.size()+"/"+healers.size()+"/"+(ranged.size()+melee.size()));
 			String tanksMessage = "";
 			for(String key : tanks){
 				JSONObject raider = (JSONObject) team.get(key);
@@ -65,7 +68,9 @@ public class RaidTeamManager {
 				}
 				tanksMessage+= "\n" + raider.get("class");
 				tanksMessage+= "\n" + raider.get("spec");
-				tanksMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+				String ilvl = get_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				String avg_ilvl = get_avg_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				tanksMessage+= "\n" + ilvl + "/" + avg_ilvl + " ilvl";
 			}
 			builder.addField("Tanks:", tanksMessage, true); 
 			String healersMessage = "";
@@ -78,7 +83,9 @@ public class RaidTeamManager {
 				}
 				healersMessage+= "\n" + raider.get("class");
 				healersMessage+= "\n" + raider.get("spec");
-				healersMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+				String ilvl = get_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				String avg_ilvl = get_avg_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				healersMessage+= "\n" + ilvl + "/" + avg_ilvl + " ilvl";
 			}
 			builder.addField("Healers:", healersMessage, true);
 			builder.addBlankField(false); 
@@ -92,7 +99,9 @@ public class RaidTeamManager {
 				}
 				rangedMessage+= "\n" + raider.get("class");
 				rangedMessage+= "\n" + raider.get("spec");
-				rangedMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+				String ilvl = get_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				String avg_ilvl = get_avg_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				rangedMessage+= "\n" + ilvl + "/" + avg_ilvl + " ilvl";
 			}
 			builder.addField("Ranged Damage:", rangedMessage, true); 
 			String meleeMessage = "";
@@ -105,7 +114,9 @@ public class RaidTeamManager {
 				}
 				meleeMessage+= "\n" + raider.get("class");
 				meleeMessage+= "\n" + raider.get("spec");
-				meleeMessage+= "\n" + raider.get("ilvl") + "/" + raider.get("avg_ilvl") + " ilvl";
+				String ilvl = get_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				String avg_ilvl = get_avg_ilvl(raider.get("name").toString(), raider.get("server").toString());
+				meleeMessage+= "\n" + ilvl + "/" + avg_ilvl + " ilvl";
 			}
 			builder.addField("Melee Damage:", meleeMessage, true); 
 			message.editMessageEmbeds(builder.build()).queue();
