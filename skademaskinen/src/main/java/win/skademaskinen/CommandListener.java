@@ -313,7 +313,7 @@ public class CommandListener extends ListenerAdapter {
             case "message":
                 if(author.hasPermission(Permission.ADMINISTRATOR)){
                     Message announcement;
-                    if(event.getOption("channel_id") != null){
+                    if(event.getOption("channel_id") == null){
                         announcement = event.getMessageChannel()
                             .getHistoryAround(event.getOption("message_id")
                             .getAsString(), 1)
