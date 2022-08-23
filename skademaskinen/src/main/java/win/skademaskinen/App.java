@@ -1,8 +1,8 @@
 package win.skademaskinen;
 
 import java.io.IOException;
-import java.lang.StackWalker.Option;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
 
@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
@@ -35,9 +36,67 @@ public class App
         jda.awaitReady();
         System.out.println("finished await");
         setCommands();
-
-
         RaidTeamManager.update(jda.getGuildById("642852517197250560"));
+
+        Scanner scanner = new Scanner(System.in);
+        for(String line = ""; !line.equals("exit"); line = scanner.nextLine()){
+            String arguments[] = line.split(" ");
+            switch(arguments[0]){
+                case "":
+                    break;
+                case "help":
+                    System.out.println("""
+                        send:   Send a message in a channel
+                        guild:  Get info about a discord server
+                        clear:  clear the terminal""");
+                    break;
+                case "send":
+                    System.out.print("server id: ");
+                    Guild server = jda.getGuildById(scanner.nextLine());
+                    System.out.print("channel id: ");
+                    TextChannel channel = server.getTextChannelById(scanner.nextLine());
+                    System.out.print("Message to be sent: ");
+                    channel.sendMessage(scanner.nextLine()).queue();
+                    break;
+                case "guild":
+                    if(arguments.length > 1){
+                        switch(arguments[1]){
+                            case "list":
+                                for(Guild guild : jda.getGuilds()){
+                                    System.out.println("Name:           " + guild.getName());
+                                    System.out.println("id:             " + guild.getId());
+                                    System.out.println("member count:   " + guild.getMemberCount());
+                                    System.out.println("channel count:  " + guild.getChannels().size() + "\n");
+                                }
+                                break;
+                            default:
+                                Guild guild = jda.getGuildById(arguments[1]);
+                                System.out.println("Name:           " + guild.getName());
+                                System.out.println("id:             " + guild.getId());
+                                System.out.println("member count:   " + guild.getMemberCount());
+                                System.out.println("channel count:  " + guild.getChannels().size());
+
+                        }
+                    }
+                    else{
+                        for(Guild guild : jda.getGuilds()){
+                            System.out.println("Name:           " + guild.getName());
+                            System.out.println("id:             " + guild.getId());
+                            System.out.println("member count:   " + guild.getMemberCount());
+                            System.out.println("channel count:  " + guild.getChannels().size() + "\n");
+                        }
+                    }
+                    break;
+                case "clear":
+                    System.out.println("\033[H\033[2J");
+                    break;
+                default:
+                    System.out.println("No such command! [type help for a list of commands]");
+            }
+            System.out.print("["+ jda.getSelfUser().getName() +"] > ");
+        }
+        scanner.close();
+        System.exit(0);
 
 
 
@@ -79,8 +138,7 @@ public class App
                 .addOption(OptionType.USER, "raider", "Mention of the raider", true)
                 .addOption(OptionType.STRING, "name", "Character name", true)
                 .addOption(OptionType.STRING, "server", "Character server", true, true)
-                .addOption(OptionType.STRING, "role", "Character role", true, true)
-                .addOption(OptionType.BOOLEAN, "raidtimes", "Can they raid on our raid times", true),
+                .addOption(OptionType.STRING, "role", "Character role", true, true),
             Commands.slash("updateteam", "ADMIN COMMAND: update the raid team list"),
             Commands.slash("spawnmessage", "ADMIN COMMAND: spawn an empty message"),
             Commands.slash("editmessage", "ADMIN COMMAND: edit a custom embed")

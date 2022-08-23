@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -126,6 +127,7 @@ public class RaidTeamManager {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_wow_api_token(){
 		String token = "";
 		try {
@@ -144,6 +146,7 @@ public class RaidTeamManager {
 		return token;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_class(String name, String server){
 		String token = get_wow_api_token();
 		String command = "curl https://eu.api.blizzard.com/profile/wow/character/"+server.toLowerCase()+"/"+name.toLowerCase()+"?namespace=profile-eu&locale=en_GB&access_token="+token;
@@ -161,6 +164,7 @@ public class RaidTeamManager {
 		return _class;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_spec(String name, String server){
 		String token = get_wow_api_token();
 		String command = "curl https://eu.api.blizzard.com/profile/wow/character/"+server.toLowerCase()+"/"+name.toLowerCase()+"?namespace=profile-eu&locale=en_GB&access_token="+token;
@@ -178,6 +182,7 @@ public class RaidTeamManager {
 		return spec;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_ilvl(String name, String server){
 		String token = get_wow_api_token();
 		String command = "curl https://eu.api.blizzard.com/profile/wow/character/"+server.toLowerCase()+"/"+name.toLowerCase()+"?namespace=profile-eu&locale=en_GB&access_token="+token;
@@ -195,6 +200,7 @@ public class RaidTeamManager {
 		return ilvl;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_avg_ilvl(String name, String server){
 		String token = get_wow_api_token();
 		String command = "curl https://eu.api.blizzard.com/profile/wow/character/"+server.toLowerCase()+"/"+name.toLowerCase()+"?namespace=profile-eu&locale=en_GB&access_token="+token;
@@ -212,6 +218,7 @@ public class RaidTeamManager {
 		return avg_ilvl;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public String get_image(String name, String server){
 		String token = get_wow_api_token();
 		String command = "curl https://eu.api.blizzard.com/profile/wow/character/"+server.toLowerCase()+"/"+name.toLowerCase()+"/character-media?namespace=profile-eu&locale=en_GB&access_token="+token;
@@ -235,8 +242,8 @@ public class RaidTeamManager {
 
 	public static void addRaider(List<ModalMapping> values, String userid, Guild guild) {
 		try {
-			JSONObject team = Config.getFile("team.json");
-			JSONObject raider = new JSONObject();
+			HashMap<String, Object> team = Config.getFile("team.json");
+			HashMap<String, Object> raider = new HashMap<String, Object>();
 			for(ModalMapping value : values){
 				switch(value.getId()){
 					case "name":
@@ -249,14 +256,6 @@ public class RaidTeamManager {
 					case "role":
 						raider.put("role", value.getAsString());
 						break;
-					case "raidtimes":
-						if(value.getAsString().equalsIgnoreCase("yes")){
-							raider.put("raid_times", true);
-						}
-						else{
-							raider.put("raid_times", false);
-						}
-						break;
 				}
 			}
 			raider.put("class", get_class((String)raider.get("name"), (String) raider.get("server")));
@@ -265,7 +264,7 @@ public class RaidTeamManager {
 			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			team.put(userid, raider);
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toJSONString());
+				writer.write(((JSONObject) team).toJSONString());
 			}
 			update(guild);
 		} catch (IOException | ParseException e) {
@@ -274,10 +273,10 @@ public class RaidTeamManager {
 	}
 	public static void removeRaider(Member member) {
 		try {
-			JSONObject team = Config.getFile("team.json");
+			HashMap<String, Object> team = Config.getFile("team.json");
 			team.remove(member.getId());
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toJSONString());
+				writer.write(((JSONObject) team).toJSONString());
 			}
 			update(member.getGuild());
 		} catch (IOException | ParseException e) {
@@ -287,8 +286,8 @@ public class RaidTeamManager {
 	}
 	public static void addRaiderOption(List<OptionMapping> options, String id, Guild guild) {
 		try {
-			JSONObject team = Config.getFile("team.json");
-			JSONObject raider = new JSONObject();
+			HashMap<String, Object> team = Config.getFile("team.json");
+			HashMap<String, Object> raider = new HashMap<String, Object>();
 			for(OptionMapping value : options){
 				switch(value.getName()){
 					case "name":
@@ -317,7 +316,7 @@ public class RaidTeamManager {
 			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			team.put(id, raider);
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toJSONString());
+				writer.write(((JSONObject)team).toJSONString());
 			}
 			update(guild);
 		} catch (IOException | ParseException e) {

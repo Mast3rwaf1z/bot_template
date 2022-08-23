@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,7 +24,8 @@ public class Config {
         }
     }
     
-    public static JSONObject getFile(String file) throws IOException, ParseException{
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> getFile(String file) throws IOException, ParseException{
         JSONParser parser = new JSONParser();
         try(FileReader reader = new FileReader(file)){
             return (JSONObject) parser.parse(reader);
