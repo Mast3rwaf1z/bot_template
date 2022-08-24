@@ -293,7 +293,7 @@ public class App
                                 }
                                 else{
                                     System.out.println(Colors.red("Error: Too few arguments"));
-                                    System.out.println(Colors.black("Example: [team add 692410386657574952 Skademanden argent-dawn melee]"));
+                                    System.out.println(Colors.black("Example: [team add 214752462769356802 Skademanden argent-dawn melee]"));
                                 }
                                 break;
                             case "remove":
