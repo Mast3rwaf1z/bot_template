@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.Command.Subcommand;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
@@ -28,9 +27,12 @@ public class App
     static private JDA jda;
     static private HashMap<String, Object> config;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
-        System.out.println("Starting bot");
+        System.out.println(Colors.yellow("Starting bot"));
+        System.out.print(Colors.GREEN);
         config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
+        jda.awaitReady();
+        System.out.println(Colors.yellow("Adding event listeners"));
         jda.addEventListener(new CommandListener());
         jda.addEventListener(new ModalListener());
         jda.addEventListener(new ButtonListener());
@@ -38,20 +40,19 @@ public class App
         jda.addEventListener(new SelectMenuListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
-        System.out.println("await ready");
-        jda.awaitReady();
-        System.out.println("finished await");
+        System.out.println(Colors.yellow("Setting commands"));
         setCommands();
         RaidTeamManager.update(jda.getGuildById("642852517197250560"));
-
+        System.out.print(Colors.RESET);
+        System.out.println(Colors.yellow("Finished bot startup"));
         cli();
+        jda.shutdown();
         System.exit(0);
 
 
 
     }
     static private void setCommands(){
-        System.out.println("Setting commands");
         /*for(Command command : jda.retrieveCommands().complete()){
             command.delete().queue();
         }*/
@@ -204,7 +205,8 @@ public class App
                                 System.out.println("\t"+Colors.blue("list")+":          List all members of the raid team");
                                 System.out.println("\t"+Colors.blue("add")+":           Add a raider to the raid team");
                                 System.out.println("\t"+Colors.blue("remove")+":        Removes a raider from the raid team");
-                                System.out.println("\t"+Colors.blue("<member id>")+":  Shows a single member of the raid team");
+                                System.out.println("\t"+Colors.blue("requirements")+":  Manages the requirements of the raid team");
+                                System.out.println("\t"+Colors.blue("<member id>")+":   Shows a single member of the raid team");
                                 System.out.println("+--------------------------------------------------------------------+");
                                 break;
                             case "list":

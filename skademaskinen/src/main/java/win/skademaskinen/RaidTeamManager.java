@@ -119,11 +119,8 @@ public class RaidTeamManager {
 			builder.addField("Melee Damage:", meleeMessage, true); 
 			message.editMessageEmbeds(builder.build()).queue();
 			
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -141,10 +138,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			token = (String) ((JSONObject) parser.parse(new BufferedReader(new InputStreamReader(process.getInputStream())))).get("access_token");
 		} catch (IOException | ParseException | InterruptedException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+			Colors.exceptionHandler(e);
 		}
 		return token;
 	}
@@ -161,11 +155,8 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = (JSONObject) parser.parse(reader);
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
-		} catch (IOException | InterruptedException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		return _class;
 	}
@@ -182,11 +173,8 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = (JSONObject) parser.parse(reader);
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
-		} catch (IOException | InterruptedException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		return spec;
 	}
@@ -203,11 +191,8 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = (JSONObject) parser.parse(reader);
 			ilvl = String.valueOf(data.get("equipped_item_level"));
-		} catch (IOException | InterruptedException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		return ilvl;
 	}
@@ -224,11 +209,8 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = (JSONObject) parser.parse(reader);
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
-		} catch (IOException | InterruptedException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		return avg_ilvl;
 	}
@@ -245,11 +227,8 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = (JSONObject) parser.parse(reader);
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
-		} catch (IOException | InterruptedException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		return image;
 	}
@@ -267,11 +246,8 @@ public class RaidTeamManager {
 				writer.write(((JSONObject) team).toJSONString());
 			}
 			update(member.getGuild());
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 		
 	}
@@ -292,11 +268,8 @@ public class RaidTeamManager {
 				writer.write(((JSONObject)team).toJSONString());
 			}
 			update(guild);
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -324,11 +297,8 @@ public class RaidTeamManager {
 			try(FileWriter writer = new FileWriter("team_requirements.json")){
 				writer.write(((JSONObject)file).toJSONString());
 			}
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -357,11 +327,8 @@ public class RaidTeamManager {
 			try(FileWriter writer = new FileWriter("team_requirements.json")){
 				writer.write(((JSONObject)file).toJSONString());
 			}
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -376,17 +343,14 @@ public class RaidTeamManager {
 				writer.write(((JSONObject)file).toJSONString());
 			}
 			
-		} catch (IOException | ParseException e) {
-			for(StackTraceElement element : e.getStackTrace()){
-				System.out.println(Colors.red(element.toString()));
-			}
-			App.prompt();
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e);
 		}
 	}
 	public static void printRaider(JSONObject raider, String name, Guild guild){
 		System.out.println();
 		System.out.print(Colors.green("Discord name:                   "));
-		System.out.println(guild.retrieveMemberById(name).complete().getNickname());
+		System.out.println(guild.retrieveMemberById(name).complete().getEffectiveName());
 		System.out.print(Colors.green("Character name:                 "));
 		System.out.println(raider.get("name"));
 		System.out.print(Colors.green("Server:                         "));

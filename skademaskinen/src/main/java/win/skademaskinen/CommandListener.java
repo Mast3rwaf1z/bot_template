@@ -43,9 +43,9 @@ public class CommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         System.out.println();
         System.out.println(Colors.yellow("Received slash command:"));
-        System.out.println(Colors.green("Command:       ") + event.getName());
+        System.out.println(Colors.green("Command:        ") + event.getName());
         if(event.getSubcommandName() != null){
-            System.out.println(Colors.green("Subcommand:    ") + event.getSubcommandName());
+            System.out.println(Colors.green("Subcommand:     ") + event.getSubcommandName());
         }
         System.out.println(Colors.blue("Option count:   ") + event.getOptions().size());
         for(OptionMapping option : event.getOptions()){
