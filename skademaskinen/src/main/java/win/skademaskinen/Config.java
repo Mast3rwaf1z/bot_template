@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.interactions.ModalInteraction;
 public class Config {
     public static ArrayList<ModalInteraction> modals = new ArrayList<ModalInteraction>();
     
-    public static JSONObject getConfig() throws IOException, ParseException{
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> getConfig() throws IOException, ParseException{
         JSONParser parser = new JSONParser();
         try(FileReader reader = new FileReader("config.json")){
             return (JSONObject) parser.parse(reader);

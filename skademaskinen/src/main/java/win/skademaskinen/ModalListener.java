@@ -28,10 +28,12 @@ public class ModalListener extends ListenerAdapter{
             String server = event.getValue("server").getAsString();
             String role = event.getValue("role").getAsString();
             boolean raidtimes = event.getValue("raidtimes").getAsString().equalsIgnoreCase("yes") ? true : false;
-            System.out.println("Name:       " + name);
-            System.out.println("Server:     " + server);
-            System.out.println("Role:       " + role);
-            System.out.println("raidtimes:  " + raidtimes);
+            System.out.println();
+            System.out.println(Colors.yellow("Application:"));
+            System.out.println(Colors.green("Name:       ") + name);
+            System.out.println(Colors.green("Server:     ") + server);
+            System.out.println(Colors.green("Role:       ") + role);
+            System.out.println(Colors.green("raidtimes:  ") + raidtimes);
             try{
                 String _class = RaidTeamManager.get_class(name, server);
                 String ilvl = RaidTeamManager.get_ilvl(name, server);
@@ -49,7 +51,7 @@ public class ModalListener extends ListenerAdapter{
                 }
 
                 int score = 0;
-                JSONObject applicationData = (JSONObject) Config.getConfig().get("raid_form");
+                JSONObject applicationData = (JSONObject) Config.getFile("team_requirements.json").get("raid_form");
                 long reqIlvl = (long) applicationData.get("minimum_ilvl");
                 JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
                 JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
@@ -118,7 +120,9 @@ public class ModalListener extends ListenerAdapter{
                     .queue();
                     Config.modals.add(event.getInteraction());
                 } catch (IOException | ParseException e) {
-                    e.printStackTrace();
+                    for(StackTraceElement element : e.getStackTrace()){
+                        System.out.println(Colors.red(element.toString()));
+                    }
                 }
                 break;
             case "title_modal":

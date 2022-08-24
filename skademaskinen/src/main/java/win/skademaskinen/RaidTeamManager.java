@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,13 +17,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 public class RaidTeamManager {
 	static private String raidTeamMessageId = "987484728724705360";
 	public static void update(Guild guild){
-
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
 			guild.getTextChannelById("889964274229854248").getHistoryAround("1011047944075628714", 1).complete().getMessageById("1011047944075628714");
@@ -57,6 +53,7 @@ public class RaidTeamManager {
 
 				}
 			}
+			builder.appendDescription("\n**Raid team composition:** "+tanks.size()+"/"+healers.size()+"/"+(ranged.size()+melee.size()));
 
 			App.setStatus("Raid team: " + tanks.size()+"/"+healers.size()+"/"+(ranged.size()+melee.size()));
 			String tanksMessage = "";
@@ -123,7 +120,10 @@ public class RaidTeamManager {
 			message.editMessageEmbeds(builder.build()).queue();
 			
 		} catch (IOException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 	}
 
@@ -141,7 +141,10 @@ public class RaidTeamManager {
 			process.waitFor();
 			token = (String) ((JSONObject) parser.parse(new BufferedReader(new InputStreamReader(process.getInputStream())))).get("access_token");
 		} catch (IOException | ParseException | InterruptedException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return token;
 	}
@@ -159,7 +162,10 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
 		} catch (IOException | InterruptedException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return _class;
 	}
@@ -177,7 +183,10 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
 		} catch (IOException | InterruptedException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return spec;
 	}
@@ -195,7 +204,10 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			ilvl = String.valueOf(data.get("equipped_item_level"));
 		} catch (IOException | InterruptedException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return ilvl;
 	}
@@ -213,7 +225,10 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
 		} catch (IOException | InterruptedException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return avg_ilvl;
 	}
@@ -231,7 +246,10 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
 		} catch (IOException | InterruptedException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		return image;
 	}
@@ -240,37 +258,7 @@ public class RaidTeamManager {
 		return raidTeamMessageId;
 	}
 
-	public static void addRaider(List<ModalMapping> values, String userid, Guild guild) {
-		try {
-			HashMap<String, Object> team = Config.getFile("team.json");
-			HashMap<String, Object> raider = new HashMap<String, Object>();
-			for(ModalMapping value : values){
-				switch(value.getId()){
-					case "name":
-					String cap = value.getAsString().substring(0, 1).toUpperCase() + value.getAsString().substring(1);
-						raider.put("name", cap);
-						break;
-					case "server":
-						raider.put("server", value.getAsString());
-						break;
-					case "role":
-						raider.put("role", value.getAsString());
-						break;
-				}
-			}
-			raider.put("class", get_class((String)raider.get("name"), (String) raider.get("server")));
-			raider.put("spec", get_spec((String)raider.get("name"), (String)raider.get("server")));
-			raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
-			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
-			team.put(userid, raider);
-			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(((JSONObject) team).toJSONString());
-			}
-			update(guild);
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	public static void removeRaider(Member member) {
 		try {
 			HashMap<String, Object> team = Config.getFile("team.json");
@@ -280,36 +268,21 @@ public class RaidTeamManager {
 			}
 			update(member.getGuild());
 		} catch (IOException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
 		
 	}
-	public static void addRaiderOption(List<OptionMapping> options, String id, Guild guild) {
+	public static void addRaider(String name, String server, String role, String id, Guild guild) {
 		try {
 			HashMap<String, Object> team = Config.getFile("team.json");
 			HashMap<String, Object> raider = new HashMap<String, Object>();
-			for(OptionMapping value : options){
-				switch(value.getName()){
-					case "name":
-						String cap = value.getAsString().substring(0, 1).toUpperCase() + value.getAsString().substring(1);
-						raider.put("name", cap);
-						break;
-					case "server":
-						raider.put("server", value.getAsString());
-						break;
-					case "role":
-						raider.put("role", value.getAsString());
-						break;
-					case "raidtimes":
-						if(value.getAsString().equalsIgnoreCase("yes")){
-							raider.put("raid_times", true);
-						}
-						else{
-							raider.put("raid_times", false);
-						}
-						break;
-				}
-			}
+			String cap = name.substring(0, 1).toUpperCase() + name.substring(1);
+			raider.put("name", cap);
+			raider.put("server", server);
+			raider.put("role", role);
 			raider.put("class", get_class((String)raider.get("name"), (String) raider.get("server")));
 			raider.put("spec", get_spec((String)raider.get("name"), (String)raider.get("server")));
 			raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
@@ -320,7 +293,112 @@ public class RaidTeamManager {
 			}
 			update(guild);
 		} catch (IOException | ParseException e) {
-			e.printStackTrace();
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
 		}
+	}
+	@SuppressWarnings("unchecked")
+	public static void addRequirement(String type, String value){
+		try {
+			switch(type){
+				case "filled":
+				case "filled roles":
+					type = "filled_roles";
+					break;
+				case "needed":
+					type = "needed_classes";
+					case "needed classes":
+					break;
+				case "preferred":
+				case "preferred roles":
+					type = "preferred_roles";
+			}
+			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
+			ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
+			requirement.add(value);
+			requirements.put(type, requirement);
+			file.put("raid_form", requirements);
+			try(FileWriter writer = new FileWriter("team_requirements.json")){
+				writer.write(((JSONObject)file).toJSONString());
+			}
+		} catch (IOException | ParseException e) {
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void removeRequirement(String type, String value){
+		try {
+			switch(type){
+				case "filled":
+				case "filled roles":
+					type = "filled_roles";
+					break;
+				case "needed":
+				case "needed classes":
+					type = "needed_classes";
+					break;
+				case "preferred":
+				case "preferred roles":
+					type = "preferred_roles";
+			}
+			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
+			ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
+			requirement.remove(value);
+			requirements.put(type, requirement);
+			file.put("raid_form", requirements);
+			try(FileWriter writer = new FileWriter("team_requirements.json")){
+				writer.write(((JSONObject)file).toJSONString());
+			}
+		} catch (IOException | ParseException e) {
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void setIlvlRequirement(int ilvl){
+		try {
+			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
+			requirements.put("minimum_ilvl", ilvl);
+			file.put("raid_form", requirements);
+			try(FileWriter writer = new FileWriter("team_requirements.json")){
+				writer.write(((JSONObject)file).toJSONString());
+			}
+			
+		} catch (IOException | ParseException e) {
+			for(StackTraceElement element : e.getStackTrace()){
+				System.out.println(Colors.red(element.toString()));
+			}
+			App.prompt();
+		}
+	}
+	public static void printRaider(JSONObject raider, String name, Guild guild){
+		System.out.println();
+		System.out.print(Colors.green("Discord name:                   "));
+		System.out.println(guild.retrieveMemberById(name).complete().getNickname());
+		System.out.print(Colors.green("Character name:                 "));
+		System.out.println(raider.get("name"));
+		System.out.print(Colors.green("Server:                         "));
+		System.out.println(raider.get("server"));
+		System.out.print(Colors.green("Role:                           "));
+		System.out.println(raider.get("role"));
+		System.out.print(Colors.green("Class:                          "));
+		System.out.println(raider.get("class"));
+		System.out.print(Colors.green("Specialization:                 "));
+		System.out.println(raider.get("spec"));
+		System.out.print(Colors.green("Item level/average item level:  "));
+		System.out.println(raider.get("ilvl")+"/"+raider.get("avg_ilvl"));
+
 	}
 }

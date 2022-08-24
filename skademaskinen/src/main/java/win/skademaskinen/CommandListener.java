@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.awt.Color;
@@ -39,9 +41,21 @@ public class CommandListener extends ListenerAdapter {
     }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
-        System.out.println("Command:                " + event.getCommandString());
         System.out.println();
-        //event.deferReply().queue();
+        System.out.println(Colors.yellow("Received slash command:"));
+        System.out.println(Colors.green("Command:       ") + event.getName());
+        if(event.getSubcommandName() != null){
+            System.out.println(Colors.green("Subcommand:    ") + event.getSubcommandName());
+        }
+        System.out.println(Colors.blue("Option count:   ") + event.getOptions().size());
+        for(OptionMapping option : event.getOptions()){
+            String message = option.getName() + ":";
+            while(message.length() < 16){
+                message+=" ";
+            }
+            System.out.println(Colors.green(message) + option.getAsString());
+        }
+        App.prompt();
         Guild guild = event.getGuild();
         Member author = event.getMember();
         EmbedBuilder builder = new EmbedBuilder();
@@ -208,51 +222,43 @@ public class CommandListener extends ListenerAdapter {
 				}
 				break;
 		    case "version":
-				String msg = "**Changelog**\n```\nRedesigned application form```";
+				String msg = "**Changelog**\n```\nAdded cli\nadded new commands to handle requirements in discord\nchanged command syntax of raid team manager```";
 				event.reply(msg).setEphemeral(true).queue();
 				break;
-		    case "applicationform":
+            case "team":
                 if(author.hasPermission(Permission.ADMINISTRATOR)){
-                    MessageEmbed embed = new EmbedBuilder()
-                        .setTitle("Apply to The Nut Hut raid team!")
-                        .setDescription("Hi, here you can apply to the raid team!\nYou will receive a pop-up form to add your character's details.")
-                        .setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif")
-                        .build();
-                    event.replyEmbeds(embed).addActionRow(Button.primary("apply_button", "Apply here!")).queue();
+                    switch(event.getSubcommandName()){
+                        case "add":
+                            event.deferReply(true).queue();
+                            RaidTeamManager.addRaider(event.getOption("name").getAsString(), 
+                                event.getOption("server").getAsString(), 
+                                event.getOption("role").getAsString(), 
+                                event.getOption("raider").getAsMember().getId(), 
+                                guild);
+                            event.getHook().editOriginal("Successfully added raider to the team!").queue();
+                            break;
+                        case "remove":
+                            Member member = event.getOption("raider").getAsMember();
+                            RaidTeamManager.removeRaider(member);
+                            event.reply("Successfully removed raider from the raid team!").setEphemeral(true).queue();
+                            break;
+                        case "form":
+                            MessageEmbed embed = new EmbedBuilder()
+                                .setTitle("Apply to The Nut Hut raid team!")
+                                .setDescription("Hi, here you can apply to the raid team!\nYou will receive a pop-up form to add your character's details.")
+                                .setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif")
+                                .build();
+                            event.replyEmbeds(embed).addActionRow(Button.primary("apply_button", "Apply here!")).queue();
+                            break;
+                        case "update":
+                            event.deferReply(true).queue();
+                            RaidTeamManager.update(event.getGuild());
+                            event.getHook().editOriginal("updated raid team").queue();
+                            break;
+                    }
                 }
                 else{
                     event.reply("You are not an administrator!").setEphemeral(true).queue();
-                }
-                break;
-            case "removeraider":
-                if(author.hasPermission(Permission.ADMINISTRATOR)){
-
-                    Member member = event.getOption("raider").getAsMember();
-                    RaidTeamManager.removeRaider(member);
-                    event.reply("Successfully removed raider from the raid team!").setEphemeral(true).queue();
-                }
-                else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
-                }
-                break;
-            case "addraider":
-            event.deferReply(true).queue();
-                if(author.hasPermission(Permission.ADMINISTRATOR)){
-                    RaidTeamManager.addRaiderOption(event.getOptions(), event.getOption("raider").getAsMember().getId(), guild);
-                    event.getHook().editOriginal("Successfully added raider to the team!").queue();
-                }
-                else{
-                    event.getHook().editOriginal("You are not an administrator!").queue();
-                }
-                break;
-            case "updateteam":
-                if(author.hasPermission(Permission.ADMINISTRATOR)){
-                    event.deferReply(true).queue();
-                    RaidTeamManager.update(event.getGuild());
-                    event.getHook().editOriginal("updated raid team").queue();
-                }
-                else{
-                    event.getHook().editOriginal("You are not an administrator!").queue();
                 }
                 break;
             case "spawnmessage":
@@ -331,19 +337,73 @@ public class CommandListener extends ListenerAdapter {
                     }
                     event.reply(announcement).queue();
                 }
-        }
+                break;
+            case "requirements":
+                if(author.hasPermission(Permission.ADMINISTRATOR)){
+                    switch(event.getSubcommandName()){
+                        case "add":
+                        RaidTeamManager.addRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
+                        event.reply("Successfully added requirement!").setEphemeral(true).queue();
+                        break;
+                    case "remove":
+                        RaidTeamManager.removeRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
+                        event.reply("Successfully removed requirement!").setEphemeral(true).queue();
+                        break;
+                        case "list":
+                        builder.setTitle("Raid team requirements!");
+                        try {
+                            JSONObject raidForm = (JSONObject) Config.getFile("team_requirements.json").get("raid_form");
+                            String filled = "";
+                            for(Object role : (JSONArray) raidForm.get("filled_roles")){
+                                filled+=role.toString()+"\n";
+                            }
+                            builder.addField("filled roles:", filled, false);
+                            String preferred = "";
+                            for(Object role : (JSONArray) raidForm.get("preferred_roles")){
+                                preferred+=role.toString()+"\n";
+                            }
+                            builder.addField("Preferred roles:", preferred, false);
+                            String needed = "";
+                            for(Object _class : (JSONArray) raidForm.get("needed_classes")){
+                                needed+=_class.toString()+"\n";
+                            }
+                            builder.addField("Needed classes:", needed, false);
+                            builder.setDescription("Minimum item level: " + raidForm.get("minimum_ilvl"));
+                            event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+                            
+                        } catch (IOException | ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "setilvl":
+                        RaidTeamManager.setIlvlRequirement(event.getOption("ilvl").getAsInt());
+                        event.reply("Successfully set ilvl!").setEphemeral(true).queue();
+                        break;
+                    }
+                }
+                else{
+                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                }
+                break;
+                
+            }
     }
     
     public void onMessageReceived(MessageReceivedEvent event){
-        System.out.println("Server:                 " + event.getGuild().getName());
-        System.out.println("Channel:                " + event.getChannel().getName());
-        System.out.println("Author:                 " + event.getAuthor().getName());
-        System.out.println("Message:                " + event.getMessage().getContentDisplay());
-        System.out.println("Number of attachments:  " + event.getMessage().getAttachments().size());
-        for(Attachment url : event.getMessage().getAttachments()){
-            System.out.println("Attachment:             " + url.getUrl());
-        }
         System.out.println();
+        System.out.println(Colors.yellow("Message received:"));
+        if(event.isFromGuild()){
+            System.out.println(Colors.green("Server:                 ") + event.getGuild().getName());
+        }
+        System.out.println(Colors.green("Channel:                ") + event.getChannel().getName());
+        System.out.println(Colors.green("Author:                 ") + event.getAuthor().getName());
+        System.out.println(Colors.green("Message:                ") + event.getMessage().getContentDisplay());
+        System.out.println(Colors.green("Number of attachments:  ") + event.getMessage().getAttachments().size());
+        for(Attachment url : event.getMessage().getAttachments()){
+            System.out.println(Colors.green("Attachment:             ") + url.getUrl());
+        }
+        App.prompt();
     }
 
     private String getTime(long duration) {
