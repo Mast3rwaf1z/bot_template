@@ -372,9 +372,8 @@ public class CommandListener extends ListenerAdapter {
                             builder.setDescription("Minimum item level: " + raidForm.get("minimum_ilvl"));
                             event.replyEmbeds(builder.build()).setEphemeral(true).queue();
                             
-                        } catch (IOException | ParseException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                        } catch (IOException | ParseException | NullPointerException e) {
+                            Colors.exceptionHandler(e);
                         }
                         break;
                     case "setilvl":

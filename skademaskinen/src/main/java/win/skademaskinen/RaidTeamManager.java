@@ -59,7 +59,7 @@ public class RaidTeamManager {
 			String tanksMessage = "";
 			for(String key : tanks){
 				JSONObject raider = (JSONObject) team.get(key);
-				tanksMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				tanksMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				tanksMessage+= "\n" + raider.get("name");
 				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
 					tanksMessage+= " (" + raider.get("server") + ")";
@@ -74,7 +74,7 @@ public class RaidTeamManager {
 			String healersMessage = "";
 			for(String key : healers){
 				JSONObject raider = (JSONObject) team.get(key);
-				healersMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				healersMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				healersMessage+= "\n" + raider.get("name");
 				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
 					healersMessage+= " (" + raider.get("server") + ")";
@@ -90,7 +90,7 @@ public class RaidTeamManager {
 			String rangedMessage = "";
 			for(String key : ranged){
 				JSONObject raider = (JSONObject) team.get(key);
-				rangedMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				rangedMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				rangedMessage+= "\n" + raider.get("name");
 				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
 					rangedMessage+= " (" + raider.get("server") + ")";
@@ -105,7 +105,7 @@ public class RaidTeamManager {
 			String meleeMessage = "";
 			for(String key : melee){
 				JSONObject raider = (JSONObject) team.get(key);
-				meleeMessage+= "\n" + guild.retrieveMemberById(key).complete().getAsMention();
+				meleeMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 				meleeMessage+= "\n" + raider.get("name");
 				if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
 					meleeMessage+= " (" + raider.get("server") + ")";
