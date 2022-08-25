@@ -1,5 +1,8 @@
 package win.skademaskinen;
 
+import java.io.IOException;
+
+import org.jline.terminal.TerminalBuilder;
 
 public class Colors {
 	public static final String RESET = "\u001B[0m";
@@ -45,5 +48,19 @@ public class Colors {
 		if(!noPrompt){
 			Shell.prompt();
 		}
+	}
+	public static String terminalWidthLine(){
+		String line = "+";
+		try {
+			int width = TerminalBuilder.terminal().getWidth();
+			while(line.length() < width-1){
+				line+="-";
+			}
+			line+="+";
+			
+		} catch (IOException e) {
+			exceptionHandler(e, false);
+		}
+		return line;
 	}
 }
