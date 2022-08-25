@@ -238,9 +238,10 @@ public class CommandListener extends ListenerAdapter {
                             event.getHook().editOriginal("Successfully added raider to the team!").queue();
                             break;
                         case "remove":
+                            event.deferReply(true).queue();
                             Member member = event.getOption("raider").getAsMember();
                             RaidTeamManager.removeRaider(member);
-                            event.reply("Successfully removed raider from the raid team!").setEphemeral(true).queue();
+                            event.getHook().editOriginal("Successfully removed raider from the raid team!").queue();
                             break;
                         case "form":
                             MessageEmbed embed = new EmbedBuilder()

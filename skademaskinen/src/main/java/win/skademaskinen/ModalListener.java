@@ -22,12 +22,23 @@ public class ModalListener extends ListenerAdapter{
         EmbedBuilder builder = new EmbedBuilder();
         switch(event.getModalId()){
             case "Application form":
-            event.deferReply().queue();
-
+            String[] validRoles = {"tank", "healer", "melee damage", "ranged damage"};
             String name = event.getValue("name").getAsString();
             String server = event.getValue("server").getAsString();
             String role = event.getValue("role").getAsString();
             boolean raidtimes = event.getValue("raidtimes").getAsString().equalsIgnoreCase("yes") ? true : false;
+            boolean isValid = false;
+            for(String Role : validRoles){
+                if(role.equalsIgnoreCase(Role.toLowerCase())){
+                    isValid = true;
+                    break;
+                }
+            }
+            if(!isValid){
+                event.reply("Invalid role, please select one of the following: Tank, Healer, Ranged Damage, Melee Damage").setEphemeral(true).queue();
+                return;
+            }
+            event.deferReply().queue();
             System.out.println();
             System.out.println(Colors.yellow("Application:"));
             System.out.println(Colors.green("Name:       ") + name);
