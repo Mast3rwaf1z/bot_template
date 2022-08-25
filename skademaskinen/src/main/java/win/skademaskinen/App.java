@@ -123,7 +123,4 @@ public class App
     }
 
     
-    public static void prompt(){
-        System.out.print("["+Colors.blue(jda.getSelfUser().getName())+"] > ");
-    }
 }

@@ -55,7 +55,7 @@ public class CommandListener extends ListenerAdapter {
             }
             System.out.println(Colors.green(message) + option.getAsString());
         }
-        App.prompt();
+        Shell.prompt();
         Guild guild = event.getGuild();
         Member author = event.getMember();
         EmbedBuilder builder = new EmbedBuilder();
@@ -373,7 +373,7 @@ public class CommandListener extends ListenerAdapter {
                             event.replyEmbeds(builder.build()).setEphemeral(true).queue();
                             
                         } catch (IOException | ParseException | NullPointerException e) {
-                            Colors.exceptionHandler(e);
+                            Colors.exceptionHandler(e, false);
                         }
                         break;
                     case "setilvl":
@@ -403,7 +403,7 @@ public class CommandListener extends ListenerAdapter {
         for(Attachment url : event.getMessage().getAttachments()){
             System.out.println(Colors.green("Attachment:             ") + url.getUrl());
         }
-        App.prompt();
+        Shell.prompt();
     }
 
     private String getTime(long duration) {

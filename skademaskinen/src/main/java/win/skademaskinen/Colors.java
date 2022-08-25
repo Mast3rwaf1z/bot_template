@@ -36,12 +36,14 @@ public class Colors {
 	public static String white(String string){
 		return WHITE+string+RESET;
 	}
-	public static void exceptionHandler(Exception e){
+	public static void exceptionHandler(Exception e, boolean noPrompt){
 		System.out.println();
 		System.out.println(Colors.yellow(e.getLocalizedMessage()));
 		for(StackTraceElement element : e.getStackTrace()){
 			System.out.println("\t" + Colors.red(element.toString()));
 		}
-		App.prompt();
+		if(!noPrompt){
+			Shell.prompt();
+		}
 	}
 }

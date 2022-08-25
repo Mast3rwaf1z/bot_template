@@ -75,7 +75,7 @@ public class ModalListener extends ListenerAdapter{
                         score++;
                     }
                     else{
-                        fields.add("Your item level is too low, we have a requirement of 252 (you need to be "+(reqIlvl-Long.parseLong(ilvl))+" higher)");
+                        fields.add("Your item level is too low, we have a requirement of "+applicationData.get("minimum_ilvl")+" (you need to be "+(reqIlvl-Long.parseLong(ilvl))+" higher)");
                     }
                     if(preferredRoles.contains(role.toLowerCase())){
                         score++;
