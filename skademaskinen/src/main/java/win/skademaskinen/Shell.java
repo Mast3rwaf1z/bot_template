@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -65,14 +67,14 @@ public class Shell {
     }
 
 	private static void help(){
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 		System.out.println("\t"+Colors.blue("guilds")+":  Get info about a discord server");
 		System.out.println("\t"+Colors.blue("guilds")+":  Get info about a discord servers channels");
 		System.out.println("\t"+Colors.blue("send")+":    Send a message in a selected channel");
 		System.out.println("\t"+Colors.blue("clear")+":   clear the terminal");
 		System.out.println("\t"+Colors.blue("exit")+":    Stop the bot");
 		System.out.println("\t"+Colors.blue("team")+":    Show a list of all raiders on the raid team");
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 
 	}
 	private static void send(String[] arguments){
@@ -130,12 +132,12 @@ public class Shell {
 		}
 	}
 	private static void guildsHelp() {
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 		System.out.println("\t"+Colors.blue("list")+":        Print the list of guilds");
 		System.out.println("\t"+Colors.blue("<guild id>")+":  Prints a guild in the list");
 		System.out.println("\t"+Colors.blue("select")+":  	  Selects a given guild");
 		System.out.println("\t"+Colors.blue("select")+":  	  Reset guild selection");
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 	}
 
 	private static void guildsSelect(String[] arguments) {
@@ -233,13 +235,13 @@ public class Shell {
 
 	}
 	private static void teamHelp(){
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 		System.out.println("\t"+Colors.blue("list")+":          List all members of the raid team");
 		System.out.println("\t"+Colors.blue("add")+":           Add a raider to the raid team");
 		System.out.println("\t"+Colors.blue("remove")+":        Removes a raider from the raid team");
 		System.out.println("\t"+Colors.blue("requirements")+":  Manages the requirements of the raid team");
 		System.out.println("\t"+Colors.blue("<member id>")+":   Shows a single member of the raid team");
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 
 	}
 	private static void teamList(HashMap<String, Object> team){
@@ -358,11 +360,28 @@ public class Shell {
 
 	}
 	private static void requirementsHelp(){
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
 		System.out.println("\t"+Colors.blue("list")+":          List all requirements");
 		System.out.println("\t"+Colors.blue("add")+":           Add a requirement to the raid team");
 		System.out.println("\t"+Colors.blue("remove")+":        Removes a requirement from the raid team");
 		System.out.println("\t"+Colors.blue("setilvl")+":       Set the required item level of the raid team");
-		System.out.println(Colors.yellow(Colors.terminalWidthLine()));
+		System.out.println(Colors.yellow(terminalWidthLine()));
+	}
+
+	private static String terminalWidthLine(){
+		String line = "+";
+		try {
+			Terminal terminal = TerminalBuilder.terminal();
+			int width = terminal.getWidth();
+			terminal.close();
+			while(line.length() < width-1){
+				line+="-";
+			}
+			line+="+";
+			
+		} catch (IOException e) {
+			Colors.exceptionHandler(e, false);
+		}
+		return line;
 	}
 }
