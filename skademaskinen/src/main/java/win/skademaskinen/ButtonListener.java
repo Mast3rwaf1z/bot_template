@@ -119,7 +119,7 @@ public class ButtonListener extends ListenerAdapter{
                 RaidTeamManager.addRaider(modal.getValue("name").getAsString(), 
                     modal.getValue("server").getAsString(), 
                     modal.getValue("role").getAsString(), 
-                    id, 
+                    modal.getMember().getId(), 
                     event.getGuild());
                 event.getHook().editOriginal("Successfully added raider to the team and deleted application!").queue();
                 event.getMessage().delete().complete();
