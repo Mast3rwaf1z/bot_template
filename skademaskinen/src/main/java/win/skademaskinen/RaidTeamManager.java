@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,10 +19,18 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 
 public class RaidTeamManager {
 	static private String raidTeamMessageId = "987484728724705360";
 	public static void update(Guild guild){
+		try {
+			if(!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("Skademaskinen")){
+				return;
+			}
+		} catch (UnknownHostException e) {
+			Colors.exceptionHandler(e, false);
+		}
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
 			guild.getTextChannelById("889964274229854248").getHistoryAround("1011047944075628714", 1).complete().getMessageById("1011047944075628714");
@@ -251,6 +261,19 @@ public class RaidTeamManager {
 		}
 		
 	}
+	public static void removeRaider(User user, Guild guild) {
+		try {
+			HashMap<String, Object> team = Config.getFile("team.json");
+			team.remove(user.getId());
+			try(FileWriter writer = new FileWriter("team.json")){
+				writer.write(((JSONObject) team).toJSONString());
+			}
+			update(guild);
+		} catch (IOException | ParseException | NullPointerException e) {
+			Colors.exceptionHandler(e, false);
+		}
+		
+	}
 	public static void addRaider(String name, String server, String role, String id, Guild guild) {
 		try {
 			HashMap<String, Object> team = Config.getFile("team.json");
@@ -365,4 +388,5 @@ public class RaidTeamManager {
 		System.out.println(raider.get("ilvl")+"/"+raider.get("avg_ilvl"));
 
 	}
+
 }

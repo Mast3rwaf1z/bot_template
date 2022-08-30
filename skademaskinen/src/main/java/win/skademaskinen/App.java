@@ -2,6 +2,7 @@ package win.skademaskinen;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
@@ -12,19 +13,31 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class App 
 {
     static public JDA jda;
     static private HashMap<String, Object> config;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
+        System.out.println(Colors.yellow("Deserializing modal interactions"));
+        SerialModalContainer modals = SerialModalContainer.deserialize();
+        if(modals != null){
+            Config.modals = modals.get();
+        }
+        else{
+            Config.modals = new ArrayList<ModalInteraction>();
+        }
         System.out.println(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
-        jda = JDABuilder.createDefault(config.get("token").toString()).build();
+        jda = JDABuilder.createDefault(config.get("token").toString())
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .build();
         jda.awaitReady();
         System.out.println(Colors.yellow("Adding event listeners"));
         jda.addEventListener(new CommandListener());
@@ -32,6 +45,7 @@ public class App
         jda.addEventListener(new ButtonListener());
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new SelectMenuListener());
+        jda.addEventListener(new GuildEventListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
         System.out.println(Colors.yellow("Setting commands"));
@@ -40,7 +54,10 @@ public class App
         System.out.print(Colors.RESET);
         System.out.println(Colors.yellow("Finished bot startup"));
         Shell.shell();
+        System.out.println(Colors.yellow("Stopping bot"));
         jda.shutdown();
+        System.out.println(Colors.yellow("Serializing modal interactions"));
+        SerialModalContainer.serialize(new SerialModalContainer(Config.modals));
         System.exit(0);
 
 
