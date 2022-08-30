@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -50,7 +51,12 @@ public class App
         setStatus("Jezdiboi");
         System.out.println(Colors.yellow("Setting commands"));
         setCommands();
-        RaidTeamManager.update(jda.getGuildById("642852517197250560"));
+        try{
+            RaidTeamManager.update(jda.getGuildById("642852517197250560"));
+        }
+        catch(ErrorResponseException e){
+            Colors.exceptionHandler(e, false);
+        }
         System.out.print(Colors.RESET);
         System.out.println(Colors.yellow("Finished bot startup"));
         Shell.shell();
