@@ -129,7 +129,7 @@ public class ModalListener extends ListenerAdapter{
                     Button.danger(event.getInteraction().getId()+"decline_button", "Decline"), 
                     Button.secondary(event.getInteraction().getId()+"add_button", "Add to team"))
                     .queue();
-                    Config.modals.add(event.getInteraction());
+                    Config.modals.add(event);
                 } catch (IOException | ParseException e) {
                     for(StackTraceElement element : e.getStackTrace()){
                         System.out.println(Colors.red(element.toString()));

@@ -14,7 +14,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.ModalInteraction;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -25,21 +26,21 @@ public class App
     static public JDA jda;
     static private HashMap<String, Object> config;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
-        System.out.println(Colors.yellow("Deserializing modal interactions"));
-        SerialModalContainer modals = SerialModalContainer.deserialize();
-        if(modals != null){
-            Config.modals = modals.get();
-        }
-        else{
-            Config.modals = new ArrayList<ModalInteraction>();
-        }
         System.out.println(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString())
-            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             .build();
         jda.awaitReady();
+        System.out.println(Colors.yellow("Deserializing modal interactions"));
+        Serializer modals = Serializer.deserialize();
+        if(modals != null && false){
+            Config.modals = modals.get(jda);
+        }
+        else{
+            Config.modals = new ArrayList<ModalInteractionEvent>();
+        }
         System.out.println(Colors.yellow("Adding event listeners"));
         jda.addEventListener(new CommandListener());
         jda.addEventListener(new ModalListener());
@@ -50,12 +51,12 @@ public class App
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
         System.out.println(Colors.yellow("Setting commands"));
-        setCommands();
+        setCommands(false);
         try{
             RaidTeamManager.update(jda.getGuildById("642852517197250560"));
         }
         catch(ErrorResponseException e){
-            Colors.exceptionHandler(e, false);
+            Colors.exceptionHandler(e, true);
         }
         System.out.print(Colors.RESET);
         System.out.println(Colors.yellow("Finished bot startup"));
@@ -63,16 +64,18 @@ public class App
         System.out.println(Colors.yellow("Stopping bot"));
         jda.shutdown();
         System.out.println(Colors.yellow("Serializing modal interactions"));
-        SerialModalContainer.serialize(new SerialModalContainer(Config.modals));
+        Serializer.serialize(new Serializer(Config.modals));
         System.exit(0);
 
 
 
     }
-    static private void setCommands(){
-        /*for(Command command : jda.retrieveCommands().complete()){
-            command.delete().queue();
-        }*/
+    static public void setCommands(boolean shouldReset){
+        if(shouldReset){
+            for(Command command : jda.retrieveCommands().complete()){
+                command.delete().queue();
+            }
+        }
         jda.updateCommands().addCommands(
             Commands.slash("ping", "Send a pong back"),
             Commands.slash("play", "Play a song from youtube")
@@ -98,15 +101,6 @@ public class App
 			    .addOption(OptionType.STRING, "entry10", "entry", false),
 			Commands.slash("welcomemessage", "ADMIN COMMAND: Create an interactive welcome message"),
 			Commands.slash("version", "Show the current version of the bot software (ephemeral message)"),
-			Commands.slash("applicationform", "ADMIN COMMAND: Apply to the raid team"),
-            Commands.slash("removeraider", "ADMIN COMMAND: Remove a raider from the raid team")
-                .addOption(OptionType.USER, "raider", "User to be deleted", true),
-            Commands.slash("addraider", "ADMIN COMMAND: Add a raider to the raid team manually")
-                .addOption(OptionType.USER, "raider", "Mention of the raider", true)
-                .addOption(OptionType.STRING, "name", "Character name", true)
-                .addOption(OptionType.STRING, "server", "Character server", true, true)
-                .addOption(OptionType.STRING, "role", "Character role", true, true),
-            Commands.slash("updateteam", "ADMIN COMMAND: Update the raid team list"),
             Commands.slash("spawnmessage", "ADMIN COMMAND: Spawn an empty message"),
             Commands.slash("editmessage", "ADMIN COMMAND: Edit a custom embed")
                 .addOption(OptionType.STRING, "messageid", "ID of the message to be edited", true)

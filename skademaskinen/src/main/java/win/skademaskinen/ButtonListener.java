@@ -2,9 +2,9 @@ package win.skademaskinen;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -82,8 +82,8 @@ public class ButtonListener extends ListenerAdapter{
         if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
             if (event.getButton().getId().contains("approve_button")) {
                 String id = event.getButton().getId().replace("approve_button", "");
-                ModalInteraction modal = null;
-                for(ModalInteraction m : Config.modals){
+                ModalInteractionEvent modal = null;
+                for(ModalInteractionEvent m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
                         break;
@@ -94,8 +94,8 @@ public class ButtonListener extends ListenerAdapter{
             }
             else if(event.getButton().getId().contains("decline_button")){
                 String id = event.getButton().getId().replace("decline_button", "");
-                ModalInteraction modal = null;
-                for(ModalInteraction m : Config.modals){
+                ModalInteractionEvent modal = null;
+                for(ModalInteractionEvent m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
                         break;
@@ -109,8 +109,8 @@ public class ButtonListener extends ListenerAdapter{
             else if(event.getButton().getId().contains("add_button")){
                 event.deferReply(true).queue();
                 String id = event.getButton().getId().replace("add_button", "");
-                ModalInteraction modal = null;
-                for(ModalInteraction m : Config.modals){
+                ModalInteractionEvent modal = null;
+                for(ModalInteractionEvent m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
                         break;

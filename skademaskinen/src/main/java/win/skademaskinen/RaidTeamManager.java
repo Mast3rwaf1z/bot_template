@@ -26,6 +26,7 @@ public class RaidTeamManager {
 	public static void update(Guild guild){
 		try {
 			if(!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("Skademaskinen")){
+				System.out.println(Colors.red("\nRaid team update blocked: Bot is not deployed!"));
 				return;
 			}
 		} catch (UnknownHostException e) {

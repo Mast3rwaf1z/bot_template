@@ -58,6 +58,8 @@ public class Shell {
                 case "team":
 					team(arguments, line);
                     break;
+				case "commands":
+					commands(arguments);
                 default:
                     System.out.println(Colors.red("No such command!")+Colors.black(" [type help for a list of commands]"));
             }
@@ -65,6 +67,13 @@ public class Shell {
         }
         scanner.close();
     }
+
+	private static void commands(String[] arguments) {
+		switch(arguments[1]){
+			case "update":
+				App.setCommands(true);
+		}
+	}
 
 	private static void help(){
 		System.out.println(Colors.yellow(terminalWidthLine()));

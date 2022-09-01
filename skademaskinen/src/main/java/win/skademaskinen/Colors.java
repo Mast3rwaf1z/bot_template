@@ -38,7 +38,7 @@ public class Colors {
 	}
 	public static void exceptionHandler(Exception e, boolean noPrompt){
 		System.out.println();
-		System.out.println(Colors.yellow(e.getLocalizedMessage()));
+		System.out.println(yellow(e.toString()));
 		for(StackTraceElement element : e.getStackTrace()){
 			System.out.println("\t" + Colors.red(element.toString()));
 		}

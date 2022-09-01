@@ -10,10 +10,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import net.dv8tion.jda.api.interactions.ModalInteraction;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
 public class Config {
-    public static ArrayList<ModalInteraction> modals = new ArrayList<ModalInteraction>();
+    public static ArrayList<ModalInteractionEvent> modals = new ArrayList<ModalInteractionEvent>();
     
     @SuppressWarnings("unchecked")
     public static HashMap<String, Object> getConfig() throws IOException, ParseException{
