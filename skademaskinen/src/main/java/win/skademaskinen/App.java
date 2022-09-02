@@ -2,6 +2,7 @@ package win.skademaskinen;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
 
@@ -23,10 +24,19 @@ public class App
         jda.addEventListener(new CommandListener());
         jda.addEventListener(new ButtonListener());
         jda.addEventListener(new AutoCompleteListener());
+        jda.addEventListener(new SelectMenuListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("v2.0"));
         jda.awaitReady();
         setCommands();
+
+        Scanner scanner = new Scanner(System.in);
+        for(String line = ""; !line.equals("exit"); line = scanner.nextLine()){
+            System.out.print("["+jda.getSelfUser().getName()+"] > ");
+        }
+        scanner.close();
+        jda.shutdown();
+        System.exit(0);
 
     }
     static private void setCommands(){

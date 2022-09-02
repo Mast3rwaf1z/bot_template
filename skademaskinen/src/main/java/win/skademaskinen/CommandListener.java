@@ -6,9 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
@@ -24,25 +22,20 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Modal;
-import net.dv8tion.jda.api.interactions.components.Modal.Builder;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
@@ -61,7 +54,7 @@ public class CommandListener extends ListenerAdapter {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("deprecation")
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         EmbedBuilder builder = new EmbedBuilder();
         System.out.println("Command:                " + event.getCommandString());
@@ -104,7 +97,6 @@ public class CommandListener extends ListenerAdapter {
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
                 else if(event.getOptions().size() == 0){
-                    error_message(event, "Please specify a track").queue();
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
@@ -196,17 +188,27 @@ public class CommandListener extends ListenerAdapter {
                     }
                     event.replyEmbeds(builder.build()).queue();
                 } catch (SQLException e) {
-                    error_message(event, "This server does not seem to have a leaderboard yet").queue();
                 }
                 break;
             case "rolepicker":
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     builder.setTitle("Pick a role");
-                    builder.setImage("https://www.design.aau.dk/digitalAssets/888/888355_aau_left_rgb_uk.png");
+                    builder.setImage("https://www.csee.umbc.edu/wp-content/uploads/2012/02/computer-chip-edited2.jpg");
                     builder.setDescription("Use the selection menus below to pick the desired roles in this discord server.");
-                    SelectMenu color_menu = SelectMenu.create("color_menu").build();
-                    SelectMenu year_menu = SelectMenu.create("year_menu").build();
-                    event.replyEmbeds(builder.build()).addActionRow(color_menu).addActionRow(year_menu).queue();
+                    Builder color_menu = SelectMenu.create("color_menu");
+                    for(String color : colors){
+                        color_menu.addOption(color, color);
+                    }
+                    color_menu.setMaxValues(1);
+                    color_menu.setPlaceholder("Select a color for your name");
+                    Builder year_menu = SelectMenu.create("year_menu");
+                    year_menu.addOption("2019", "2019");
+                    year_menu.addOption("2020", "2020");
+                    year_menu.addOption("2021", "2021");
+                    year_menu.addOption("2022", "2022");
+                    year_menu.setMaxValues(1);
+                    year_menu.setPlaceholder("Select which year you belong to");
+                    event.replyEmbeds(builder.build()).addActionRow(color_menu.build()).addActionRow(year_menu.build()).queue();
 
                 }
                 else{
@@ -323,10 +325,6 @@ public class CommandListener extends ListenerAdapter {
 
     }
     
-    public ModalCallbackAction error_message(SlashCommandInteractionEvent event, String message){
-        Builder modal = Modal.create("", "Error:\n"+message);
-        return event.replyModal(modal.build());
-    }
 
     private void jail(Member author, SlashCommandInteractionEvent event, Guild guild){
 
