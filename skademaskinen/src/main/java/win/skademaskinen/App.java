@@ -21,6 +21,8 @@ public class App
         JSONObject config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
         jda.addEventListener(new CommandListener());
+        jda.addEventListener(new ButtonListener());
+        jda.addEventListener(new AutoCompleteListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("v2.0"));
         jda.awaitReady();
@@ -63,7 +65,8 @@ public class App
             Commands.slash("brainfuck", "execute a brainfuck string")
                 .addOption(OptionType.STRING, "code", "Code to be executed", true),
             Commands.slash("results", "Get results from poll")
-                .addOption(OptionType.STRING, "messageid", "id of the poll message", true)
+                .addOption(OptionType.STRING, "messageid", "id of the poll message", true),
+            Commands.slash("rolepicker", "create a rolepicker")
             ).queue();
         jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
     }

@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,7 +24,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -47,6 +42,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.Modal.Builder;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
@@ -204,22 +200,18 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "rolepicker":
-                roles = (ArrayList) Config.getConfig().getJSONArray("aau_roles").toList();
-                builder.setTitle("Role picker");
-                builder.setDescription("**Choose a role from the following:**");
-                builder.appendDescription("\n");
-                for(String roleId : roles){
-                    Role role = guild.getRoleById(roleId);
-                    builder.appendDescription("\n" + role.getAsMention());
+                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    builder.setTitle("Pick a role");
+                    builder.setImage("https://www.design.aau.dk/digitalAssets/888/888355_aau_left_rgb_uk.png");
+                    builder.setDescription("Use the selection menus below to pick the desired roles in this discord server.");
+                    SelectMenu color_menu = SelectMenu.create("color_menu").build();
+                    SelectMenu year_menu = SelectMenu.create("year_menu").build();
+                    event.replyEmbeds(builder.build()).addActionRow(color_menu).addActionRow(year_menu).queue();
+
                 }
-                ReplyCallbackAction callbackAction =  event.replyEmbeds(builder.build());
-                ArrayList<Button> buttons = new ArrayList<>();
-                for(String roleId : roles){
-                    Role role = guild.getRoleById(roleId);
-                    buttons.add(Button.primary(role.getId(), role.getName()));
+                else{
+                    event.reply("Error: you are not an administrator").setEphemeral(true).queue();
                 }
-                callbackAction.addActionRow(buttons);
-                callbackAction.queue();
                 break;
             case "poll":
                 ArrayList<String> options = new ArrayList<>();
@@ -322,66 +314,9 @@ public class CommandListener extends ListenerAdapter {
         }*/
     }
 
-    public void onButtonInteraction(ButtonInteractionEvent event){
-        Guild guild = event.getGuild();
-        Member member = event.getMember();
-        switch(event.getMessage().getInteraction().getName()){
-            case "rolepicker":
-                for(String roleId : roles){
-                    Role role = guild.getRoleById(roleId);
-                    if(event.getButton().getId().equals(role.getId())){
-                        guild.addRoleToMember(member, role).queue();
-                        event.deferEdit().queue();
-                    }
-                }
-                break;
-            case "poll":
-            if(!Config.getJSON("polls.json").has(event.getMessageId())){
-                Config.registerNewPoll(event.getMessageId());
-            }
-                JSONObject poll = Config.getPoll(event.getMessageId());
-                if(!poll.has(member.getId())){
-                    Config.addMemberToPoll(member.getId(), event.getMessageId());
-                }
-                Config.modifyPollEntryForMember(member.getId(), event.getMessageId(), event.getButton().getId());
-                poll = Config.getPoll(event.getMessageId());
-                MessageEmbed embed = event.getMessage().getEmbeds().get(0);
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setTitle(embed.getTitle());
-                builder.setDescription(embed.getDescription());
-
-                List<Field> fields = embed.getFields();
-                for(Field field: fields){
-                    int value = 0;
-                    for(String key: poll.keySet()){
-                        if(poll.getJSONArray(key).toList().contains(field.getName())){
-                            value++;
-                        }
-                    }
-                    String newValue = "Votes: " + String.valueOf(value);
-                    field = new Field(field.getName(), newValue, false);
-                    builder.addField(field);
-                }
-                event.getMessage().editMessageEmbeds(builder.build()).queue();
-                event.deferEdit().queue();
-                break;
-
-        }
-    }
+    
 
     //autocomplete here
-    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event){
-        switch(event.getName()){
-            case "color":
-                String[] choices = colors;
-                List<Command.Choice> options = Stream.of(choices)
-                    .filter(choice -> choice.startsWith(event.getFocusedOption().getValue()))
-                    .map(choice -> new Command.Choice(choice, choice))
-                    .collect(Collectors.toList());
-                event.replyChoices(options).queue();
-                break;
-        }
-    }
 
     public void onGuildJoined(GuildJoinEvent event) throws SQLException{
         databaseHandler.createPoopTable(event.getGuild());

@@ -1,2 +1,5 @@
 config.json
 *.class
+team.json
+team_requirements.json
+tokens
