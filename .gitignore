@@ -3,4 +3,8 @@ team.json
 team_requirements.json
 *.class
 tokens
+<<<<<<< HEAD
 modals.ser
+=======
+serial_modal
+>>>>>>> 64bfec7 (fixed serializer)
