@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
@@ -46,9 +47,11 @@ public class App
     }
     static private void setCommands(boolean reset){
         System.out.println("Setting commands");
-        /*for(Command command : jda.retrieveCommands().complete()){
-            command.delete().queue();
-        }*/
+        if(reset){
+            for(Command command : jda.retrieveCommands().complete()){
+                command.delete().queue();
+            }
+        }
         jda.updateCommands().addCommands(
             Commands.slash("ping", "send a pong back"),
             Commands.slash("jail", "Send a user to jail")
