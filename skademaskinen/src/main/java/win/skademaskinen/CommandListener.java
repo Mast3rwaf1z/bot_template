@@ -44,19 +44,18 @@ public class CommandListener extends ListenerAdapter {
     }
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
-        System.out.println();
-        System.out.println(Colors.yellow("Received slash command:"));
-        System.out.println(Colors.green("Command:        ") + event.getName());
+        Shell.printer(Colors.yellow("Received slash command:"));
+        Shell.printer(Colors.green("Command:        ") + event.getName());
         if(event.getSubcommandName() != null){
-            System.out.println(Colors.green("Subcommand:     ") + event.getSubcommandName());
+            Shell.printer(Colors.green("Subcommand:     ") + event.getSubcommandName());
         }
-        System.out.println(Colors.blue("Option count:   ") + event.getOptions().size());
+        Shell.printer(Colors.blue("Option count:   ") + event.getOptions().size());
         for(OptionMapping option : event.getOptions()){
             String message = option.getName() + ":";
             while(message.length() < 16){
                 message+=" ";
             }
-            System.out.println(Colors.green(message) + option.getAsString());
+            Shell.printer(Colors.green(message) + option.getAsString());
         }
         Shell.prompt();
         Guild guild = event.getGuild();
@@ -96,7 +95,7 @@ public class CommandListener extends ListenerAdapter {
                     for(OptionMapping option : event.getOptions()){
                         page = option.getAsInt()-1;
                     }
-                    System.out.println(bots.get(guild).getQueue().size());
+                    Shell.printer(String.valueOf(bots.get(guild).getQueue().size()));
                     List<AudioTrack> tracks;
                     if(bots.get(guild).getQueue().size()< 15){
                         tracks = bots.get(guild).getQueue();
@@ -376,7 +375,7 @@ public class CommandListener extends ListenerAdapter {
                             event.replyEmbeds(builder.build()).setEphemeral(true).queue();
                             
                         } catch (IOException | ParseException | NullPointerException e) {
-                            Colors.exceptionHandler(e, false);
+                            Colors.exceptionHandler(e);
                         }
                         break;
                     case "setilvl":
@@ -408,17 +407,16 @@ public class CommandListener extends ListenerAdapter {
     }
     
     public void onMessageReceived(MessageReceivedEvent event){
-        System.out.println();
-        System.out.println(Colors.yellow("Message received:"));
+        Shell.printer(Colors.yellow("Message received:"));
         if(event.isFromGuild()){
-            System.out.println(Colors.green("Server:                 ") + event.getGuild().getName());
+            Shell.printer(Colors.green("Server:                 ") + event.getGuild().getName());
         }
-        System.out.println(Colors.green("Channel:                ") + event.getChannel().getName());
-        System.out.println(Colors.green("Author:                 ") + event.getAuthor().getName());
-        System.out.println(Colors.green("Message:                ") + event.getMessage().getContentDisplay());
-        System.out.println(Colors.green("Number of attachments:  ") + event.getMessage().getAttachments().size());
+        Shell.printer(Colors.green("Channel:                ") + event.getChannel().getName());
+        Shell.printer(Colors.green("Author:                 ") + event.getAuthor().getName());
+        Shell.printer(Colors.green("Message:                ") + event.getMessage().getContentDisplay());
+        Shell.printer(Colors.green("Number of attachments:  ") + event.getMessage().getAttachments().size());
         for(Attachment url : event.getMessage().getAttachments()){
-            System.out.println(Colors.green("Attachment:             ") + url.getUrl());
+            Shell.printer(Colors.green("Attachment:             ") + url.getUrl());
         }
         Shell.prompt();
     }

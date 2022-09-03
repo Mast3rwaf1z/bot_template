@@ -26,11 +26,11 @@ public class RaidTeamManager {
 	public static void update(Guild guild){
 		try {
 			if(!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("Skademaskinen")){
-				System.out.println(Colors.red("\nRaid team update blocked: Bot is not deployed!"));
+				Shell.printer(Colors.red("\nRaid team update blocked: Bot is not deployed!"));
 				return;
 			}
 		} catch (UnknownHostException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
@@ -131,7 +131,7 @@ public class RaidTeamManager {
 			message.editMessageEmbeds(builder.build()).queue();
 			
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -149,7 +149,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			token = (String) ((JSONObject) parser.parse(new BufferedReader(new InputStreamReader(process.getInputStream())))).get("access_token");
 		} catch (IOException | ParseException | InterruptedException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return token;
 	}
@@ -167,7 +167,7 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
 		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return _class;
 	}
@@ -185,7 +185,7 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
 		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return spec;
 	}
@@ -203,7 +203,7 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			ilvl = String.valueOf(data.get("equipped_item_level"));
 		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return ilvl;
 	}
@@ -221,7 +221,7 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
 		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return avg_ilvl;
 	}
@@ -239,7 +239,7 @@ public class RaidTeamManager {
 			JSONObject data = (JSONObject) parser.parse(reader);
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
 		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		return image;
 	}
@@ -258,7 +258,7 @@ public class RaidTeamManager {
 			}
 			update(member.getGuild());
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		
 	}
@@ -271,7 +271,7 @@ public class RaidTeamManager {
 			}
 			update(guild);
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 		
 	}
@@ -293,7 +293,7 @@ public class RaidTeamManager {
 			}
 			update(guild);
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -322,7 +322,7 @@ public class RaidTeamManager {
 				writer.write(((JSONObject)file).toJSONString());
 			}
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -352,7 +352,7 @@ public class RaidTeamManager {
 				writer.write(((JSONObject)file).toJSONString());
 			}
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 	}
 
@@ -368,25 +368,24 @@ public class RaidTeamManager {
 			}
 			
 		} catch (IOException | ParseException | NullPointerException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 	}
 	public static void printRaider(JSONObject raider, String name, Guild guild){
-		System.out.println();
 		System.out.print(Colors.green("Discord name:                   "));
-		System.out.println(guild.retrieveMemberById(name).complete().getEffectiveName());
+		Shell.printer(guild.retrieveMemberById(name).complete().getEffectiveName());
 		System.out.print(Colors.green("Character name:                 "));
-		System.out.println(raider.get("name"));
+		Shell.printer(raider.get("name").toString());
 		System.out.print(Colors.green("Server:                         "));
-		System.out.println(raider.get("server"));
+		Shell.printer(raider.get("server").toString());
 		System.out.print(Colors.green("Role:                           "));
-		System.out.println(raider.get("role"));
+		Shell.printer(raider.get("role").toString());
 		System.out.print(Colors.green("Class:                          "));
-		System.out.println(raider.get("class"));
+		Shell.printer(raider.get("class").toString());
 		System.out.print(Colors.green("Specialization:                 "));
-		System.out.println(raider.get("spec"));
+		Shell.printer(raider.get("spec").toString());
 		System.out.print(Colors.green("Item level/average item level:  "));
-		System.out.println(raider.get("ilvl")+"/"+raider.get("avg_ilvl"));
+		Shell.printer(raider.get("ilvl")+"/"+raider.get("avg_ilvl"));
 
 	}
 

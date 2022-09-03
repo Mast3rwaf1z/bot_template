@@ -41,12 +41,11 @@ public class ModalListener extends ListenerAdapter{
                 return;
             }
             event.deferReply().queue();
-            System.out.println();
-            System.out.println(Colors.yellow("Application:"));
-            System.out.println(Colors.green("Name:       ") + name);
-            System.out.println(Colors.green("Server:     ") + server);
-            System.out.println(Colors.green("Role:       ") + role);
-            System.out.println(Colors.green("raidtimes:  ") + raidtimes);
+            Shell.printer(Colors.yellow("Application:"));
+            Shell.printer(Colors.green("Name:       ") + name);
+            Shell.printer(Colors.green("Server:     ") + server);
+            Shell.printer(Colors.green("Role:       ") + role);
+            Shell.printer(Colors.green("raidtimes:  ") + raidtimes);
             try{
                 String _class = RaidTeamManager.get_class(name, server);
                 String ilvl = RaidTeamManager.get_ilvl(name, server);
@@ -134,7 +133,7 @@ public class ModalListener extends ListenerAdapter{
                     Config.modals.add(new ModalData(event.getValues(), event.getId(), event.getMember().getId()));
                 } catch (IOException | ParseException e) {
                     for(StackTraceElement element : e.getStackTrace()){
-                        System.out.println(Colors.red(element.toString()));
+                        Shell.printer(Colors.red(element.toString()));
                     }
                 }
                 break;

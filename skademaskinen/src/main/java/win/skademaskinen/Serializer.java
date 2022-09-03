@@ -25,7 +25,7 @@ public class Serializer implements Serializable {
 			out.close();
 			file.close();
 		} catch (IOException e) {
-			Colors.exceptionHandler(e, false);
+			Colors.exceptionHandler(e);
 		}
 
 	}
@@ -39,7 +39,7 @@ public class Serializer implements Serializable {
 			file.close();
 			return object;
 		} catch (IOException | ClassNotFoundException e) {
-			Colors.exceptionHandler(e, true);
+			Colors.exceptionHandler(e);
 		}
 		
 		return null;

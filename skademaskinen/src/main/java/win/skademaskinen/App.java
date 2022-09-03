@@ -25,14 +25,14 @@ public class App
     static public JDA jda;
     static private HashMap<String, Object> config;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
-        System.out.println(Colors.yellow("Starting bot"));
+        Shell.printer(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString())
             .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             .build();
         jda.awaitReady();
-        System.out.println(Colors.yellow("Deserializing modal interactions"));
+        Shell.printer(Colors.yellow("Deserializing modal interactions"));
         Serializer modals = Serializer.deserialize();
         if(modals != null){
             Config.modals = modals.get();
@@ -40,7 +40,7 @@ public class App
         else{
             Config.modals = new ArrayList<ModalData>();
         }
-        System.out.println(Colors.yellow("Adding event listeners"));
+        Shell.printer(Colors.yellow("Adding event listeners"));
         jda.addEventListener(new CommandListener());
         jda.addEventListener(new ModalListener());
         jda.addEventListener(new ButtonListener());
@@ -49,20 +49,20 @@ public class App
         jda.addEventListener(new GuildEventListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
-        System.out.println(Colors.yellow("Setting commands"));
+        Shell.printer(Colors.yellow("Setting commands"));
         setCommands(false);
         try{
             RaidTeamManager.update(jda.getGuildById("642852517197250560"));
         }
         catch(ErrorResponseException e){
-            Colors.exceptionHandler(e, true);
+            Colors.exceptionHandler(e);
         }
         System.out.print(Colors.RESET);
-        System.out.println(Colors.yellow("Finished bot startup"));
+        Shell.printer(Colors.yellow("Finished bot startup"));
         Shell.shell();
-        System.out.println(Colors.yellow("Stopping bot"));
+        Shell.printer(Colors.yellow("Stopping bot"));
         jda.shutdown();
-        System.out.println(Colors.yellow("Serializing modal interactions"));
+        Shell.printer(Colors.yellow("Serializing modal interactions"));
         Serializer.serialize(new Serializer(Config.modals));
         System.exit(0);
 

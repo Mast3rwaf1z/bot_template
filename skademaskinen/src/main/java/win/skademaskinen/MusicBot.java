@@ -57,7 +57,7 @@ public class MusicBot {
 					builder.setTitle("Track started");
                 }
 				event.replyEmbeds(builder.build()).queue();
-				System.out.println("replied");
+				Shell.printer("replied");
             } 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {

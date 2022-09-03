@@ -29,7 +29,7 @@ public class TrackScheduler extends AudioEventAdapter {
             player.startTrack(dequeue(), false);
         }
         else{
-            System.out.println(endReason.name());
+            Shell.printer(endReason.name());
         }
         if(queue.isEmpty() && player.getPlayingTrack() == null){
             new Thread(){

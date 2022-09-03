@@ -128,7 +128,7 @@ public class ButtonListener extends ListenerAdapter{
                     builder.setThumbnail("https://cdn-icons-png.flaticon.com/512/1246/1246239.png");
                     event.replyEmbeds(builder.build()).setEphemeral(true).queue();
                 } catch (IOException | ParseException e) {
-                    Colors.exceptionHandler(e, false);
+                    Colors.exceptionHandler(e);
                     event.reply("failed to create results message").setEphemeral(true).queue();
                 }
                 break;

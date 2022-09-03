@@ -138,7 +138,7 @@ public class SelectMenuListener extends ListenerAdapter{
 					event.deferEdit().queue();
 
 				} catch (IOException | ParseException e) {
-					Colors.exceptionHandler(e, false);
+					Colors.exceptionHandler(e);
 				}
 			
 			break;
