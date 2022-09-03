@@ -1,30 +1,23 @@
 package win.skademaskinen;
 
-import java.io.Externalizable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-
 public class Serializer implements Serializable {
-	private ArrayList<ModalContainer> modals = null;
+	private ArrayList<ModalData> modals = new ArrayList<ModalData>();
 
-	public Serializer(ArrayList<ModalInteractionEvent> modals){
-		for(ModalInteractionEvent modal : modals){
-			this.modals.add(new ModalContainer(modal.getResponseNumber(), modal.getInteraction()));
+	public Serializer(ArrayList<ModalData> modals){
+		for(ModalData modal : modals){
+			this.modals.add(modal);
 		}
 	}
 
 	public static void serialize(Serializer object){
-		Serializer backup = deserialize();
 		try {
 			FileOutputStream file = new FileOutputStream("serial_modal");
 			ObjectOutputStream out = new ObjectOutputStream(file);
@@ -32,7 +25,6 @@ public class Serializer implements Serializable {
 			out.close();
 			file.close();
 		} catch (IOException e) {
-			serialize(backup);
 			Colors.exceptionHandler(e, false);
 		}
 
@@ -52,11 +44,7 @@ public class Serializer implements Serializable {
 		
 		return null;
 	}
-	public ArrayList<ModalInteractionEvent> get(JDA jda){
-		ArrayList<ModalInteractionEvent> result = new ArrayList<ModalInteractionEvent>();
-		for(ModalContainer container : modals){
-			result.add(new ModalInteractionEvent(jda, container.responseNumber, container.interaction));
-		}
-		return result;
+	public ArrayList<ModalData> get(){
+		return modals;
 	}
 }

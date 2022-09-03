@@ -2,7 +2,6 @@ package win.skademaskinen;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -82,44 +81,46 @@ public class ButtonListener extends ListenerAdapter{
         if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
             if (event.getButton().getId().contains("approve_button")) {
                 String id = event.getButton().getId().replace("approve_button", "");
-                ModalInteractionEvent modal = null;
-                for(ModalInteractionEvent m : Config.modals){
+                ModalData modal = null;
+                for(ModalData m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
                         break;
                     }
                 }
-                event.reply("Approved " + modal.getMember().getAsMention() + "s application, you should have a dps/heal/tanking check!").setEphemeral(true).queue();
-                modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been approved, you will need to have a dps, healing or tanking check to join!").queue();
+                event.reply("Approved " + event.getGuild().retrieveMemberById(modal.getMemberId()).complete().getAsMention() + "s application, you should have a dps/heal/tanking check!").setEphemeral(true).queue();
+                event.getGuild().retrieveMemberById(modal.getMemberId()).complete().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been approved, you will need to have a dps, healing or tanking check to join!").queue();
             }
             else if(event.getButton().getId().contains("decline_button")){
                 String id = event.getButton().getId().replace("decline_button", "");
-                ModalInteractionEvent modal = null;
-                for(ModalInteractionEvent m : Config.modals){
+                ModalData modal = null;
+                for(ModalData m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
+                        Config.modals.remove(m);
                         break;
                     }
                 }
-                event.reply("Declined " + modal.getMember().getAsMention() + "s application").setEphemeral(true).queue();
+                event.reply("Declined " + event.getGuild().retrieveMemberById(modal.getMemberId()).complete().getAsMention() + "s application").setEphemeral(true).queue();
                 event.getMessage().delete().complete();
-                modal.getMember().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been declined, please refer to your application below:").queue();
-                modal.getMember().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
+                event.getGuild().retrieveMemberById(modal.getMemberId()).complete().getUser().openPrivateChannel().complete().sendMessage("Your application to The Nut Hut raiding team has been declined, please refer to your application below:").queue();
+                event.getGuild().retrieveMemberById(modal.getMemberId()).complete().getUser().openPrivateChannel().complete().sendMessageEmbeds(event.getMessage().getEmbeds().get(0)).queue();
             }
             else if(event.getButton().getId().contains("add_button")){
                 event.deferReply(true).queue();
                 String id = event.getButton().getId().replace("add_button", "");
-                ModalInteractionEvent modal = null;
-                for(ModalInteractionEvent m : Config.modals){
+                ModalData modal = null;
+                for(ModalData m : Config.modals){
                     if (m.getId().equals(id)){
                         modal = m;
+                        Config.modals.remove(m);
                         break;
                     }
                 }
-                RaidTeamManager.addRaider(modal.getValue("name").getAsString(), 
-                    modal.getValue("server").getAsString(), 
-                    modal.getValue("role").getAsString(), 
-                    modal.getMember().getId(), 
+                RaidTeamManager.addRaider(modal.get("name"), 
+                    modal.get("server"), 
+                    modal.get("role"), 
+                    modal.getMemberId(), 
                     event.getGuild());
                 event.getHook().editOriginal("Successfully added raider to the team and deleted application!").queue();
                 event.getMessage().delete().complete();

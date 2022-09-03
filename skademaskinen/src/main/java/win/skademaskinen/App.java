@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
@@ -14,7 +15,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -35,11 +35,11 @@ public class App
         jda.awaitReady();
         System.out.println(Colors.yellow("Deserializing modal interactions"));
         Serializer modals = Serializer.deserialize();
-        if(modals != null && false){
-            Config.modals = modals.get(jda);
+        if(modals != null){
+            Config.modals = modals.get();
         }
         else{
-            Config.modals = new ArrayList<ModalInteractionEvent>();
+            Config.modals = new ArrayList<ModalData>();
         }
         System.out.println(Colors.yellow("Adding event listeners"));
         jda.addEventListener(new CommandListener());
