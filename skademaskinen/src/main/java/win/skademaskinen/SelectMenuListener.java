@@ -1,10 +1,14 @@
 package win.skademaskinen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class SelectMenuListener extends ListenerAdapter{
 	final private String[] colors = {"blue", "green", "gray", "yellow", "white", "orange", "red", "purple", "pink", "darkgreen"};
@@ -32,6 +36,19 @@ public class SelectMenuListener extends ListenerAdapter{
 					}
 				}
 				guild.addRoleToMember(member, role1).queue();
+				break;
+			case "games_menu":
+				for(String value : event.getValues()){
+					if(value.equals("0")){
+						guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709321113378917")).queue();
+						guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709678338060349")).queue();
+						event.reply("Successfully cleared games roles").setEphemeral(true).queue();
+						return;
+					}
+					else{
+						guild.addRoleToMember(event.getMember(), guild.getRoleById(value)).queue();
+					}
+				}
 				break;
 		}
 		event.deferEdit().queue();

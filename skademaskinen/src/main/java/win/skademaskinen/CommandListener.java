@@ -208,7 +208,15 @@ public class CommandListener extends ListenerAdapter {
                     year_menu.addOption("2022", "2022");
                     year_menu.setMaxValues(1);
                     year_menu.setPlaceholder("Select which year you belong to");
-                    event.replyEmbeds(builder.build()).addActionRow(color_menu.build()).addActionRow(year_menu.build()).queue();
+
+                    Builder games_menu = SelectMenu.create("games_menu");
+                    games_menu.addOption("CS Boiz", "1015709321113378917");
+                    games_menu.addOption("RL Boiz", "1015709678338060349");
+                    games_menu.addOption("None", "0");
+                    games_menu.setMaxValues(2);
+                    games_menu.setPlaceholder("Choose games roles");
+
+                    event.replyEmbeds(builder.build()).addActionRow(color_menu.build()).addActionRow(year_menu.build()).addActionRow(games_menu.build()).queue();
 
                 }
                 else{
