@@ -26,13 +26,17 @@ public class App
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new SelectMenuListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-        jda.getPresence().setActivity(Activity.playing("v2.0"));
+        jda.getPresence().setActivity(Activity.playing("Faur er dårlig"));
         jda.awaitReady();
         setCommands();
 
         Scanner scanner = new Scanner(System.in);
         for(String line = ""; !line.equals("exit"); line = scanner.nextLine()){
-            System.out.print("["+jda.getSelfUser().getName()+"] > ");
+            String[] arguments = line.split(" ");
+            switch(arguments[0]){
+
+            }
+            prompt();
         }
         scanner.close();
         jda.shutdown();
@@ -78,6 +82,8 @@ public class App
                 .addOption(OptionType.STRING, "messageid", "id of the poll message", true),
             Commands.slash("rolepicker", "create a rolepicker")
             ).queue();
-        jda.getGuildById("988405633181155348").updateCommands().addCommands(Commands.slash("rolepicker", "create a rolepicker")).queue();
+    }
+    public static void prompt(){
+		System.out.print("["+Colors.blue(App.jda.getSelfUser().getName())+"] > ");
     }
 }
