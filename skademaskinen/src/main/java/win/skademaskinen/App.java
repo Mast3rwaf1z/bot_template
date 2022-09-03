@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
@@ -132,7 +131,8 @@ public class App
                     .addOption(OptionType.STRING, "value", "The additional requirement", true, true),
                 new SubcommandData("setilvl", "Sets the ilvl requirement")
                     .addOption(OptionType.INTEGER, "ilvl", "The desired item level", true),
-                new SubcommandData("list", "list the raid team requirements"))
+                new SubcommandData("list", "list the raid team requirements")),
+            Commands.slash("poll", "ADMIN COMMAND: create a poll")
             ).queue();
     }
     public static void setStatus(String message){

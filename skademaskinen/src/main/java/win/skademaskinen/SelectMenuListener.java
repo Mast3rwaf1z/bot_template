@@ -1,16 +1,23 @@
 package win.skademaskinen;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 public class SelectMenuListener extends ListenerAdapter{
 	
+	@SuppressWarnings("unchecked")
 	public void onSelectMenuInteraction(SelectMenuInteractionEvent event){
 		String menu_id = event.getComponentId();
 		List<String> values = event.getValues();
@@ -107,6 +114,33 @@ public class SelectMenuListener extends ListenerAdapter{
 				builder.appendDescription(role + "\n");
 			}
 			event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+			break;
+
+		case "poll_menu":
+			String pollId = event.getMessageId();
+			String key = event.getMember().getId();
+			ArrayList<String> options = new ArrayList<String>();
+			for(SelectOption option : event.getSelectedOptions()){
+				options.add(option.getValue());
+			}
+				try {
+					HashMap<String, Object> polls = Config.getFile("polls.json");
+					if(!polls.containsKey(pollId)){
+						polls.put(pollId, new HashMap<>());
+					}
+					HashMap<String, ArrayList<String>> poll = (HashMap<String, ArrayList<String>>) polls.get(pollId);
+					poll.put(key, options);
+					polls.put(pollId, poll);
+					try(FileWriter writer = new FileWriter("polls.json")){
+						writer.write(((JSONObject)polls).toJSONString());
+						writer.close();
+					}
+					event.deferEdit().queue();
+
+				} catch (IOException | ParseException e) {
+					Colors.exceptionHandler(e, false);
+				}
+			
 			break;
 		}
 	}

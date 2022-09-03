@@ -28,8 +28,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 public class CommandListener extends ListenerAdapter {
@@ -386,7 +389,21 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("You are not an administrator!").setEphemeral(true).queue();
                 }
                 break;
-                
+            case "poll":
+                if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    TextInput description = TextInput.create("description", "Description", TextInputStyle.SHORT)
+                        .setPlaceholder("Write a description for a poll")
+                        .build();
+
+                    TextInput options = TextInput.create("options", "List of options", TextInputStyle.PARAGRAPH)
+                        .setPlaceholder("write a list of options (comma seperated)")
+                        .build();
+                    event.replyModal(Modal.create("poll_modal", "Create a poll").addActionRow(description).addActionRow(options).build()).queue();
+                }
+                else{
+                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                }
+                break;
             }
     }
     

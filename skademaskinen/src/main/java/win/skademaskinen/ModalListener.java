@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -194,6 +196,33 @@ public class ModalListener extends ListenerAdapter{
                 builder.setImage(event.getValue("url_input").getAsString());
                 imessage.editMessageEmbeds(builder.build()).queue();
                 event.reply("success").setEphemeral(true).queue();
+                break;
+
+            case "poll_modal":
+                String description = event.getValue("description").getAsString();
+                String[] options = event.getValue("options").getAsString().split(",");
+                for(int i = 0; i < options.length; i++){
+                    options[i] = options[i].strip();
+                }
+                for(int i = 0; i < options.length; i++){
+                    for(int j = 0; j < options.length; j++){
+                        if(options[i].equals(options[j]) && i != j){
+                            event.reply("You can't have two identical options").setEphemeral(true).queue();
+                            return;
+                        }
+                    }
+                }
+                builder.setTitle(event.getMember().getEffectiveName()+"s poll");
+                builder.setDescription(description);
+                Builder selectMenu = SelectMenu.create("poll_menu");
+                for(String option : options){
+                    selectMenu.addOption(option, option);
+                }
+                selectMenu.setMaxValues(options.length);
+                builder.setColor(Color.blue);
+                builder.setThumbnail("https://cdn-icons-png.flaticon.com/512/1246/1246239.png");
+                
+                event.replyEmbeds(builder.build()).addActionRow(selectMenu.build()).addActionRow(Button.primary("poll_button", "Show results")).queue();
                 break;
                 
                 

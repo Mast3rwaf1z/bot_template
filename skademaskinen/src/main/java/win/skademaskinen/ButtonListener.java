@@ -1,5 +1,16 @@
 package win.skademaskinen;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+
+import org.json.simple.parser.ParseException;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -11,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 public class ButtonListener extends ListenerAdapter{
 
+    @SuppressWarnings("unchecked")
 	public void onButtonInteraction(ButtonInteractionEvent event){
         TextInput messageId = TextInput.create("message_id", "Id of the message being edited, DO NOT EDIT", TextInputStyle.SHORT).setValue(event.getMessageId()).build();
         switch (event.getButton().getId()) {
@@ -74,6 +86,50 @@ public class ButtonListener extends ListenerAdapter{
                 if(event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                     event.getMessage().editMessageEmbeds(new EmbedBuilder().setTitle("Empty embed").build()).queue();
 					event.reply("Cleared embed").setEphemeral(true).queue();
+                }
+                break;
+            case "poll_button":
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Poll results:");
+                try {
+                    HashMap<String, Integer> amounts = new HashMap<String, Integer>();
+                    HashMap<String, Object> poll = (HashMap<String, Object>) Config.getFile("polls.json").get(event.getMessageId());
+                    int i = 0;
+                    for(String key : poll.keySet()){
+                        i++;
+                        if(i == 4){
+                            builder.addBlankField(false);
+                            i = 0;
+                        }
+                        ArrayList<String> options = (ArrayList<String>) poll.get(key);
+                        String body = "";
+                        for(String option : options){
+                            body+=option+"\n";
+                            if(amounts.containsKey(option)){
+                                int amount = amounts.get(option)+1;
+                                amounts.put(option, amount);
+                            }
+                            else{
+                                amounts.put(option, 1);
+                            }
+                        }
+                        builder.addField(event.getGuild().retrieveMemberById(key).complete().getEffectiveName(), body, true);
+                    }
+                    List<Entry<String, Integer>> entries = new LinkedList<Entry<String, Integer>>(amounts.entrySet());
+                    Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+                        @Override
+                        public int compare(Entry<String, Integer> val1, Entry<String, Integer> val2) {
+                            return val2.getValue().compareTo(val1.getValue());
+                        }
+                    });
+                    for(Entry<String, Integer> entry : entries){
+                        builder.appendDescription(entry.getKey() + ": " + entry.getValue()+"\n");
+                    }
+                    builder.setThumbnail("https://cdn-icons-png.flaticon.com/512/1246/1246239.png");
+                    event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+                } catch (IOException | ParseException e) {
+                    Colors.exceptionHandler(e, false);
+                    event.reply("failed to create results message").setEphemeral(true).queue();
                 }
                 break;
                 
