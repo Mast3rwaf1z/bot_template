@@ -50,6 +50,7 @@ public class App
         if(reset){
             for(Command command : jda.retrieveCommands().complete()){
                 command.delete().queue();
+                
             }
         }
         jda.updateCommands().addCommands(
