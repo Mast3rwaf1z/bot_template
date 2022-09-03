@@ -19,7 +19,7 @@ public class Serializer implements Serializable {
 
 	public static void serialize(Serializer object){
 		try {
-			FileOutputStream file = new FileOutputStream("serial_modal");
+			FileOutputStream file = new FileOutputStream("modals.ser");
 			ObjectOutputStream out = new ObjectOutputStream(file);
 			out.writeObject(object);
 			out.close();
@@ -32,7 +32,7 @@ public class Serializer implements Serializable {
 
 	public static Serializer deserialize(){
 		try {
-			FileInputStream file = new FileInputStream("serial_modal");
+			FileInputStream file = new FileInputStream("modals.ser");
 			ObjectInputStream in = new ObjectInputStream(file);
 			Serializer object = (Serializer) in.readObject();
 			in.close();
