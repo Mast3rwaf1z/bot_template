@@ -28,13 +28,14 @@ public class App
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("Faur er dårlig"));
         jda.awaitReady();
-        setCommands();
+        setCommands(false);
 
         Scanner scanner = new Scanner(System.in);
         for(String line = ""; !line.equals("exit"); line = scanner.nextLine()){
             String[] arguments = line.split(" ");
             switch(arguments[0]){
-
+                case "commandreset":
+                    setCommands(true);
             }
             prompt();
         }
@@ -43,7 +44,7 @@ public class App
         System.exit(0);
 
     }
-    static private void setCommands(){
+    static private void setCommands(boolean reset){
         System.out.println("Setting commands");
         /*for(Command command : jda.retrieveCommands().complete()){
             command.delete().queue();
