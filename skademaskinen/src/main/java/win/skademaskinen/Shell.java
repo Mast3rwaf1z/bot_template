@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp.Capability;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -210,7 +211,7 @@ public class Shell {
 		}
 	}
 	private static void clear(){
-		printer("\033[H\033[2J");
+		reader.getTerminal().puts(Capability.clear_screen);
 	}
 	private static void team(String[] arguments, String line){
 		HashMap<String, Object> team;
