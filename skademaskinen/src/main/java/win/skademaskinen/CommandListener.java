@@ -212,6 +212,7 @@ public class CommandListener extends ListenerAdapter {
                     Builder games_menu = SelectMenu.create("games_menu");
                     games_menu.addOption("CS Boiz", "1015709321113378917");
                     games_menu.addOption("RL Boiz", "1015709678338060349");
+                    games_menu.addOption("RL Boiz", "1015964640171270206");
                     games_menu.addOption("None", "0");
                     games_menu.setMaxValues(2);
                     games_menu.setPlaceholder("Choose games roles");
