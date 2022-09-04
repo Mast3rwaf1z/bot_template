@@ -30,14 +30,7 @@
 
     <dependency>
       <groupId>org.jline</groupId>
-      <artifactId>jline-reader</artifactId>
-      <version>3.21.0</version>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.jline</groupId>
-      <artifactId>jline-terminal</artifactId>
+      <artifactId>jline</artifactId>
       <version>3.21.0</version>
     </dependency>
 

@@ -7,6 +7,7 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
+import org.jline.widget.AutosuggestionWidgets;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -36,6 +37,8 @@ public class Shell {
     }
 
 	public static void shell() throws IOException, ParseException, org.json.simple.parser.ParseException{
+		AutosuggestionWidgets autosuggestionWidgets = new AutosuggestionWidgets(reader);
+		autosuggestionWidgets.enable();
         for(String line = ""; !line.equals("exit"); line = reader.readLine(prompt())){
             String arguments[] = line.split(" ");
             switch(arguments[0]){
