@@ -38,12 +38,14 @@ public class SelectMenuListener extends ListenerAdapter{
 				guild.addRoleToMember(member, role1).queue();
 				break;
 			case "games_menu":
+				guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709321113378917")).queue();
+				guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709678338060349")).queue();
+				guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015964640171270206")).queue();
 				for(String value : event.getValues()){
 					if(value.equals("0")){
 						guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709321113378917")).queue();
 						guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015709678338060349")).queue();
 						guild.removeRoleFromMember(event.getMember(), guild.getRoleById("1015964640171270206")).queue();
-						event.reply("Successfully cleared games roles").setEphemeral(true).queue();
 						return;
 					}
 					else{
