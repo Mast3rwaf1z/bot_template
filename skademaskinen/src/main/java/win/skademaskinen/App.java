@@ -52,6 +52,7 @@ public class App
         Shell.printer(Colors.yellow("Setting commands"));
         setCommands(false);
         try{
+            Shell.printer(Colors.yellow("updating raid team"));
             RaidTeamManager.update(jda.getGuildById("642852517197250560"));
         }
         catch(ErrorResponseException e){

@@ -17,26 +17,22 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
-public class Shell {
+public class Shell{
 	private static Guild guild = null;
 	private static MessageChannel channel = null;
 	private static LineReader reader = LineReaderBuilder.builder().build();
 
     public static String prompt(){
 		if(guild == null){
-			return("["+Colors.blue(App.jda.getSelfUser().getName())+"] > ");
+			return "["+Colors.blue("The Nut Bot")+"] > ";
 		}
-		else{
-			if(channel == null){
-				return("["+Colors.blue(App.jda.getSelfUser().getName() + Colors.green(" - ") + Colors.blue(guild.getName())) +"] > ");
-			}
-			else{
-				return("["+Colors.blue(App.jda.getSelfUser().getName() + Colors.green(" - ") + Colors.blue(guild.getName())) + Colors.green(" - ") + Colors.blue(channel.getName())+ "] > ");
-			}
+		if(channel == null){
+			return "["+Colors.blue("The Nut Bot" + Colors.green(" - ") + Colors.blue(guild.getName())) +"] > ";
 		}
+		return "["+Colors.blue("The Nut Bot" + Colors.green(" - ") + Colors.blue(guild.getName())) + Colors.green(" - ") + Colors.blue(channel.getName())+ "] > ";
     }
 
-	public static void shell() throws IOException, ParseException, org.json.simple.parser.ParseException{
+	public static void shell() throws IOException, ParseException{
 		AutosuggestionWidgets autosuggestionWidgets = new AutosuggestionWidgets(reader);
 		autosuggestionWidgets.enable();
         for(String line = ""; !line.equals("exit"); line = reader.readLine(prompt())){
