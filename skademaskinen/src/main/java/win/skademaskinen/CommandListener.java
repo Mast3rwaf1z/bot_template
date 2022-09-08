@@ -222,7 +222,7 @@ public class CommandListener extends ListenerAdapter {
 				}
 				break;
 		    case "version":
-				String msg = "**Changelog**\n```\nA way to remove people who leave the discord server from the team\nA check whether I'm running testing code or the real thing so you don't keep getting confused at the raid team\nPersistent data so the applications aren't breaking on a restart\n```";
+				String msg = "**Changelog**\n```\nAdded a feature request system\n```";
 				event.reply(msg).setEphemeral(true).queue();
 				break;
             case "team":
