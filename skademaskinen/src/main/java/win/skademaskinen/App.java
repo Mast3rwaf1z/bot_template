@@ -133,7 +133,8 @@ public class App
                 new SubcommandData("setilvl", "Sets the ilvl requirement")
                     .addOption(OptionType.INTEGER, "ilvl", "The desired item level", true),
                 new SubcommandData("list", "list the raid team requirements")),
-            Commands.slash("poll", "ADMIN COMMAND: create a poll")
+            Commands.slash("poll", "ADMIN COMMAND: create a poll"),
+            Commands.slash("featurerequest", "request for a feature to be added to the bot")
             ).queue();
     }
     public static void setStatus(String message){

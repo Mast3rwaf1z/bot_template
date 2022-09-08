@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 public class CommandListener extends ListenerAdapter {
@@ -74,9 +75,6 @@ public class CommandListener extends ListenerAdapter {
                         bot.connectToVoiceChannel(author.getVoiceState().getChannel());
                     }
                     bot.play(event.getOption("url").getAsString().strip(), event);
-                }
-                else if(event.getOptions().size() == 0){
-                    event.reply("Please specify a track").setEphemeral(true).queue();
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
@@ -261,7 +259,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                    event.reply("You are not an administrator! use `/featurerequest` to suggest new features").setEphemeral(true).queue();
                 }
                 break;
             case "spawnmessage":
@@ -276,7 +274,7 @@ public class CommandListener extends ListenerAdapter {
                     ).queue();
                 }
                 else{
-                    event.reply("You are not an administrator").setEphemeral(true).queue();
+                    event.reply("You are not an administrator! use `/featurerequest` to suggest new features").setEphemeral(true).queue();
                 }
                 break;
             case "editmessage":
@@ -316,7 +314,7 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("Successfully edited message").setEphemeral(true).queue();
                 }
                 else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                    event.reply("You are not an administrator! use `/featurerequest` to suggest new features").setEphemeral(true).queue();
                 }
                 break;
             case "message":
@@ -338,7 +336,8 @@ public class CommandListener extends ListenerAdapter {
                             .getMessageById(event.getOption("message_id")
                             .getAsString());
                     }
-                    event.reply(announcement).queue();
+                    event.reply(MessageCreateData.fromMessage(announcement)).queue();
+                    
                 }
                 break;
             case "requirements":
@@ -385,7 +384,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                    event.reply("You are not an administrator! use `/featurerequest` to suggest new features").setEphemeral(true).queue();
                 }
                 break;
             case "poll":
@@ -400,8 +399,13 @@ public class CommandListener extends ListenerAdapter {
                     event.replyModal(Modal.create("poll_modal", "Create a poll").addActionRow(description).addActionRow(options).build()).queue();
                 }
                 else{
-                    event.reply("You are not an administrator!").setEphemeral(true).queue();
+                    event.reply("You are not an administrator! use `/featurerequest` to suggest new features").setEphemeral(true).queue();
                 }
+                break;
+            case "featurerequest":
+                TextInput featureName = TextInput.create("name", "Feature name", TextInputStyle.SHORT).setPlaceholder("Write a name for your feature").build();
+                TextInput featureDescription = TextInput.create("description", "Feature Description", TextInputStyle.PARAGRAPH).setPlaceholder("please write a description for your request").build();
+                event.replyModal(Modal.create("featurerequest", "Feature Request").addActionRow(featureName).addActionRow(featureDescription).build()).queue();
                 break;
             }
     }

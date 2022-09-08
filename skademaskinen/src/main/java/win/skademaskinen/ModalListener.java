@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -222,6 +223,17 @@ public class ModalListener extends ListenerAdapter{
                 builder.setThumbnail("https://cdn-icons-png.flaticon.com/512/1246/1246239.png");
                 
                 event.replyEmbeds(builder.build()).addActionRow(selectMenu.build()).addActionRow(Button.primary("poll_button", "Show results")).queue();
+                break;
+            case "featurerequest":
+                TextChannel channel = App.jda.getGuildById("692410386657574952").getTextChannelById("1017458560860438628");
+                builder.setTitle(event.getValue("name").getAsString());
+                builder.setDescription("**"+event.getMember().getEffectiveName()+"** ("+event.getMember().getId()+")\n");
+                builder.setThumbnail(event.getMember().getEffectiveAvatarUrl());
+                builder.setColor(Color.pink);
+                builder.setFooter(event.getGuild().getName());
+                builder.appendDescription(event.getValue("description").getAsString());
+                channel.sendMessageEmbeds(builder.build()).queue();
+                event.deferEdit().queue();
                 break;
                 
                 
