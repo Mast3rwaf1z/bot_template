@@ -11,6 +11,8 @@ import org.json.simple.parser.ParseException;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -37,7 +39,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 public class CommandListener extends ListenerAdapter {
-    private HashMap<Guild, MusicBot> bots = new HashMap<>();
+    public static HashMap<Guild, MusicBot> bots = new HashMap<>();
     Runtime runtime = Runtime.getRuntime();
 
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
@@ -74,12 +76,24 @@ public class CommandListener extends ListenerAdapter {
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
                         bot.connectToVoiceChannel(author.getVoiceState().getChannel());
                     }
-                    bot.play(event.getOption("url").getAsString().strip(), event);
+                    try{
+                        new URL(event.getOption("url").getAsString());
+                        bot.play(event.getOption("url").getAsString().strip(), event);
+                    }
+                    catch(MalformedURLException e){
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                    }
                 }
                 else{
                     bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
                     MusicBot bot = bots.get(guild);
-                    bot.play(event.getOption("url").getAsString().strip(), event);
+                    try{
+                        new URL(event.getOption("url").getAsString());
+                        bot.play(event.getOption("url").getAsString().strip(), event);
+                    }
+                    catch(MalformedURLException e){
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                    }
                 }
                 break;
             case "skip":
@@ -222,7 +236,7 @@ public class CommandListener extends ListenerAdapter {
 				}
 				break;
 		    case "version":
-				String msg = "**Changelog**\n```\nAdded a feature request system\n```";
+				String msg = "**Changelog**\n```\nExtended musicbot with more functionality\n```";
 				event.reply(msg).setEphemeral(true).queue();
 				break;
             case "team":
@@ -425,7 +439,7 @@ public class CommandListener extends ListenerAdapter {
         Shell.prompt();
     }
 
-    private String getTime(long duration) {
+    static String getTime(long duration) {
         String minutes = String.valueOf((duration/1000)/60);
         if(Integer.parseInt(minutes) < 10){
             minutes = "0" + minutes;

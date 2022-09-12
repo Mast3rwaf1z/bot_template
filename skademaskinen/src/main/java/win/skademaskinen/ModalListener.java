@@ -7,6 +7,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -19,10 +21,15 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ModalListener extends ListenerAdapter{
 	public void onModalInteraction(ModalInteractionEvent event){
         EmbedBuilder builder = new EmbedBuilder();
+        Guild guild = event.getGuild();
+        Member author = event.getMember();
+        
         switch(event.getModalId()){
             case "Application form":
             String[] validRoles = {"tank", "healer", "melee damage", "ranged damage"};
@@ -235,7 +242,32 @@ public class ModalListener extends ListenerAdapter{
                 channel.sendMessageEmbeds(builder.build()).queue();
                 event.deferEdit().queue();
                 break;
-                
+            case "add more":
+                if (author.getVoiceState().inAudioChannel() && CommandListener.bots.containsKey(guild)) {
+                    MusicBot bot = CommandListener.bots.get(guild);
+                    if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
+                        bot.connectToVoiceChannel(author.getVoiceState().getChannel());
+                    }
+                    try{
+                        new URL(event.getValue("url").getAsString());
+                        bot.play(event.getValue("url").getAsString().strip(), event);
+                    }
+                    catch(MalformedURLException e){
+                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event);
+                    }
+                }
+                else{
+                    CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+                    MusicBot bot = CommandListener.bots.get(guild);
+                    try{
+                        new URL(event.getValue("url").getAsString());
+                        bot.play(event.getValue("url").getAsString().strip(), event);
+                    }
+                    catch(MalformedURLException e){
+                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event);
+                    }
+                }
+                break;
                 
         }
             

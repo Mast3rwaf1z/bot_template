@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 
 import org.json.simple.parser.ParseException;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -24,6 +26,8 @@ public class ButtonListener extends ListenerAdapter{
 
     @SuppressWarnings("unchecked")
 	public void onButtonInteraction(ButtonInteractionEvent event){
+        EmbedBuilder builder = new EmbedBuilder();
+
         TextInput messageId = TextInput.create("message_id", "Id of the message being edited, DO NOT EDIT", TextInputStyle.SHORT).setValue(event.getMessageId()).build();
         switch (event.getButton().getId()) {
             case "apply_button":
@@ -89,7 +93,6 @@ public class ButtonListener extends ListenerAdapter{
                 }
                 break;
             case "poll_button":
-                EmbedBuilder builder = new EmbedBuilder();
                 builder.setTitle("Poll results:");
                 try {
                     HashMap<String, Integer> amounts = new HashMap<String, Integer>();
@@ -130,6 +133,33 @@ public class ButtonListener extends ListenerAdapter{
                 } catch (IOException | ParseException e) {
                     Colors.exceptionHandler(e);
                     event.reply("failed to create results message").setEphemeral(true).queue();
+                }
+                break;
+            case "add more":
+                TextInput input = TextInput.create("url", "URL or search term", TextInputStyle.SHORT).build();
+                event.replyModal(Modal.create("add more", "Add More").addActionRow(input).build()).queue();
+                break;
+            case "show queue":
+                if(event.getMember().getVoiceState().inAudioChannel() && CommandListener.bots.containsKey(event.getGuild())){
+                    int page = 0;
+                    Shell.printer(String.valueOf(CommandListener.bots.get(event.getGuild()).getQueue().size()));
+                    List<AudioTrack> tracks;
+                    if(CommandListener.bots.get(event.getGuild()).getQueue().size()< 15){
+                        tracks = CommandListener.bots.get(event.getGuild()).getQueue();
+                    }
+                    else{
+                        tracks = CommandListener.bots.get(event.getGuild()).getQueue().subList(page*15, (page*15)+15);
+                    }
+                    builder.setTitle("Track queue");
+                    for(AudioTrack track : tracks){
+                        builder.addField("", "["+track.getInfo().title+"]("+track.getInfo().uri+")\n Duration: "+CommandListener.getTime(track.getDuration()), false);
+                    }
+                    int totalTime = 0;
+                    for(AudioTrack track : tracks){
+                        totalTime += track.getDuration();
+                    }
+                    builder.setFooter("Total time remaining: " + CommandListener.getTime(totalTime-CommandListener.bots.get(event.getGuild()).getCurrentTrack().getDuration()) + " | Total tracks in queue: " + CommandListener.bots.get(event.getGuild()).getQueue().size());
+                    event.replyEmbeds(builder.build()).queue();
                 }
                 break;
                 
