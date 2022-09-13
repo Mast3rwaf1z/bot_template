@@ -92,6 +92,9 @@ public class MusicBot {
                     builder.appendDescription("\nThe bot is paused!");
                 }
                 builder.setFooter("Length: " + track.getDuration()+"ms");
+                Shell.printer(track.getIdentifier());
+                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
+
             } 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
@@ -115,6 +118,7 @@ public class MusicBot {
                     player.startTrack(playlist.getSelectedTrack(), false);
                 }
                 builder.setFooter("Total playlist length: " + duration+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
             }
 
             private void handleSearchResult(AudioPlaylist playlist, SlashCommandInteractionEvent event) {
@@ -145,7 +149,9 @@ public class MusicBot {
         } catch (InterruptedException | ExecutionException e1) {
             Colors.exceptionHandler(e1);
         }
-        event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        if(!event.isAcknowledged()){
+            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        }
     }
 
     public void play(String url, ModalInteractionEvent event) {
@@ -166,6 +172,7 @@ public class MusicBot {
                     builder.appendDescription("\nThe bot is paused!");
                 }
                 builder.setFooter("Length: " + track.getDuration()+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
             } 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
@@ -189,6 +196,7 @@ public class MusicBot {
                     player.startTrack(playlist.getSelectedTrack(), false);
                 }
                 builder.setFooter("Total playlist length: " + duration+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
             }
 
             private void handleSearchResult(AudioPlaylist playlist, ModalInteractionEvent event) {
@@ -219,7 +227,10 @@ public class MusicBot {
         } catch (InterruptedException | ExecutionException e1) {
             Colors.exceptionHandler(e1);
         }
-        event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+
+        if(!event.isAcknowledged()){
+            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        }
     }
 
     public void play(String url, SelectMenuInteractionEvent event) {
@@ -240,6 +251,7 @@ public class MusicBot {
                     builder.appendDescription("\nThe bot is paused!");
                 }
                 builder.setFooter("Length: " + track.getDuration()+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
             } 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
@@ -263,6 +275,7 @@ public class MusicBot {
                     player.startTrack(playlist.getSelectedTrack(), false);
                 }
                 builder.setFooter("Total playlist length: " + duration+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
             }
 
             private void handleSearchResult(AudioPlaylist playlist, SelectMenuInteractionEvent event) {
@@ -293,7 +306,9 @@ public class MusicBot {
         } catch (InterruptedException | ExecutionException e1) {
             Colors.exceptionHandler(e1);
         }
-        event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        if(!event.isAcknowledged()){
+            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        }
     }
 
     public void skip(SlashCommandInteractionEvent event) {

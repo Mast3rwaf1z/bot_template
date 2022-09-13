@@ -29,6 +29,13 @@
   <dependencies>
 
     <dependency>
+      <groupId>com.google.api.client</groupId>
+      <artifactId>google-api-data-youtube-v2</artifactId>
+      <version>1.0.10-alpha</version>
+    </dependency>
+
+
+    <dependency>
       <groupId>org.jline</groupId>
       <artifactId>jline</artifactId>
       <version>3.21.0</version>
