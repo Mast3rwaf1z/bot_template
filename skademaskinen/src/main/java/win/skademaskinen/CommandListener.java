@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -32,23 +34,21 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
-import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 public class CommandListener extends ListenerAdapter {
     final private String[] colors = {"blue", "green", "gray", "yellow", "orange", "red", "white", "purple", "pink", "darkgreen"};
     ArrayList<String> roles = new ArrayList<>();
-    private HashMap<Guild, MusicBot> bots = new HashMap<>();
+    static HashMap<Guild, MusicBot> bots = new HashMap<>();
     private DatabaseHandler databaseHandler;
     Runtime runtime = Runtime.getRuntime();
     
     
     public CommandListener() throws ClassNotFoundException, SQLException, IOException{
-        databaseHandler = new DatabaseHandler();
+        //databaseHandler = new DatabaseHandler();
         roles.add("992064457276653699");
         
     }
@@ -94,15 +94,25 @@ public class CommandListener extends ListenerAdapter {
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
                         bot.connectToVoiceChannel(author.getVoiceState().getChannel());
                     }
+                    try{
+                        new URL(event.getOption("url").getAsString());
+                        bot.play(event.getOption("url").getAsString().strip(), event);
+                    }
+                    catch(MalformedURLException e){
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                    }
+                }
+            else{
+                bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+                MusicBot bot = bots.get(guild);
+                try{
+                    new URL(event.getOption("url").getAsString());
                     bot.play(event.getOption("url").getAsString().strip(), event);
                 }
-                else if(event.getOptions().size() == 0){
+                catch(MalformedURLException e){
+                    bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
                 }
-                else{
-                    bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
-                    MusicBot bot = bots.get(guild);
-                    bot.play(event.getOption("url").getAsString().strip(), event);
-                }
+            }
                 break;
             case "skip":
                 if(author.getVoiceState().inAudioChannel() && bots.containsKey(guild)){
