@@ -144,7 +144,10 @@ public class SelectMenuListener extends ListenerAdapter{
 			break;
 		
 		case "playlist":
-			CommandListener.bots.get(event.getGuild()).play(event.getValues().get(0), event);
+			if(!CommandListener.bots.containsKey(guild)){
+				CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+			}
+			CommandListener.bots.get(guild).play(event.getValues().get(0), event);
 			break;
 
 		}

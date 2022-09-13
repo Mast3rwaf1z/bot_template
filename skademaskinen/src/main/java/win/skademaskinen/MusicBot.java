@@ -57,6 +57,18 @@ public class MusicBot {
         connect();
     }
 
+    public MusicBot(AudioChannel channel, SelectMenuInteractionEvent initial_message) {
+        this.channel = channel;
+        guild = initial_message.getGuild();
+        audioManager = guild.getAudioManager();
+        scheduler = new TrackScheduler(audioManager);
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+        audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
+        player.addListener(scheduler);
+        connect();
+    }
+
     private void connect() {
         if(!audioManager.isConnected()){
             audioManager.openAudioConnection(channel);
