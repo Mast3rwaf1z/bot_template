@@ -85,6 +85,7 @@ public class App
                 .addOption(OptionType.INTEGER, "page", "Select a page (Default: 1)", false),
             Commands.slash("nowplaying", "Show the current song"),
             Commands.slash("disconnect", "Disconnect the bot from voice"),
+            Commands.slash("leave", "Disconnect the bot from voice"),
             Commands.slash("pause", "Pause the bot"),
             Commands.slash("clear", "Clear the song queue"),
             Commands.slash("help", "Show a list of commands"),

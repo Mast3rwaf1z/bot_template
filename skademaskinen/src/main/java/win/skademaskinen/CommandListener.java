@@ -135,6 +135,7 @@ public class CommandListener extends ListenerAdapter {
                     event.reply("Currently playing track: " + "["+track.getInfo().title+"]("+track.getInfo().uri+")").queue();
                 }
                 break;
+            case "leave":
             case "disconnect":
                 if(author.getVoiceState().inAudioChannel() && bots.containsKey(guild)){
                     bots.get(guild).disconnect();
