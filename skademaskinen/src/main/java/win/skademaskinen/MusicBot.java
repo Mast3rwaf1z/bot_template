@@ -16,9 +16,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
@@ -32,33 +31,10 @@ public class MusicBot {
     private Guild guild;
     private AudioManager audioManager;
 
-    public MusicBot(AudioChannel channel, SlashCommandInteractionEvent initial_message){
+    
+    public MusicBot(AudioChannel channel){
         this.channel = channel;
-        guild = initial_message.getGuild();
-        audioManager = guild.getAudioManager();
-        scheduler = new TrackScheduler(audioManager);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
-        audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
-        player.addListener(scheduler);
-        connect();
-    }
-
-    public MusicBot(AudioChannel channel, ModalInteractionEvent initial_message){
-        this.channel = channel;
-        guild = initial_message.getGuild();
-        audioManager = guild.getAudioManager();
-        scheduler = new TrackScheduler(audioManager);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
-        audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
-        player.addListener(scheduler);
-        connect();
-    }
-
-    public MusicBot(AudioChannel channel, SelectMenuInteractionEvent initial_message) {
-        this.channel = channel;
-        guild = initial_message.getGuild();
+        guild = channel.getGuild();
         audioManager = guild.getAudioManager();
         scheduler = new TrackScheduler(audioManager);
         AudioSourceManagers.registerRemoteSources(playerManager);
@@ -73,7 +49,8 @@ public class MusicBot {
             audioManager.openAudioConnection(channel);
         }
     }
-    public void play(String url, SlashCommandInteractionEvent event) {
+    public void play(String url, InteractionHook hook) {
+        connect();
 		EmbedBuilder builder = new EmbedBuilder();
         Future<Void> future = playerManager.loadItem(url, new AudioLoadResultHandler() {
             @Override
@@ -97,7 +74,7 @@ public class MusicBot {
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 if(playlist.isSearchResult()){
-                    handleSearchResult(playlist, event);
+                    handleSearchResult(playlist);
                     return;
                 }
 				builder.setTitle("Playlist loaded");
@@ -118,7 +95,7 @@ public class MusicBot {
                 builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
             }
 
-            private void handleSearchResult(AudioPlaylist playlist, SlashCommandInteractionEvent event) {
+            private void handleSearchResult(AudioPlaylist playlist) {
                 EmbedBuilder builder = new EmbedBuilder();
                 Builder menuBuilder = SelectMenu.create("playlist");
                 builder.setTitle("Choose a track to play:");
@@ -127,7 +104,7 @@ public class MusicBot {
                 }
                 menuBuilder.setPlaceholder("select a track");
                 
-                event.replyEmbeds(builder.build()).addActionRow(menuBuilder.build()).queue();
+                hook.editOriginalEmbeds(builder.build()).setActionRow(menuBuilder.build()).queue();
             }
 
             @Override
@@ -144,166 +121,9 @@ public class MusicBot {
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e1) {
-            Colors.exceptionHandler(e1, false);
+            Colors.exceptionHandler(e1);
         }
-        if(!event.isAcknowledged()){
-            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
-        }
-    }
-
-    public void play(String url, ModalInteractionEvent event) {
-		EmbedBuilder builder = new EmbedBuilder();
-        Future<Void> future = playerManager.loadItem(url, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-				builder.setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")");
-                if(player.getPlayingTrack() != null){
-                    scheduler.enqueue(track);
-					builder.setTitle("Track queued");
-                }
-                else{
-                    player.startTrack(track, false);
-					builder.setTitle("Track started");
-                }
-                if(player.isPaused()){
-                    builder.appendDescription("\nThe bot is paused!");
-                }
-                builder.setFooter("Length: " + track.getDuration()+"ms");
-                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
-            } 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                if(playlist.isSearchResult()){
-                    handleSearchResult(playlist, event);
-                    return;
-                }
-				builder.setTitle("Playlist loaded");
-                List<AudioTrack> tracks = playlist.getTracks();
-                long duration = 0;
-                for(AudioTrack track : tracks){
-					builder.appendDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
-                    scheduler.enqueue(track);
-                    duration = duration+track.getPosition();
-                }
-                if(player.isPaused()){
-                    builder.appendDescription("\nThe bot is paused!");
-                }
-                if(player.getPlayingTrack() == null){
-                    player.startTrack(playlist.getSelectedTrack(), false);
-                }
-                builder.setFooter("Total playlist length: " + duration+"ms");
-                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
-            }
-
-            private void handleSearchResult(AudioPlaylist playlist, ModalInteractionEvent event) {
-                EmbedBuilder builder = new EmbedBuilder();
-                Builder menuBuilder = SelectMenu.create("playlist");
-                builder.setTitle("Choose a track to play:");
-                for(AudioTrack track : playlist.getTracks()){
-                    menuBuilder.addOption(track.getInfo().title, track.getIdentifier());
-                }
-                menuBuilder.setPlaceholder("select a track");
-
-                event.replyEmbeds(builder.build()).addActionRow(menuBuilder.build()).queue();
-            }
-
-            @Override
-            public void noMatches() {
-				builder.setTitle("No matches");
-            }
-            @Override
-            public void loadFailed(FriendlyException e) {
-				builder.setTitle("Load failed");
-				builder.appendDescription("Error code:\n");
-				builder.appendDescription(e.getMessage());
-            }
-        });
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e1) {
-            Colors.exceptionHandler(e1, false);
-        }
-
-        if(!event.isAcknowledged()){
-            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
-        }
-    }
-
-    public void play(String url, SelectMenuInteractionEvent event) {
-		EmbedBuilder builder = new EmbedBuilder();
-        Future<Void> future = playerManager.loadItem(url, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-				builder.setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")");
-                if(player.getPlayingTrack() != null){
-                    scheduler.enqueue(track);
-					builder.setTitle("Track queued");
-                }
-                else{
-                    player.startTrack(track, false);
-					builder.setTitle("Track started");
-                }
-                if(player.isPaused()){
-                    builder.appendDescription("\nThe bot is paused!");
-                }
-                builder.setFooter("Length: " + track.getDuration()+"ms");
-                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
-            } 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                if(playlist.isSearchResult()){
-                    handleSearchResult(playlist, event);
-                    return;
-                }
-				builder.setTitle("Playlist loaded");
-                List<AudioTrack> tracks = playlist.getTracks();
-                long duration = 0;
-                for(AudioTrack track : tracks){
-					builder.appendDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
-                    scheduler.enqueue(track);
-                    duration = duration+track.getPosition();
-                }
-                if(player.isPaused()){
-                    builder.appendDescription("\nThe bot is paused!");
-                }
-                if(player.getPlayingTrack() == null){
-                    player.startTrack(playlist.getSelectedTrack(), false);
-                }
-                builder.setFooter("Total playlist length: " + duration+"ms");
-                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
-            }
-
-            private void handleSearchResult(AudioPlaylist playlist, SelectMenuInteractionEvent event) {
-                EmbedBuilder builder = new EmbedBuilder();
-                Builder menuBuilder = SelectMenu.create("playlist");
-                builder.setTitle("Choose a track to play:");
-                for(AudioTrack track : playlist.getTracks()){
-                    menuBuilder.addOption(track.getInfo().title, track.getIdentifier());
-                }
-                menuBuilder.setPlaceholder("select a track");
-
-                event.replyEmbeds(builder.build()).addActionRow(menuBuilder.build()).queue();
-            }
-
-            @Override
-            public void noMatches() {
-				builder.setTitle("No matches");
-            }
-            @Override
-            public void loadFailed(FriendlyException e) {
-				builder.setTitle("Load failed");
-				builder.appendDescription("Error code:\n");
-				builder.appendDescription(e.getMessage());
-            }
-        });
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e1) {
-            Colors.exceptionHandler(e1, false);
-        }
-        if(!event.isAcknowledged()){
-            event.replyEmbeds(builder.build()).addActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
-        }
+        hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
     }
 
     public void skip(SlashCommandInteractionEvent event) {

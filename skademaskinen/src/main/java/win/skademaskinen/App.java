@@ -2,10 +2,11 @@ package win.skademaskinen;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
 
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
 import org.json.JSONObject;
 
 import net.dv8tion.jda.api.JDA;
@@ -19,7 +20,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 public class App 
 {
     static private JDA jda;
+    public static LineReader reader;
     public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException{
+        reader = LineReaderBuilder.builder().build();
         JSONObject config = Config.getConfig();
         jda = JDABuilder.createDefault(config.get("token").toString()).build();
         jda.addEventListener(new CommandListener());
@@ -31,17 +34,14 @@ public class App
         jda.getPresence().setActivity(Activity.playing("Faur er dårlig"));
         jda.awaitReady();
         setCommands(false);
-
-        Scanner scanner = new Scanner(System.in);
-        for(String line = ""; !line.equals("exit"); line = scanner.nextLine()){
+        for(String line = ""; !line.equals("exit"); line = reader.readLine(getPrompt())){
             String[] arguments = line.split(" ");
             switch(arguments[0]){
                 case "commandreset":
                     setCommands(true);
+                    break;
             }
-            prompt();
         }
-        scanner.close();
         jda.shutdown();
         System.exit(0);
 
@@ -89,7 +89,7 @@ public class App
             Commands.slash("rolepicker", "create a rolepicker")
             ).queue();
     }
-    public static void prompt(){
-		System.out.print("["+Colors.blue(App.jda.getSelfUser().getName())+"] > ");
+    public static String getPrompt(){
+		return "["+Colors.blue(App.jda.getSelfUser().getName())+"] > ";
     }
 }

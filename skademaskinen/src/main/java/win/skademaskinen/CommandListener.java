@@ -57,8 +57,8 @@ public class CommandListener extends ListenerAdapter {
     @SuppressWarnings("deprecation")
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         EmbedBuilder builder = new EmbedBuilder();
-        System.out.println("Command:                " + event.getCommandString());
-        System.out.println();
+        App.reader.printAbove("Command:                " + event.getCommandString());
+        App.reader.printAbove("");
         event.deferReply();
         Guild guild = event.getGuild();
         Member author = event.getMember();
@@ -79,7 +79,7 @@ public class CommandListener extends ListenerAdapter {
             case "color":
                 for(String color : colors){
                     if(author.getRoles().contains(guild.getRolesByName(color, true).get(0))){
-                        System.out.println("Removing role" + color);
+                        App.reader.printAbove("Removing role" + color);
                         guild.removeRoleFromMember(author, guild.getRolesByName(color, true).get(0)).queue();
                     }
                 }
@@ -89,6 +89,8 @@ public class CommandListener extends ListenerAdapter {
 
             //music
             case "play":
+                event.deferReply().queue();
+                
                 if (author.getVoiceState().inAudioChannel() && bots.containsKey(guild)) {
                     MusicBot bot = bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
@@ -96,21 +98,21 @@ public class CommandListener extends ListenerAdapter {
                     }
                     try{
                         new URL(event.getOption("url").getAsString());
-                        bot.play(event.getOption("url").getAsString().strip(), event);
+                        bot.play(event.getOption("url").getAsString().strip(), event.getHook());
                     }
                     catch(MalformedURLException e){
-                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event.getHook());
                     }
                 }
             else{
-                bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+                bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
                 MusicBot bot = bots.get(guild);
                 try{
                     new URL(event.getOption("url").getAsString());
-                    bot.play(event.getOption("url").getAsString().strip(), event);
+                    bot.play(event.getOption("url").getAsString().strip(), event.getHook());
                 }
                 catch(MalformedURLException e){
-                    bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                    bot.play("ytsearch:"+event.getOption("url").getAsString(), event.getHook());
                 }
             }
                 break;
@@ -125,7 +127,7 @@ public class CommandListener extends ListenerAdapter {
                     for(OptionMapping option : event.getOptions()){
                         page = option.getAsInt()-1;
                     }
-                    System.out.println(bots.get(guild).getQueue().size());
+                    App.reader.printAbove(""+bots.get(guild).getQueue().size());
                     List<AudioTrack> tracks;
                     if(bots.get(guild).getQueue().size()< 15){
                         tracks = bots.get(guild).getQueue();
@@ -292,7 +294,7 @@ public class CommandListener extends ListenerAdapter {
         }
     }
 
-    private String getTime(long duration) {
+    static String getTime(long duration) {
         String minutes = String.valueOf((duration/1000)/60);
         if(Integer.parseInt(minutes) < 10){
             minutes = "0" + minutes;
@@ -306,16 +308,16 @@ public class CommandListener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event){
         if(event.isFromGuild()){
-            System.out.println("Server:                 " + event.getGuild().getName());
+            App.reader.printAbove("Server:                 " + event.getGuild().getName());
         }
-        System.out.println("Channel:                " + event.getChannel().getName());
-        System.out.println("Author:                 " + event.getAuthor().getName());
-        System.out.println("Message:                " + event.getMessage().getContentDisplay());
-        System.out.println("Number of attachments:  " + event.getMessage().getAttachments().size());
+        App.reader.printAbove("Channel:                " + event.getChannel().getName());
+        App.reader.printAbove("Author:                 " + event.getAuthor().getName());
+        App.reader.printAbove("Message:                " + event.getMessage().getContentDisplay());
+        App.reader.printAbove("Number of attachments:  " + event.getMessage().getAttachments().size());
         for(Attachment url : event.getMessage().getAttachments()){
-            System.out.println("Attachment:             " + url.getUrl());
+            App.reader.printAbove("Attachment:             " + url.getUrl());
         }
-        System.out.println();
+        App.reader.printAbove("");
         
         //Message message = event.getMessage();
         /*if(!message.getGuild().getId().equalsIgnoreCase("642852517197250560")){
@@ -406,10 +408,10 @@ public class CommandListener extends ListenerAdapter {
         builder.setThumbnail(who.getAvatarUrl());
         jail.sendMessageEmbeds(builder.build()).queue();
 
-        System.out.println("sleeping thread");
+        App.reader.printAbove("sleeping thread");
         switch(measurement.toLowerCase()){
             case "seconds":
-                System.out.println("Sleeping seconds");
+                App.reader.printAbove("Sleeping seconds");
                 try {
                     Thread.sleep(time*1000);
                 } catch (InterruptedException e) {
@@ -418,7 +420,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "minutes":
-                System.out.println("Sleeping minutes");
+                App.reader.printAbove("Sleeping minutes");
                 try {
                     Thread.sleep((long)(time*6e4));
                 } catch (InterruptedException e) {
@@ -427,7 +429,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "hours":
-                System.out.println("Sleeping hours");
+                App.reader.printAbove("Sleeping hours");
                 try {
                     Thread.sleep((long)(time*36e5));
                 } catch (InterruptedException e) {
@@ -436,7 +438,7 @@ public class CommandListener extends ListenerAdapter {
                 }
                 break;
             case "days":
-                System.out.println("Sleeping days");
+                App.reader.printAbove("Sleeping days");
                 try {
                     Thread.sleep((long)(time*864e5));
                 } catch (InterruptedException e) {
@@ -453,7 +455,7 @@ public class CommandListener extends ListenerAdapter {
                 guild.addRoleToMember(who, role).queue();
             }
         }
-        System.out.println("Released " + who.getEffectiveName() + " From jail");
+        App.reader.printAbove("Released " + who.getEffectiveName() + " From jail");
     }
 
 }

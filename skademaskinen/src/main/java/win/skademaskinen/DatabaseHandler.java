@@ -48,7 +48,7 @@ public class DatabaseHandler {
         else{
             statement.execute("update server_"+ guildId + " set count="+current+ " where id="+memberId+";");
         }
-        System.out.println("Successfully incremented poop value to" + current);
+        App.reader.printAbove("Successfully incremented poop value to" + current);
     }
 
     public int getPoopsForMember(Member member) throws SQLException{

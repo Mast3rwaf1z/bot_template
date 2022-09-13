@@ -29,7 +29,7 @@ public class ResultGetter {
 		String out = "";
 		HashMap<String, ArrayList<String>> result = new HashMap<>();
 		JSONObject poll = (JSONObject) polls.get(message_id);
-		System.out.println("results for poll #" + message.getId() + " with name: " + message.getEmbeds().get(0).getDescription());
+		App.reader.printAbove("results for poll #" + message.getId() + " with name: " + message.getEmbeds().get(0).getDescription());
 		out += "results for poll #" + message.getId() + " with name: " + message.getEmbeds().get(0).getDescription() + "\n";
 		for(Object reply_key : poll.keySet()){
 			Member member = guild.retrieveMemberById(reply_key.toString()).complete();
@@ -37,10 +37,10 @@ public class ResultGetter {
 			if (member == null) {
 				continue;
 			}
-			System.out.println(member.getEffectiveName());
+			App.reader.printAbove(member.getEffectiveName());
 			out += member.getEffectiveName() +"\n";
 			for(Object reply : replies){
-				System.out.println("\t" + reply.toString());
+				App.reader.printAbove("\t" + reply.toString());
 				out += "\t" + reply.toString() + "\n";
 				ArrayList<String> list = result.get(reply.toString());
 				if(list == null){
@@ -53,14 +53,14 @@ public class ResultGetter {
 				}
 			}
 		}
-		System.out.println("Formatted results for poll #" + message_id);
+		App.reader.printAbove("Formatted results for poll #" + message_id);
 		out += "Formatted results for poll #" + message_id + "\n";
 		for(String key : result.keySet()){
-			System.out.println(key);
+			App.reader.printAbove(key);
 			out += key + "\n";
 			ArrayList<String> list = result.get(key);
 			for(String element : list){
-				System.out.println("\t" + element);
+				App.reader.printAbove("\t" + element);
 				out += "\t" + element + "\n";
 			}
 		}
