@@ -47,6 +47,7 @@ public class App
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new SelectMenuListener());
         jda.addEventListener(new GuildEventListener());
+        jda.addEventListener(new VoiceChannelListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
         Shell.printer(Colors.yellow("Setting commands"));
