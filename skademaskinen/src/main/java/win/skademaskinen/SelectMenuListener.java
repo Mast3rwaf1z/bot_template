@@ -142,6 +142,11 @@ public class SelectMenuListener extends ListenerAdapter{
 				}
 			
 			break;
+		
+		case "playlist":
+			CommandListener.bots.get(event.getGuild()).play(event.getValues().get(0), event);
+			break;
+
 		}
 	}
 }
