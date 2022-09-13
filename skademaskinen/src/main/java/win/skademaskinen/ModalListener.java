@@ -244,27 +244,28 @@ public class ModalListener extends ListenerAdapter{
                 break;
             case "add more":
                 if (author.getVoiceState().inAudioChannel() && CommandListener.bots.containsKey(guild)) {
+                    event.deferReply().queue();
                     MusicBot bot = CommandListener.bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
                         bot.connectToVoiceChannel(author.getVoiceState().getChannel());
                     }
                     try{
                         new URL(event.getValue("url").getAsString());
-                        bot.play(event.getValue("url").getAsString().strip(), event);
+                        bot.play(event.getValue("url").getAsString().strip(), event.getHook());
                     }
                     catch(MalformedURLException e){
-                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event);
+                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event.getHook());
                     }
                 }
                 else{
-                    CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+                    CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
                     MusicBot bot = CommandListener.bots.get(guild);
                     try{
                         new URL(event.getValue("url").getAsString());
-                        bot.play(event.getValue("url").getAsString().strip(), event);
+                        bot.play(event.getValue("url").getAsString().strip(), event.getHook());
                     }
                     catch(MalformedURLException e){
-                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event);
+                        bot.play("ytsearch:"+event.getValue("url").getAsString(), event.getHook());
                     }
                 }
                 break;

@@ -71,6 +71,8 @@ public class CommandListener extends ListenerAdapter {
 
             //music
             case "play":
+                event.deferReply().queue();
+
                 if (author.getVoiceState().inAudioChannel() && bots.containsKey(guild)) {
                     MusicBot bot = bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
@@ -78,21 +80,21 @@ public class CommandListener extends ListenerAdapter {
                     }
                     try{
                         new URL(event.getOption("url").getAsString());
-                        bot.play(event.getOption("url").getAsString().strip(), event);
+                        bot.play(event.getOption("url").getAsString().strip(), event.getHook());
                     }
                     catch(MalformedURLException e){
-                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event.getHook());
                     }
                 }
                 else{
-                    bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel(), event));
+                    bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
                     MusicBot bot = bots.get(guild);
                     try{
                         new URL(event.getOption("url").getAsString());
-                        bot.play(event.getOption("url").getAsString().strip(), event);
+                        bot.play(event.getOption("url").getAsString().strip(), event.getHook());
                     }
                     catch(MalformedURLException e){
-                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event);
+                        bot.play("ytsearch:"+event.getOption("url").getAsString(), event.getHook());
                     }
                 }
                 break;
@@ -236,7 +238,7 @@ public class CommandListener extends ListenerAdapter {
 				}
 				break;
 		    case "version":
-				String msg = "**Changelog**\n```\nExtended musicbot with more functionality\n```";
+				String msg = "**Changelog**\n```\ngeneral cleanup and restructuring of code\n```";
 				event.reply(msg).setEphemeral(true).queue();
 				break;
             case "team":
