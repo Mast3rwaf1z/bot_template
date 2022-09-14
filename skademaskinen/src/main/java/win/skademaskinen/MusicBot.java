@@ -107,10 +107,12 @@ public class MusicBot {
                     menuBuilder.addOption(track.getInfo().title, track.getInfo().uri);
                 }
                 menuBuilder.setPlaceholder("select a track");
-                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getTracks().get(0).getIdentifier()+"/0.jpg");
+                builder.setDescription("**Search term: **"+ url.replace("ytsearch:", " "));
                 selectMenus = new HashMap<>();
                 selectMenus.put(menuBuilder.getId(), menuBuilder.build());
                 hook.editOriginalEmbeds(builder.build()).setActionRows(ActionRow.of(menuBuilder.build()), ActionRow.of(Button.secondary("add all"+menuBuilder.getId(), "Add all"))).queue();
+                App.reader.printAbove("here");
             }
 
             @Override
