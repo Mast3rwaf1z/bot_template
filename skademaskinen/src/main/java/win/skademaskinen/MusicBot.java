@@ -1,6 +1,8 @@
 package win.skademaskinen;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -18,6 +20,7 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
@@ -25,11 +28,12 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 public class MusicBot {
     static private AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-    private AudioPlayer player = playerManager.createPlayer();
+    AudioPlayer player = playerManager.createPlayer();
     private TrackScheduler scheduler;
     private AudioChannel channel;
     private Guild guild;
     private AudioManager audioManager;
+    public Map<String, SelectMenu> selectMenus = new HashMap<String, SelectMenu>();
 
     
     public MusicBot(AudioChannel channel){
@@ -67,10 +71,12 @@ public class MusicBot {
                 if(player.isPaused()){
                     builder.appendDescription("\nThe bot is paused!");
                 }
-                builder.setFooter("Length: " + track.getDuration()+"ms");
+                builder.setFooter("Duration: " + CommandListener.getTime(track.getDuration()));
+                builder.setAuthor(track.getInfo().title);
                 builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
-
+                hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue"), Button.danger("skip", "Skip")).queue();
             } 
+            
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 if(playlist.isSearchResult()){
@@ -93,6 +99,7 @@ public class MusicBot {
                 }
                 builder.setFooter("Total playlist length: " + duration+"ms");
                 builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
+                hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
             }
 
             private void handleSearchResult(AudioPlaylist playlist) {
@@ -103,42 +110,78 @@ public class MusicBot {
                     menuBuilder.addOption(track.getInfo().title, track.getInfo().uri);
                 }
                 menuBuilder.setPlaceholder("select a track");
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getTracks().get(0).getIdentifier()+"/0.jpg");
+                builder.setDescription("**Search term: **"+ url.replace("ytsearch:", " "));
+                selectMenus = new HashMap<>();
+                selectMenus.put(menuBuilder.getId(), menuBuilder.build());
+                hook.editOriginalEmbeds(builder.build()).setComponents(ActionRow.of(menuBuilder.build()), ActionRow.of(Button.secondary("add all"+menuBuilder.getId(), "Add all"))).queue();
                 
-                hook.editOriginalEmbeds(builder.build()).setActionRow(menuBuilder.build()).queue();
             }
 
             @Override
             public void noMatches() {
 				builder.setTitle("No matches");
+                hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
             }
             @Override
             public void loadFailed(FriendlyException e) {
 				builder.setTitle("Load failed");
 				builder.appendDescription("Error code:\n");
 				builder.appendDescription(e.getMessage());
+                hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
             }
         });
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e1) {
-            Colors.exceptionHandler(e1);
-        }
-        hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
     }
 
-    public void skip(SlashCommandInteractionEvent event) {
+    public void skip(InteractionHook hook) {
         if(player.getPlayingTrack() != null){
             player.stopTrack();
             if(!scheduler.isEmpty()){
                 AudioTrack track = scheduler.dequeue();
                 player.startTrack(track, false);
-                event.reply("Started track: " + track.getInfo().title).queue();
+                EmbedBuilder builder = new EmbedBuilder();
+				builder.setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")");
+                builder.setTitle("Track started");
+                if(player.isPaused()){
+                    builder.appendDescription("\nThe bot is paused!");
+                }
+                builder.setFooter("Length: " + track.getDuration()+"ms");
+                builder.setThumbnail("http://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
+                hook.editOriginalEmbeds(builder.build()).queue();
+
             }
             else{
-                event.reply("Queue is now empty").queue();
+                hook.editOriginal("Queue is now empty").queue();
+                disconnect();
             }
         }
     }
+
+    public void skip(AudioTrack track, InteractionHook hook){
+        if(scheduler.getQueue().contains(track)){
+            scheduler.removeTrackFromQueue(track);
+            hook.editOriginal("Successfully removed track from queue").queue();
+            
+        }
+        else{
+            if(track == null){
+                player.stopTrack();
+                if(scheduler.isEmpty()){
+                    disconnect();
+                }
+                else{
+                    AudioTrack next = scheduler.dequeue();
+                    player.startTrack(next, false);
+                }
+                hook.editOriginal("Successfully skipped track!").queue();
+            }
+            else{
+                hook.editOriginal("queue does not contain track").queue();
+            }
+        }
+    }
+
+
     public List<AudioTrack> getQueue() {
         return scheduler.getQueue();
     }

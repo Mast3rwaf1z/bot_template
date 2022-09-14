@@ -142,16 +142,13 @@ public class SelectMenuListener extends ListenerAdapter{
 				}
 			
 			break;
-		
-		case "playlist":
-			event.deferReply().queue();
-			
-			if(!CommandListener.bots.containsKey(guild)){
-				CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
-			}
-			CommandListener.bots.get(guild).play(event.getValues().get(0), event.getHook());
-			break;
-
+			case "playlist":
+				event.deferReply().queue();
+				if(!CommandListener.bots.containsKey(guild)){
+					CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
+				}
+				CommandListener.bots.get(guild).play(event.getValues().get(0), event.getHook());
+				break;
 		}
 	}
 }

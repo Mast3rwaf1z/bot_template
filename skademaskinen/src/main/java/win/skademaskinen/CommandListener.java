@@ -72,7 +72,6 @@ public class CommandListener extends ListenerAdapter {
             //music
             case "play":
                 event.deferReply().queue();
-
                 if (author.getVoiceState().inAudioChannel() && bots.containsKey(guild)) {
                     MusicBot bot = bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
@@ -100,7 +99,8 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "skip":
                 if(author.getVoiceState().inAudioChannel() && bots.containsKey(guild)){
-                    bots.get(guild).skip(event);
+                    event.deferReply().queue();
+                    bots.get(guild).skip(event.getHook());
                 }
                 break;
             case "queue":
@@ -109,7 +109,6 @@ public class CommandListener extends ListenerAdapter {
                     for(OptionMapping option : event.getOptions()){
                         page = option.getAsInt()-1;
                     }
-                    Shell.printer(String.valueOf(bots.get(guild).getQueue().size()));
                     List<AudioTrack> tracks;
                     if(bots.get(guild).getQueue().size()< 15){
                         tracks = bots.get(guild).getQueue();
@@ -126,6 +125,10 @@ public class CommandListener extends ListenerAdapter {
                         totalTime += track.getDuration();
                     }
                     builder.setFooter("Total time remaining: " + getTime(totalTime-bots.get(guild).getCurrentTrack().getDuration()) + " | Total tracks in queue: " + bots.get(guild).getQueue().size());
+                    AudioTrack current = bots.get(guild).player.getPlayingTrack();
+                    builder.setDescription("Currently playing track:\n["+current.getInfo().title+"]("+current.getInfo().uri+")");
+                    builder.appendDescription("\nDuration: "+getTime(current.getDuration()));
+                    builder.setThumbnail("http://img.youtube.com/vi/"+current.getIdentifier()+"/0.jpg");
                     event.replyEmbeds(builder.build()).queue();
                 }
                 break;

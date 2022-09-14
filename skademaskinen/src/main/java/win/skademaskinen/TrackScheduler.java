@@ -65,4 +65,7 @@ public class TrackScheduler extends AudioEventAdapter {
         }
         
     }
+	public void removeTrackFromQueue(AudioTrack track) {
+        queue.remove(track);
+	}
 }
