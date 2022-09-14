@@ -30,6 +30,7 @@ public class App
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new SelectMenuListener());
         jda.addEventListener(new ModalListener());
+        jda.addEventListener(new VoiceChannelListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         jda.getPresence().setActivity(Activity.playing("Faur er dårlig"));
         jda.awaitReady();
