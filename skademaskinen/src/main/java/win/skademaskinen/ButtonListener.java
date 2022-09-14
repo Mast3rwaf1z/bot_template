@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
@@ -77,6 +78,16 @@ public class ButtonListener extends ListenerAdapter{
                 }
                 break;
 
+        }
+        if(event.getComponentId().contains("add all")){
+            event.deferReply().queue();
+            List<SelectOption> urls = CommandListener.bots.get(event.getGuild()).selectMenus.get(event.getComponentId().replace("add all", "")).getOptions();
+            for(SelectOption url : urls){
+                if(!CommandListener.bots.containsKey(event.getGuild())){
+                    CommandListener.bots.put(event.getGuild(), new MusicBot(event.getMember().getVoiceState().getChannel()));
+                }
+                CommandListener.bots.get(event.getGuild()).play(url.getValue(), event.getHook());
+            }
         }
     }
 }

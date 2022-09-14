@@ -1,6 +1,8 @@
 package win.skademaskinen;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -18,6 +20,7 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
@@ -30,6 +33,7 @@ public class MusicBot {
     private AudioChannel channel;
     private Guild guild;
     private AudioManager audioManager;
+    public Map<String, SelectMenu> selectMenus = new HashMap<String, SelectMenu>();
 
     
     public MusicBot(AudioChannel channel){
@@ -103,8 +107,10 @@ public class MusicBot {
                     menuBuilder.addOption(track.getInfo().title, track.getInfo().uri);
                 }
                 menuBuilder.setPlaceholder("select a track");
-                
-                hook.editOriginalEmbeds(builder.build()).setActionRow(menuBuilder.build()).queue();
+                builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
+                selectMenus = new HashMap<>();
+                selectMenus.put(menuBuilder.getId(), menuBuilder.build());
+                hook.editOriginalEmbeds(builder.build()).setActionRows(ActionRow.of(menuBuilder.build()), ActionRow.of(Button.secondary("add all"+menuBuilder.getId(), "Add all"))).queue();
             }
 
             @Override
@@ -123,7 +129,9 @@ public class MusicBot {
         } catch (InterruptedException | ExecutionException e1) {
             Colors.exceptionHandler(e1);
         }
-        hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        if(!builder.isEmpty()){
+            hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        }
     }
 
     public void skip(SlashCommandInteractionEvent event) {
