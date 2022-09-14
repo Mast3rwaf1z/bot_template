@@ -58,6 +58,11 @@ public class TrackScheduler extends AudioEventAdapter {
             queue.poll();
         }
     }
+
+    public void removeTrackFromQueue(AudioTrack track){
+        queue.remove(track);
+    }
+
     private void timeout(AudioPlayer player) throws InterruptedException{
         Thread.sleep(1000);
         if(player.getPlayingTrack() == null){
