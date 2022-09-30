@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -45,7 +46,7 @@ public class CommandListener extends ListenerAdapter {
     public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
 
     }
-    @Override
+    @SuppressWarnings("unchecked")
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event){
         Shell.printer(Colors.yellow("Received slash command:"));
         Shell.printer(Colors.green("Command:        ") + event.getName());
@@ -73,6 +74,7 @@ public class CommandListener extends ListenerAdapter {
             case "play":
                 event.deferReply().queue();
                 if (author.getVoiceState().inAudioChannel() && bots.containsKey(guild)) {
+                    Shell.printer(event.getOption("url").getAsString());
                     MusicBot bot = bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
                         bot.connectToVoiceChannel(author.getVoiceState().getChannel());
@@ -194,6 +196,27 @@ public class CommandListener extends ListenerAdapter {
 									+ guild.getTextChannelById("642853163774509116").getAsMention()
 									+ "\nBelow you can choose the roles you need in this discord server!");
 					builder.setImage("https://cdn.discordapp.com/attachments/642853163774509116/922532262459867196/The_nut_hut.gif");
+
+                    try {
+                        Map<?, ?> requirements = (Map<?, ?>) Config.getFile("team_requirements.json").get("raid_form");
+                        String needed = "";
+                        for(String obj : (List<String>)requirements.get("needed_classes")){
+                            needed+="\n"+obj;
+                        }
+                        builder.addField("Needed roles", needed, true);
+                        String preferred = "";
+                        for(String obj : (List<String>)requirements.get("preferred_roles")){
+                            preferred+="\n"+obj;
+                        }
+                        builder.addField("Preferred classes", preferred, true);
+                        String filled = "";
+                        for(String obj : (List<String>)requirements.get("filled_roles")){
+                            filled+="\n"+obj;
+                        }
+                        builder.addField("filled roles", filled, true);
+                    } catch (IOException | ParseException e) {
+                        Colors.exceptionHandler(e);
+                    }
 						
 					SelectMenu type_menu = SelectMenu.create("type_menu")
 						.setPlaceholder("PvE and/or PvP")
