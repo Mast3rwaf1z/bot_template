@@ -3,8 +3,6 @@ package win.skademaskinen;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -16,9 +14,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -30,13 +27,13 @@ public class MusicBot {
     static private AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     AudioPlayer player = playerManager.createPlayer();
     private TrackScheduler scheduler;
-    private AudioChannel channel;
+    private VoiceChannel channel;
     private Guild guild;
     private AudioManager audioManager;
     public Map<String, SelectMenu> selectMenus = new HashMap<String, SelectMenu>();
 
     
-    public MusicBot(AudioChannel channel){
+    public MusicBot(VoiceChannel channel){
         this.channel = channel;
         guild = channel.getGuild();
         audioManager = guild.getAudioManager();
@@ -56,7 +53,7 @@ public class MusicBot {
     public void play(String url, InteractionHook hook) {
         connect();
 		EmbedBuilder builder = new EmbedBuilder();
-        Future<Void> future = playerManager.loadItem(url, new AudioLoadResultHandler() {
+        playerManager.loadItem(url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
 				builder.setDescription("[" + track.getInfo().title + "](" + track.getInfo().uri + ")");
@@ -206,7 +203,7 @@ public class MusicBot {
     public void clear() {
         scheduler.emptyQueue();
     }
-	public void connectToVoiceChannel(AudioChannel channel) {
+	public void connectToVoiceChannel(VoiceChannel channel) {
         audioManager.openAudioConnection(channel);
 	}
 

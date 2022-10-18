@@ -14,12 +14,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 public class Shell{
 	private static Guild guild = null;
-	private static MessageChannel channel = null;
+	private static TextChannel channel = null;
 	private static LineReader reader = LineReaderBuilder.builder().build();
 
     public static String prompt(){
@@ -203,7 +203,7 @@ public class Shell{
 	}
 
 	private static void channelsList() {
-		for(MessageChannel channel : guild.getTextChannels()){
+		for(TextChannel channel : guild.getTextChannels()){
 			printer("");
 			printer(Colors.green("Name:	")+channel.getName());
 			printer(Colors.green("ID:	")+channel.getId());

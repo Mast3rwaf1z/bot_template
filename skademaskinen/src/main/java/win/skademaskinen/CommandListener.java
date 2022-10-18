@@ -77,7 +77,7 @@ public class CommandListener extends ListenerAdapter {
                     Shell.printer(event.getOption("url").getAsString());
                     MusicBot bot = bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
-                        bot.connectToVoiceChannel(author.getVoiceState().getChannel());
+                        bot.connectToVoiceChannel(author.getVoiceState().getChannel().asVoiceChannel());
                     }
                     try{
                         new URL(event.getOption("url").getAsString());
@@ -88,7 +88,7 @@ public class CommandListener extends ListenerAdapter {
                     }
                 }
                 else{
-                    bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
+                    bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel().asVoiceChannel()));
                     MusicBot bot = bots.get(guild);
                     try{
                         new URL(event.getOption("url").getAsString());

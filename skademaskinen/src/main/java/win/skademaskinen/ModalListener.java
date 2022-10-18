@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -247,7 +247,7 @@ public class ModalListener extends ListenerAdapter{
                     event.deferReply().queue();
                     MusicBot bot = CommandListener.bots.get(guild);
                     if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
-                        bot.connectToVoiceChannel(author.getVoiceState().getChannel());
+                        bot.connectToVoiceChannel(author.getVoiceState().getChannel().asVoiceChannel());
                     }
                     try{
                         new URL(event.getValue("url").getAsString());
@@ -258,7 +258,7 @@ public class ModalListener extends ListenerAdapter{
                     }
                 }
                 else{
-                    CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel()));
+                    CommandListener.bots.put(guild, new MusicBot(event.getMember().getVoiceState().getChannel().asVoiceChannel()));
                     MusicBot bot = CommandListener.bots.get(guild);
                     try{
                         new URL(event.getValue("url").getAsString());

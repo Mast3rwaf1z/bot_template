@@ -186,7 +186,7 @@ public class ButtonListener extends ListenerAdapter{
             List<SelectOption> urls = CommandListener.bots.get(event.getGuild()).selectMenus.get(event.getComponentId().replace("add all", "")).getOptions();
             for(SelectOption url : urls){
                 if(!CommandListener.bots.containsKey(event.getGuild())){
-                    CommandListener.bots.put(event.getGuild(), new MusicBot(event.getMember().getVoiceState().getChannel()));
+                    CommandListener.bots.put(event.getGuild(), new MusicBot(event.getMember().getVoiceState().getChannel().asVoiceChannel()));
                 }
                 CommandListener.bots.get(event.getGuild()).play(url.getValue(), event.getHook());
             }
