@@ -441,6 +441,7 @@ public class CommandListener extends ListenerAdapter {
                                 needed+=_class.toString()+", ";
                             }
                             String minimum_ilvl = String.valueOf(raidForm.get("minimum_ilvl"));
+                            
                             Builder filled_field = TextInput.create("filled_roles", "Specify filled roles", TextInputStyle.PARAGRAPH)
                                 .setRequired(false)
                                 .setPlaceholder("Specify filled roles in this format: [role1, role2, role3]");
@@ -448,7 +449,6 @@ public class CommandListener extends ListenerAdapter {
                                 filled = filled.substring(0, filled.length()-2);
                                 filled_field.setValue(filled);
                             }
-
 
                             Builder preferred_field = TextInput.create("preferred_roles", "Specify preferred roles", TextInputStyle.PARAGRAPH)
                                 .setPlaceholder("Specify preferred roles in this format [role1, role2, role3]")
