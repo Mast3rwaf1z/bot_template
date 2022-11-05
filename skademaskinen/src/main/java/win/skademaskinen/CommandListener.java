@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.components.text.TextInput.Builder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
@@ -431,40 +432,46 @@ public class CommandListener extends ListenerAdapter {
                             for(Object role : (JSONArray) raidForm.get("filled_roles")){
                                 filled+=role.toString()+", ";
                             }
-                            filled = filled.substring(0, filled.length()-2);
                             String preferred = "";
                             for(Object role : (JSONArray) raidForm.get("preferred_roles")){
                                 preferred+=role.toString()+", ";
                             }
-                            preferred = preferred.substring(0, preferred.length()-2);
                             String needed = "";
                             for(Object _class : (JSONArray) raidForm.get("needed_classes")){
                                 needed+=_class.toString()+", ";
                             }
-                            needed = needed.substring(0, needed.length()-2);
                             String minimum_ilvl = String.valueOf(raidForm.get("minimum_ilvl"));
-                            TextInput filled_field = TextInput.create("filled_roles", "Specify filled roles", TextInputStyle.PARAGRAPH)
-                                .setValue(filled)
-                                .setPlaceholder("Specify filled roles in this format: [role1, role2, role3]")
-                                .build();
+                            Builder filled_field = TextInput.create("filled_roles", "Specify filled roles", TextInputStyle.PARAGRAPH)
+                                .setRequired(false)
+                                .setPlaceholder("Specify filled roles in this format: [role1, role2, role3]");
+                            if(filled.length() > 0){
+                                filled = filled.substring(0, filled.length()-2);
+                                filled_field.setValue(filled);
+                            }
 
-                            TextInput preferred_field = TextInput.create("preferred_roles", "Specify preferred roles", TextInputStyle.PARAGRAPH)
-                                .setValue(preferred)
+
+                            Builder preferred_field = TextInput.create("preferred_roles", "Specify preferred roles", TextInputStyle.PARAGRAPH)
                                 .setPlaceholder("Specify preferred roles in this format [role1, role2, role3]")
-                                .build();
+                                .setRequired(false);
+                            if(preferred.length() > 0){
+                                preferred = preferred.substring(0, preferred.length()-2);
+                                preferred_field.setValue(preferred);
+                            }
 
-                            TextInput needed_field = TextInput.create("needed_classes", "Specify needed classes", TextInputStyle.PARAGRAPH)
-                                .setValue(needed)
-                                .setPlaceholder("Specify needed classes in this format [class1, class2, class3]")
-                                .build();
+                            Builder needed_field = TextInput.create("needed_classes", "Specify needed classes", TextInputStyle.PARAGRAPH)
+                                .setRequired(false)
+                                .setPlaceholder("Specify needed classes in this format [class1, class2, class3]");
+                                if(needed.length() > 0){
+                                    needed = needed.substring(0, needed.length()-2);
+                                    needed_field.setValue(needed);
+                                }
 
-                            TextInput ilvl_field = TextInput.create("minimum_ilvl", "Specify minimum item level", TextInputStyle.SHORT)
+                            Builder ilvl_field = TextInput.create("minimum_ilvl", "Specify minimum item level", TextInputStyle.SHORT)
                                 .setValue(minimum_ilvl)
-                                .setPlaceholder("Specify item level")
-                                .build();
+                                .setPlaceholder("Specify item level");
 
                             Modal modal = Modal.create("requirements_modal", "Set requirements")
-                                .addActionRows(ActionRow.of(filled_field), ActionRow.of(preferred_field), ActionRow.of(needed_field), ActionRow.of(ilvl_field))
+                                .addActionRows(ActionRow.of(filled_field.build()), ActionRow.of(preferred_field.build()), ActionRow.of(needed_field.build()), ActionRow.of(ilvl_field.build()))
                                 .build();
 
                             event.replyModal(modal).queue();

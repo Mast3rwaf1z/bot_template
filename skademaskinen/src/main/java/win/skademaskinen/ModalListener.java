@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mysql.cj.xdevapi.JsonArray;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -275,6 +277,10 @@ public class ModalListener extends ListenerAdapter{
                 try {
                     JSONObject form = Config.getFile("team_requirements.json").getJSONObject("raid_form");
                     for(ModalMapping data : event.getValues()){
+                        if(data.getAsString().equals("")){
+                            form.put(data.getId(), new JsonArray());
+                            continue;
+                        }
                         if(data.getId().equals("minimum_ilvl")){
                             form.put("minimum_ilvl", Long.parseLong(data.getAsString()));
                             continue;
