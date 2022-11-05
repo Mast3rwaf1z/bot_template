@@ -100,7 +100,7 @@ public class App
                 .addOption(OptionType.STRING, "entry8", "entry", false)
 			    .addOption(OptionType.STRING, "entry9", "entry", false)
 			    .addOption(OptionType.STRING, "entry10", "entry", false),
-			Commands.slash("welcomemessage", "ADMIN COMMAND: Create an interactive welcome message"),
+			Commands.slash("rolepicker", "ADMIN COMMAND: Create an interactive welcome message"),
 			Commands.slash("version", "Show the current version of the bot software (ephemeral message)"),
             Commands.slash("spawnmessage", "ADMIN COMMAND: Spawn an empty message"),
             Commands.slash("editmessage", "ADMIN COMMAND: Edit a custom embed")
