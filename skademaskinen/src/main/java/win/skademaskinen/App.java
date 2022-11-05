@@ -3,11 +3,10 @@ package win.skademaskinen;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
 
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -23,8 +22,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 public class App 
 {
     static public JDA jda;
-    static private HashMap<String, Object> config;
-    public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException, ParseException{
+    static private JSONObject config;
+    public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException{
         Shell.printer(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
@@ -134,7 +133,8 @@ public class App
                     .addOption(OptionType.STRING, "value", "The additional requirement", true, true),
                 new SubcommandData("setilvl", "Sets the ilvl requirement")
                     .addOption(OptionType.INTEGER, "ilvl", "The desired item level", true),
-                new SubcommandData("list", "list the raid team requirements")),
+                new SubcommandData("list", "list the raid team requirements"),
+                new SubcommandData("form", "show the requirements form")),
             Commands.slash("poll", "ADMIN COMMAND: create a poll"),
             Commands.slash("featurerequest", "request for a feature to be added to the bot")
             ).queue();

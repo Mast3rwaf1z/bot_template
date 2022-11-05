@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -124,20 +123,20 @@ public class SelectMenuListener extends ListenerAdapter{
 				options.add(option.getValue());
 			}
 				try {
-					HashMap<String, Object> polls = Config.getFile("polls.json");
-					if(!polls.containsKey(pollId)){
+					JSONObject polls = Config.getFile("polls.json");
+					if(!polls.has(pollId)){
 						polls.put(pollId, new HashMap<>());
 					}
 					HashMap<String, ArrayList<String>> poll = (HashMap<String, ArrayList<String>>) polls.get(pollId);
 					poll.put(key, options);
 					polls.put(pollId, poll);
 					try(FileWriter writer = new FileWriter("polls.json")){
-						writer.write(((JSONObject)polls).toJSONString());
+						writer.write(polls.toString(4));
 						writer.close();
 					}
 					event.deferEdit().queue();
 
-				} catch (IOException | ParseException e) {
+				} catch (IOException e) {
 					Colors.exceptionHandler(e);
 				}
 			

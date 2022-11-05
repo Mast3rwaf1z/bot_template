@@ -1,36 +1,30 @@
 package win.skademaskinen;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 
 public class Config {
     public static ArrayList<ModalData> modals = new ArrayList<ModalData>();
-    
-    @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> getConfig() throws IOException, ParseException{
-        JSONParser parser = new JSONParser();
-        try(FileReader reader = new FileReader("config.json")){
-            return (JSONObject) parser.parse(reader);
-        }catch(FileNotFoundException e){
-            return null;
-        }
+    private static String path = "config.json";
+    private static JSONObject config;
+
+    static void load() throws JSONException, FileNotFoundException{
+        config = new JSONObject(new JSONTokener(new FileInputStream(new File(path))));
     }
     
-    @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> getFile(String file) throws IOException, ParseException{
-        JSONParser parser = new JSONParser();
-        try(FileReader reader = new FileReader(file)){
-            return (JSONObject) parser.parse(reader);
-        }catch(FileNotFoundException e){
-            return null;
-        }
+    public static JSONObject getConfig() throws JSONException, FileNotFoundException {
+        load();
+        return config;
+    }
+    
+    public static JSONObject getFile(String file) throws JSONException, FileNotFoundException {
+        return new JSONObject(new JSONTokener(new FileInputStream(new File(file))));
     }
 }

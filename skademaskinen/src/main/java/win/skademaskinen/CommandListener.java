@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
@@ -43,7 +43,7 @@ public class CommandListener extends ListenerAdapter {
     public static HashMap<Guild, MusicBot> bots = new HashMap<>();
     Runtime runtime = Runtime.getRuntime();
 
-    public CommandListener() throws ClassNotFoundException, SQLException, IOException, ParseException{
+    public CommandListener() throws ClassNotFoundException, SQLException, IOException{
 
     }
     @SuppressWarnings("unchecked")
@@ -214,10 +214,9 @@ public class CommandListener extends ListenerAdapter {
                             filled+="\n"+obj;
                         }
                         builder.addField("filled roles", filled, true);
-                    } catch (IOException | ParseException e) {
+                    } catch (IOException e) {
                         Colors.exceptionHandler(e);
                     }
-						
 					SelectMenu type_menu = SelectMenu.create("type_menu")
 						.setPlaceholder("PvE and/or PvP")
 						.setMinValues(0)
@@ -390,7 +389,7 @@ public class CommandListener extends ListenerAdapter {
                         RaidTeamManager.addRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
                         event.reply("Successfully added requirement!").setEphemeral(true).queue();
                         break;
-                    case "remove":
+                        case "remove":
                         RaidTeamManager.removeRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
                         event.reply("Successfully removed requirement!").setEphemeral(true).queue();
                         break;
@@ -416,14 +415,62 @@ public class CommandListener extends ListenerAdapter {
                             builder.setDescription("Minimum item level: " + raidForm.get("minimum_ilvl"));
                             event.replyEmbeds(builder.build()).setEphemeral(true).queue();
                             
-                        } catch (IOException | ParseException | NullPointerException e) {
+                        } catch (IOException | NullPointerException e) {
                             Colors.exceptionHandler(e);
                         }
                         break;
-                    case "setilvl":
+                        case "setilvl":
                         RaidTeamManager.setIlvlRequirement(event.getOption("ilvl").getAsInt());
                         event.reply("Successfully set ilvl!").setEphemeral(true).queue();
                         break;
+                        case "form":
+
+                        try {
+                            JSONObject raidForm = (JSONObject) Config.getFile("team_requirements.json").get("raid_form");
+                            String filled = "";
+                            for(Object role : (JSONArray) raidForm.get("filled_roles")){
+                                filled+=role.toString()+", ";
+                            }
+                            String preferred = "";
+                            for(Object role : (JSONArray) raidForm.get("preferred_roles")){
+                                preferred+=role.toString()+", ";
+                            }
+                            String needed = "";
+                            for(Object _class : (JSONArray) raidForm.get("needed_classes")){
+                                needed+=_class.toString()+", ";
+                            }
+                            String minimum_ilvl = String.valueOf(raidForm.get("minimum_ilvl"));
+                            TextInput filled_field = TextInput.create("filled_field", "Specify filled roles", TextInputStyle.PARAGRAPH)
+                                .setValue(filled)
+                                .setPlaceholder("Specify filled roles in this format: [role1, role2, role3]")
+                                .build();
+
+                            TextInput preferred_field = TextInput.create("preferred_field", "Specify preferred roles", TextInputStyle.PARAGRAPH)
+                                .setValue(preferred)
+                                .setPlaceholder("Specify preferred roles in this format [role1, role2, role3]")
+                                .build();
+
+                            TextInput needed_field = TextInput.create("needed_field", "Specify needed classes", TextInputStyle.PARAGRAPH)
+                                .setValue(needed)
+                                .setPlaceholder("Specify needed classes in this format [class1, class2, class3]")
+                                .build();
+
+                            TextInput ilvl_field = TextInput.create("ilvl_field", "Specify item level", TextInputStyle.SHORT)
+                                .setValue(minimum_ilvl)
+                                .setPlaceholder("Specify item level")
+                                .build();
+
+                            Modal modal = Modal.create("requirements_modal", "Set requirements")
+                                .addActionRows(ActionRow.of(filled_field), ActionRow.of(preferred_field), ActionRow.of(needed_field), ActionRow.of(ilvl_field))
+                                .build();
+
+                            event.replyModal(modal).queue();
+
+
+
+                        } catch (IOException e) {
+                            Colors.exceptionHandler(e);
+                        }
                     }
                 }
                 else{

@@ -1,17 +1,14 @@
 package win.skademaskinen;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 import org.jline.widget.AutosuggestionWidgets;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -32,7 +29,7 @@ public class Shell{
 		return "["+Colors.blue("The Nut Bot" + Colors.green(" - ") + Colors.blue(guild.getName())) + Colors.green(" - ") + Colors.blue(channel.getName())+ "] > ";
     }
 
-	public static void shell() throws IOException, ParseException{
+	public static void shell() throws IOException{
 		AutosuggestionWidgets autosuggestionWidgets = new AutosuggestionWidgets(reader);
 		autosuggestionWidgets.enable();
         for(String line = ""; !line.equals("exit"); line = reader.readLine(prompt())){
@@ -213,7 +210,7 @@ public class Shell{
 		reader.getTerminal().puts(Capability.clear_screen);
 	}
 	private static void team(String[] arguments, String line){
-		HashMap<String, Object> team;
+		JSONObject team;
 		try {
 			team = Config.getFile("team.json");
 			switch(arguments[1]){
@@ -236,7 +233,7 @@ public class Shell{
 					teamMember(arguments, team);
 					break;
 			}
-	} catch (IOException | ParseException e) {
+	} catch (IOException e) {
 		Colors.exceptionHandler(e);
 	}
 
@@ -251,7 +248,7 @@ public class Shell{
 		printer(Colors.yellow(terminalWidthLine()));
 
 	}
-	private static void teamList(HashMap<String, Object> team){
+	private static void teamList(JSONObject team){
 		for(String key : team.keySet()){
 			RaidTeamManager.printRaider((JSONObject) team.get(key), key, App.jda.getGuildById("642852517197250560"));
 		}
@@ -287,7 +284,7 @@ public class Shell{
 		}
 
 	}
-	private static void teamMember(String[] arguments, HashMap<String, Object> team){
+	private static void teamMember(String[] arguments, JSONObject team){
 		try{
 			RaidTeamManager.printRaider((JSONObject) team.get(arguments[1]), arguments[1], App.jda.getGuildById("642852517197250560"));
 		}
@@ -347,7 +344,7 @@ public class Shell{
 			}
 			printer(Colors.yellow("Minimum item level:"));
 			printer("\t"+raidForm.get("minimum_ilvl"));
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}

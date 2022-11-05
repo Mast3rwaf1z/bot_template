@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -139,7 +138,7 @@ public class ModalListener extends ListenerAdapter{
                     Button.secondary(event.getInteraction().getId()+"add_button", "Add to team"))
                     .queue();
                     Config.modals.add(new ModalData(event.getValues(), event.getId(), event.getMember().getId()));
-                } catch (IOException | ParseException e) {
+                } catch (IOException e) {
                     for(StackTraceElement element : e.getStackTrace()){
                         Shell.printer(Colors.red(element.toString()));
                     }

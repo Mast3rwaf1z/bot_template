@@ -9,11 +9,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -47,8 +45,8 @@ public class RaidTeamManager {
 			ArrayList<String> healers = new ArrayList<String>();
 			ArrayList<String> ranged = new ArrayList<String>();
 			ArrayList<String> melee = new ArrayList<String>();
-			for(Object key : team.keySet()){
-				JSONObject raider = (JSONObject) team.get(key);
+			for(String key : team.keySet()){
+				JSONObject raider = team.getJSONObject(key);
 				switch(raider.get("role").toString().toLowerCase()){
 					case "melee damage":
 						melee.add((String)key);
@@ -130,7 +128,7 @@ public class RaidTeamManager {
 			builder.addField("Melee Damage:", meleeMessage, true); 
 			message.editMessageEmbeds(builder.build()).queue();
 			
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -143,12 +141,11 @@ public class RaidTeamManager {
 			String id = (String) api.get("client_id");
 			String secret = (String) api.get("client_secret");
 			String command = "curl -u"+id+":"+secret+" -d grant_type=client_credentials https://eu.battle.net/oauth/token";
-			JSONParser parser = new JSONParser();
 			Runtime runtime = Runtime.getRuntime();
 			Process process = runtime.exec(command);
 			process.waitFor();
-			token = (String) ((JSONObject) parser.parse(new BufferedReader(new InputStreamReader(process.getInputStream())))).get("access_token");
-		} catch (IOException | ParseException | InterruptedException e) {
+			token = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream()))).getString("access_token");
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return token;
@@ -161,12 +158,10 @@ public class RaidTeamManager {
 		String _class = "";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			JSONParser parser = new JSONParser();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			process.waitFor();
-			JSONObject data = (JSONObject) parser.parse(reader);
+			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
-		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+		} catch (IOException | InterruptedException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		return _class;
@@ -179,12 +174,10 @@ public class RaidTeamManager {
 		String spec = "";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			JSONParser parser = new JSONParser();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			process.waitFor();
-			JSONObject data = (JSONObject) parser.parse(reader);
+			JSONObject data = new JSONObject(new JSONTokener(new BufferedReader(new InputStreamReader(process.getInputStream()))));
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
-		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+		} catch (IOException | InterruptedException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		return spec;
@@ -197,12 +190,10 @@ public class RaidTeamManager {
 		String ilvl = "";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			JSONParser parser = new JSONParser();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			process.waitFor();
-			JSONObject data = (JSONObject) parser.parse(reader);
+			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			ilvl = String.valueOf(data.get("equipped_item_level"));
-		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+		} catch (IOException | InterruptedException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		return ilvl;
@@ -215,12 +206,10 @@ public class RaidTeamManager {
 		String avg_ilvl = "";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			JSONParser parser = new JSONParser();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			process.waitFor();
-			JSONObject data = (JSONObject) parser.parse(reader);
+			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
-		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+		} catch (IOException | InterruptedException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		return avg_ilvl;
@@ -233,12 +222,10 @@ public class RaidTeamManager {
 		String image = "";
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			JSONParser parser = new JSONParser();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			process.waitFor();
-			JSONObject data = (JSONObject) parser.parse(reader);
+			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
-		} catch (IOException | InterruptedException | ParseException | NullPointerException e) {
+		} catch (IOException | InterruptedException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		return image;
@@ -251,33 +238,33 @@ public class RaidTeamManager {
 	
 	public static void removeRaider(Member member) {
 		try {
-			HashMap<String, Object> team = Config.getFile("team.json");
+			JSONObject team = Config.getFile("team.json");
 			team.remove(member.getId());
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(((JSONObject) team).toJSONString());
+				writer.write(team.toString(4));
 			}
 			update(member.getGuild());
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		
 	}
 	public static void removeRaider(User user, Guild guild) {
 		try {
-			HashMap<String, Object> team = Config.getFile("team.json");
+			JSONObject team = Config.getFile("team.json");
 			team.remove(user.getId());
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(((JSONObject) team).toJSONString());
+				writer.write(team.toString(4));
 			}
 			update(guild);
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 		
 	}
 	public static void addRaider(String name, String server, String role, String id, Guild guild) {
 		try {
-			HashMap<String, Object> team = Config.getFile("team.json");
+			JSONObject team = Config.getFile("team.json");
 			HashMap<String, Object> raider = new HashMap<String, Object>();
 			String cap = name.substring(0, 1).toUpperCase() + name.substring(1);
 			raider.put("name", cap);
@@ -289,10 +276,10 @@ public class RaidTeamManager {
 			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			team.put(id, raider);
 			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(((JSONObject)team).toJSONString());
+				writer.write(team.toString(4));
 			}
 			update(guild);
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -312,16 +299,16 @@ public class RaidTeamManager {
 				case "preferred roles":
 					type = "preferred_roles";
 			}
-			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			JSONObject file = Config.getFile("team_requirements.json");
 			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 			ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
 			requirement.add(value);
 			requirements.put(type, requirement);
 			file.put("raid_form", requirements);
 			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(((JSONObject)file).toJSONString());
+				writer.write(file.toString(4));
 			}
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -342,16 +329,16 @@ public class RaidTeamManager {
 				case "preferred roles":
 					type = "preferred_roles";
 			}
-			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			JSONObject file = Config.getFile("team_requirements.json");
 			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 			ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
 			requirement.remove(value);
 			requirements.put(type, requirement);
 			file.put("raid_form", requirements);
 			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(((JSONObject)file).toJSONString());
+				writer.write(file.toString(4));
 			}
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -359,15 +346,15 @@ public class RaidTeamManager {
 	@SuppressWarnings("unchecked")
 	public static void setIlvlRequirement(int ilvl){
 		try {
-			HashMap<String, Object> file = Config.getFile("team_requirements.json");
+			JSONObject file = Config.getFile("team_requirements.json");
 			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 			requirements.put("minimum_ilvl", ilvl);
 			file.put("raid_form", requirements);
 			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(((JSONObject)file).toJSONString());
+				writer.write(file.toString(4));
 			}
 			
-		} catch (IOException | ParseException | NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
 		}
 	}

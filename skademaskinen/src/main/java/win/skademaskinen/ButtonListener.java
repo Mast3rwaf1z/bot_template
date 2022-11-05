@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.json.simple.parser.ParseException;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
@@ -133,7 +132,7 @@ public class ButtonListener extends ListenerAdapter{
                     }
                     builder.setThumbnail("https://cdn-icons-png.flaticon.com/512/1246/1246239.png");
                     event.replyEmbeds(builder.build()).setEphemeral(true).queue();
-                } catch (IOException | ParseException e) {
+                } catch (IOException e) {
                     Colors.exceptionHandler(e);
                     event.reply("failed to create results message").setEphemeral(true).queue();
                 }
