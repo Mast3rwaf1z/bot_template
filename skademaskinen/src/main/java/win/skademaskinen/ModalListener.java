@@ -2,8 +2,9 @@ package win.skademaskinen;
 
 import java.util.ArrayList;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,8 +18,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 import java.awt.Color;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -70,28 +73,28 @@ public class ModalListener extends ListenerAdapter{
                 }
 
                 int score = 0;
-                JSONObject applicationData = (JSONObject) Config.getFile("team_requirements.json").get("raid_form");
-                long reqIlvl = (long) applicationData.get("minimum_ilvl");
-                JSONArray filledRoles = (JSONArray) applicationData.get("filled_roles");
-                JSONArray preferredRoles = (JSONArray) applicationData.get("preferred_roles");
-                JSONArray neededClasses = (JSONArray) applicationData.get("needed_classes");
+                JSONObject applicationData = Config.getFile("team_requirements.json").getJSONObject("raid_form");
+                long reqIlvl =  applicationData.getLong("minimum_ilvl");
+                JSONArray filledRoles = applicationData.getJSONArray("filled_roles");
+                JSONArray preferredRoles = applicationData.getJSONArray("preferred_roles");
+                JSONArray neededClasses = applicationData.getJSONArray("needed_classes");
                 ArrayList<String> fields = new ArrayList<String>();
 
 
-                if(!filledRoles.contains(role.toLowerCase())){
+                if(filledRoles.toList().contains(role.toLowerCase())){
                     if(Integer.parseInt(ilvl)>=reqIlvl){
                         score++;
                     }
                     else{
                         fields.add("Your item level is too low, we have a requirement of "+applicationData.get("minimum_ilvl")+" (you need to be "+(reqIlvl-Long.parseLong(ilvl))+" higher)");
                     }
-                    if(preferredRoles.contains(role.toLowerCase())){
+                    if(preferredRoles.toList().contains(role.toLowerCase())){
                         score++;
                     }
                     else{
                         fields.add("We are not actively looking for " + role + "s");
                     }
-                    if(neededClasses.contains(_class.toLowerCase())){
+                    if(neededClasses.toList().contains(_class.toLowerCase())){
                         score++;
                     }
                     else{
@@ -267,6 +270,25 @@ public class ModalListener extends ListenerAdapter{
                         bot.play("ytsearch:"+event.getValue("url").getAsString(), event.getHook());
                     }
                 }
+                break;
+            case "requirements_modal":
+                try {
+                    JSONObject form = Config.getFile("team_requirements.json").getJSONObject("raid_form");
+                    for(ModalMapping data : event.getValues()){
+                        if(data.getId().equals("minimum_ilvl")){
+                            form.put("minimum_ilvl", Long.parseLong(data.getAsString()));
+                            continue;
+                        }
+                        String[] values = data.getAsString().strip().split(", ");
+                        form.put(data.getId(), values);
+                    }
+                    JSONObject file = Config.getFile("team_requirements.json");
+                    file.put("raid_form", form);
+                    Config.writeFile("team_requirements.json", file);
+                } catch (JSONException | FileNotFoundException e) {
+                    Colors.exceptionHandler(e);
+                }
+                event.reply("Successfully updated raid team!").setEphemeral(true).queue();
                 break;
                 
         }

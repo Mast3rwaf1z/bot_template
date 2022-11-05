@@ -1,7 +1,6 @@
 package win.skademaskinen;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -161,7 +160,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			_class = (String) ((JSONObject) data.get("character_class")).get("name");
-		} catch (IOException | InterruptedException | NullPointerException e) {
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return _class;
@@ -177,7 +176,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = new JSONObject(new JSONTokener(new BufferedReader(new InputStreamReader(process.getInputStream()))));
 			spec = (String) ((JSONObject) data.get("active_spec")).get("name");
-		} catch (IOException | InterruptedException | NullPointerException e) {
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return spec;
@@ -193,7 +192,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			ilvl = String.valueOf(data.get("equipped_item_level"));
-		} catch (IOException | InterruptedException | NullPointerException e) {
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return ilvl;
@@ -209,7 +208,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			avg_ilvl = String.valueOf(data.get("average_item_level"));
-		} catch (IOException | InterruptedException | NullPointerException e) {
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return avg_ilvl;
@@ -225,7 +224,7 @@ public class RaidTeamManager {
 			process.waitFor();
 			JSONObject data = new JSONObject(new JSONTokener(new InputStreamReader(process.getInputStream())));
 			image = (String) ((JSONObject)((JSONArray) data.get("assets")).get(0)).get("value");
-		} catch (IOException | InterruptedException | NullPointerException e) {
+		} catch (IOException | InterruptedException e) {
 			Colors.exceptionHandler(e);
 		}
 		return image;
@@ -240,9 +239,7 @@ public class RaidTeamManager {
 		try {
 			JSONObject team = Config.getFile("team.json");
 			team.remove(member.getId());
-			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toString(4));
-			}
+			Config.writeFile("team.json", team);
 			update(member.getGuild());
 		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
@@ -253,9 +250,7 @@ public class RaidTeamManager {
 		try {
 			JSONObject team = Config.getFile("team.json");
 			team.remove(user.getId());
-			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toString(4));
-			}
+			Config.writeFile("team.json", team);
 			update(guild);
 		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
@@ -275,9 +270,7 @@ public class RaidTeamManager {
 			raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 			team.put(id, raider);
-			try(FileWriter writer = new FileWriter("team.json")){
-				writer.write(team.toString(4));
-			}
+			Config.writeFile("team.json", team);
 			update(guild);
 		} catch (IOException | NullPointerException e) {
 			Colors.exceptionHandler(e);
@@ -305,10 +298,8 @@ public class RaidTeamManager {
 			requirement.add(value);
 			requirements.put(type, requirement);
 			file.put("raid_form", requirements);
-			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(file.toString(4));
-			}
-		} catch (IOException | NullPointerException e) {
+			Config.writeFile("team_requirements.json", file);
+		} catch (IOException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -335,10 +326,8 @@ public class RaidTeamManager {
 			requirement.remove(value);
 			requirements.put(type, requirement);
 			file.put("raid_form", requirements);
-			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(file.toString(4));
-			}
-		} catch (IOException | NullPointerException e) {
+			Config.writeFile("team_requirements.json", file);
+		} catch (IOException e) {
 			Colors.exceptionHandler(e);
 		}
 	}
@@ -350,11 +339,9 @@ public class RaidTeamManager {
 			HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 			requirements.put("minimum_ilvl", ilvl);
 			file.put("raid_form", requirements);
-			try(FileWriter writer = new FileWriter("team_requirements.json")){
-				writer.write(file.toString(4));
-			}
+			Config.writeFile("team_requirements.json", file);
 			
-		} catch (IOException | NullPointerException e) {
+		} catch (IOException e) {
 			Colors.exceptionHandler(e);
 		}
 	}

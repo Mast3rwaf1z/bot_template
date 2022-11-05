@@ -431,31 +431,34 @@ public class CommandListener extends ListenerAdapter {
                             for(Object role : (JSONArray) raidForm.get("filled_roles")){
                                 filled+=role.toString()+", ";
                             }
+                            filled = filled.substring(0, filled.length()-2);
                             String preferred = "";
                             for(Object role : (JSONArray) raidForm.get("preferred_roles")){
                                 preferred+=role.toString()+", ";
                             }
+                            preferred = preferred.substring(0, preferred.length()-2);
                             String needed = "";
                             for(Object _class : (JSONArray) raidForm.get("needed_classes")){
                                 needed+=_class.toString()+", ";
                             }
+                            needed = needed.substring(0, needed.length()-2);
                             String minimum_ilvl = String.valueOf(raidForm.get("minimum_ilvl"));
-                            TextInput filled_field = TextInput.create("filled_field", "Specify filled roles", TextInputStyle.PARAGRAPH)
+                            TextInput filled_field = TextInput.create("filled_roles", "Specify filled roles", TextInputStyle.PARAGRAPH)
                                 .setValue(filled)
                                 .setPlaceholder("Specify filled roles in this format: [role1, role2, role3]")
                                 .build();
 
-                            TextInput preferred_field = TextInput.create("preferred_field", "Specify preferred roles", TextInputStyle.PARAGRAPH)
+                            TextInput preferred_field = TextInput.create("preferred_roles", "Specify preferred roles", TextInputStyle.PARAGRAPH)
                                 .setValue(preferred)
                                 .setPlaceholder("Specify preferred roles in this format [role1, role2, role3]")
                                 .build();
 
-                            TextInput needed_field = TextInput.create("needed_field", "Specify needed classes", TextInputStyle.PARAGRAPH)
+                            TextInput needed_field = TextInput.create("needed_classes", "Specify needed classes", TextInputStyle.PARAGRAPH)
                                 .setValue(needed)
                                 .setPlaceholder("Specify needed classes in this format [class1, class2, class3]")
                                 .build();
 
-                            TextInput ilvl_field = TextInput.create("ilvl_field", "Specify item level", TextInputStyle.SHORT)
+                            TextInput ilvl_field = TextInput.create("minimum_ilvl", "Specify minimum item level", TextInputStyle.SHORT)
                                 .setValue(minimum_ilvl)
                                 .setPlaceholder("Specify item level")
                                 .build();
