@@ -1,7 +1,6 @@
 package win.skademaskinen;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.security.auth.login.LoginException;
@@ -23,20 +22,39 @@ import win.skademaskinen.listeners.AutoCompleteListener;
 import win.skademaskinen.listeners.ButtonListener;
 import win.skademaskinen.listeners.CommandListener;
 import win.skademaskinen.listeners.GuildEventListener;
+import win.skademaskinen.listeners.MessageListener;
 import win.skademaskinen.listeners.ModalListener;
 import win.skademaskinen.listeners.SelectMenuListener;
 import win.skademaskinen.listeners.VoiceChannelListener;
 import win.skademaskinen.utils.Colors;
 import win.skademaskinen.utils.Config;
+import win.skademaskinen.utils.Log;
+import win.skademaskinen.utils.Loggable;
 import win.skademaskinen.utils.ModalData;
 import win.skademaskinen.utils.Serializer;
 import win.skademaskinen.utils.Shell;
 
-public class App 
+public class App implements Loggable
 {
     static public JDA jda;
+    static private boolean successTag = false;
     static private JSONObject config;
-    public static void main( String[] args ) throws LoginException, InterruptedException, ClassNotFoundException, SQLException, IOException{
+
+    public static void main(String[] args) {
+        App app = new App();
+        try {
+            app.run();
+            successTag = true;
+            Log.appendLog(app);
+        } catch (LoginException | ClassNotFoundException | InterruptedException | IOException e) {
+            Colors.exceptionHandler(e);
+            successTag = false;
+            Log.appendLog(app);
+        }
+        System.exit(0);
+    }
+    
+    public void run() throws LoginException, InterruptedException, ClassNotFoundException, IOException{
         Shell.printer(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
@@ -60,6 +78,7 @@ public class App
         jda.addEventListener(new SelectMenuListener());
         jda.addEventListener(new GuildEventListener());
         jda.addEventListener(new VoiceChannelListener());
+        jda.addEventListener(new MessageListener());
         jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
         setStatus("Jezdiboi");
         Shell.printer(Colors.yellow("Setting commands"));
@@ -73,12 +92,12 @@ public class App
         }
         System.out.print(Colors.RESET);
         Shell.printer(Colors.yellow("Finished bot startup"));
+        successTag = true;
         Shell.shell();
         Shell.printer(Colors.yellow("Stopping bot"));
         jda.shutdown();
         Shell.printer(Colors.yellow("Serializing modal interactions"));
         Serializer.serialize(new Serializer(Config.modals));
-        System.exit(0);
 
 
 
@@ -154,6 +173,10 @@ public class App
     }
     public static void setStatus(String message){
         jda.getPresence().setActivity(Activity.playing(message));
+    }
+    @Override
+    public String build() {
+        return log(null, successTag);
     }
 
     
