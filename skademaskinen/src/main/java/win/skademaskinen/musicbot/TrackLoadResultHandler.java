@@ -18,6 +18,7 @@ import win.skademaskinen.utils.Utils;
 public class TrackLoadResultHandler implements AudioLoadResultHandler {
     EmbedBuilder builder = new EmbedBuilder();
     private MusicBot bot;
+    private boolean isDone = false;
     private String url;
     private List<ActionRow> actionRows;
 
@@ -71,6 +72,7 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
         builder.setThumbnail("http://img.youtube.com/vi/"+playlist.getSelectedTrack().getIdentifier()+"/0.jpg");
         actionRows.add(ActionRow.of(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")));
         //hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        isDone = true;
     }
 
     private void handleSearchResult(AudioPlaylist playlist) {
@@ -88,7 +90,7 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
         actionRows.add(ActionRow.of(menuBuilder.build()));
         actionRows.add(ActionRow.of(Button.secondary("add all"+menuBuilder.getId(), "Add all")));
         //hook.editOriginalEmbeds(builder.build()).setComponents(ActionRow.of(menuBuilder.build()), ActionRow.of(Button.secondary("add all"+menuBuilder.getId(), "Add all"))).queue();
-        
+        isDone = true;
     }
 
     @Override
@@ -96,6 +98,7 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
         builder.setTitle("No matches");
         actionRows.add(ActionRow.of(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")));
         //hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        isDone = true;
     }
     @Override
     public void loadFailed(FriendlyException e) {
@@ -104,9 +107,14 @@ public class TrackLoadResultHandler implements AudioLoadResultHandler {
         builder.appendDescription(e.getMessage());
         actionRows.add(ActionRow.of(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")));
         //hook.editOriginalEmbeds(builder.build()).setActionRow(Button.primary("add more", "Add More"), Button.secondary("show queue", "Show Queue")).queue();
+        isDone = true;
     }
 
     public MessageEmbed getEmbed(){
         return builder.build();
+    }
+
+    public boolean isDone() {
+        return isDone;
     }
 }

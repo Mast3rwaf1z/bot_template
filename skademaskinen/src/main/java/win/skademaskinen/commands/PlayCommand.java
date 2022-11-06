@@ -30,7 +30,6 @@ public class PlayCommand implements Command {
 
     @Override
     public MessageEmbed run() {
-        event.deferReply().queue();
         if(author.getVoiceState().inAudioChannel()){
             MusicBot bot;
             if(MusicBot.getBots().containsKey(guild)){

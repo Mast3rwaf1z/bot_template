@@ -50,6 +50,7 @@ public class MusicBot {
         connect();
         TrackLoadResultHandler handler = new TrackLoadResultHandler(this, url);
         playerManager.loadItem(url, handler);
+        while(!handler.isDone());
         return handler;
     }
 
