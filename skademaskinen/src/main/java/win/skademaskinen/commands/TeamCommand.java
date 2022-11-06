@@ -30,7 +30,7 @@ public class TeamCommand implements Command{
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -44,11 +44,13 @@ public class TeamCommand implements Command{
                         event.getOption("raider").getAsMember().getId(), 
                         guild);
                     shouldEphemeral = true;
+                    successTag = true;
                     return "Successfully added raider to the team!";
                 case "remove":
                     Member member = event.getOption("raider").getAsMember();
                     RaidTeamManager.removeRaider(member);
                     shouldEphemeral = true;
+                    successTag = true;
                     return "Successfully removed raider from the raid team!";
                 case "form":
                     MessageEmbed embed = new EmbedBuilder()
@@ -60,12 +62,15 @@ public class TeamCommand implements Command{
                     return embed;
                 case "update":
                     RaidTeamManager.update(guild);
+                    successTag = true;
                     return "Updated raid team";
                 default:
+                    successTag = false;
                     return "Error: failed to parse subcommand!";
             }
         }
         else{
+            successTag = false;
             return permissionDenied();
         }
     }

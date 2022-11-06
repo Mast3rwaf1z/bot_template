@@ -25,7 +25,7 @@ public class RolePickerCommand implements Command {
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -85,9 +85,11 @@ public class RolePickerCommand implements Command {
                 .addOption("NSFW", "nsfw", Emoji.fromCustom("lewd", 656973114793525258L, false))
                 .build();
             actionRows.add(ActionRow.of(misc_menu));
+            successTag = true;
             return builder.build();
         }
         else{
+            successTag = false;
             return permissionDenied();
         }
     }

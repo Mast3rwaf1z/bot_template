@@ -22,7 +22,7 @@ public class RollCommand implements Command{
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+event.getMember().getUser().getAsTag()+" server: "+event.getGuild().getName(), successTag);
     }
 
     @Override
@@ -49,6 +49,7 @@ public class RollCommand implements Command{
         builder.setColor(Color.blue);
         builder.setThumbnail("https://cdn.discordapp.com/attachments/692410386657574955/889818089066221578/dice.png");
         builder.setTitle("Rolls");
+        successTag = true;
         return builder.build();
 
     }

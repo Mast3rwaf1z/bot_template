@@ -29,7 +29,7 @@ public class EditMessageCommand implements Command{
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -69,10 +69,12 @@ public class EditMessageCommand implements Command{
                 }
             message.editMessageEmbeds(builder.build()).queue();
             shouldEphemeral = true;
+            successTag = true;
             return "Successfully edited message";
 
         }
         else{
+            successTag = false;
             return permissionDenied();
         }
     }

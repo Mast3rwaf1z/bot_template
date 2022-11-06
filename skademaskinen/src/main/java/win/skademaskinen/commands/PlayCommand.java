@@ -64,7 +64,7 @@ public class PlayCommand implements Command {
     }
 
     public String build(){
-        return this.log(null, this.successTag);
+        return this.log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), this.successTag);
     }
 
     public boolean shouldEphemeral(){

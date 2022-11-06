@@ -29,13 +29,16 @@ public class ClearCommand implements Command {
         if(author.getVoiceState().inAudioChannel()){
             if(guild.getSelfMember().getVoiceState().inAudioChannel()){
                 MusicBot.getBots().get(guild).clear();
+                successTag = true;
                 return "Queue cleared!";
             }
             else{
+                successTag = false;
                 return "Error: the bot is not in a channel!";
             }
         }
         else{
+            successTag = false;
             return "Error: you are not in a voice channel!";
         }
     }

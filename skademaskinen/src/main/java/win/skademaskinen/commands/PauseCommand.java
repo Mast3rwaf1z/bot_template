@@ -21,13 +21,14 @@ public class PauseCommand implements Command{
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
     public Object run() {
         if(author.getVoiceState().inAudioChannel()){
             if(guild.getSelfMember().getVoiceState().inAudioChannel()){
+                successTag = true;
                 if(MusicBot.getBots().get(guild).pause()){
                     return "Bot paused!";
                 }
@@ -36,10 +37,12 @@ public class PauseCommand implements Command{
                 }
             }
             else{
+                successTag = false;
                 return "Error: the bot is not in a channel!";
             }
         }
         else{
+            successTag = false;
             return "Error: you are not in a voice channel!";
         }
     }

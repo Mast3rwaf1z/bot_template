@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -22,15 +23,17 @@ public class RequirementsCommand implements Command{
     private List<ActionRow> actionRows = new ArrayList<>();
     private SlashCommandInteractionEvent event;
     private Member author;
+    private Guild guild;
 
     public RequirementsCommand(SlashCommandInteractionEvent event){
         this.event = event;
         author = event.getMember();
+        guild = event.getGuild();
     }
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -41,10 +44,12 @@ public class RequirementsCommand implements Command{
                 case "add":
                     RaidTeamManager.addRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
                     shouldEphemeral = true;
+                    successTag = true;
                     return "Successfully added requirement!";
                 case "remove":
                     RaidTeamManager.removeRequirement(event.getOption("type").getAsString(), event.getOption("value").getAsString());
                     shouldEphemeral = true;
+                    successTag = true;
                     return "Successfully removed requirement!";
                 case "list":
                     builder.setTitle("Raid team requirements!");
@@ -67,10 +72,12 @@ public class RequirementsCommand implements Command{
                     builder.setDescription("Minimum item level: " + raidForm.get("minimum_ilvl"));
 
                     shouldEphemeral = true;
+                    successTag = true;
                     return builder.build();
                 case "setilvl":
                     RaidTeamManager.setIlvlRequirement(event.getOption("ilvl").getAsInt());
                     shouldEphemeral = true;
+                    successTag = true;
                     return "Successfully set ilvl!";
                 case "form":
                     JSONObject raidForm1 = Config.getFile("files/team_requirements.json").getJSONObject("raid_form");
@@ -119,15 +126,17 @@ public class RequirementsCommand implements Command{
                     Modal modal = Modal.create("requirements_modal", "Set requirements")
                         .addActionRows(ActionRow.of(filled_field.build()), ActionRow.of(preferred_field.build()), ActionRow.of(needed_field.build()), ActionRow.of(ilvl_field.build()))
                         .build();
-                    
+                    successTag = true;
                     return modal;
                 default:
+                    successTag = false;
                     return "Error: invalid subcommand!";
                     
             }
 
         }
         else{
+            successTag = false;
             return permissionDenied();
         }
     }

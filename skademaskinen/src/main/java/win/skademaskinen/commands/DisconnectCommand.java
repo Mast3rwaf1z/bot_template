@@ -21,7 +21,7 @@ public class DisconnectCommand implements Command {
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -29,13 +29,16 @@ public class DisconnectCommand implements Command {
         if(author.getVoiceState().inAudioChannel()){
             if(guild.getSelfMember().getVoiceState().inAudioChannel()){
                 MusicBot.getBots().get(guild).disconnect();
+                successTag = true;
                 return "Successfully disconnected bot!";
             }
             else{
+                successTag = false;
                 return "Error: the bot is not in a channel!";
             }
         }
         else{
+            successTag = false;
             return "Error: you are not in a voice channel!";
         }
     }

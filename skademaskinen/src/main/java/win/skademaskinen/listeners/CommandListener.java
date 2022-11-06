@@ -33,7 +33,7 @@ public class CommandListener extends ListenerAdapter {
         switch (event.getName().toLowerCase()) {
             case "ping":
                 event.reply("Pong").queue();
-                break;
+                return;
             case "play":
                 command = new PlayCommand(event);
                 break;
@@ -63,7 +63,7 @@ public class CommandListener extends ListenerAdapter {
                 command = new RolePickerCommand(event);
 				break;
 		    case "version":
-                command = new VersionCommand();
+                command = new VersionCommand(event);
 				break;
             case "team":
                 command = new TeamCommand(event);
@@ -84,7 +84,7 @@ public class CommandListener extends ListenerAdapter {
                 command = new PollCommand(event);
                 break;
             case "featurerequest":
-                command = new FeatureRequestCommand();
+                command = new FeatureRequestCommand(event);
                 break;
         }
         if(command != null){

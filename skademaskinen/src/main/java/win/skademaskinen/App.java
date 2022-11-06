@@ -176,7 +176,7 @@ public class App implements Loggable
     }
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("", successTag);
     }
 
     

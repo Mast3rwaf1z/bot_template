@@ -25,7 +25,7 @@ public class MessageCommand implements Command{
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -48,9 +48,11 @@ public class MessageCommand implements Command{
                     .getMessageById(event.getOption("message_id")
                     .getAsString());
             }
+            successTag = true;
             return MessageCreateData.fromMessage(announcement);
         }
         else{
+            successTag = false;
             return permissionDenied();
         }
     }

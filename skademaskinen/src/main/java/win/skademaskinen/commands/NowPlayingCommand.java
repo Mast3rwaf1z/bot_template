@@ -24,7 +24,7 @@ public class NowPlayingCommand implements Command {
 
     @Override
     public String build() {
-        return log(null, successTag);
+        return log("author: "+author.getUser().getAsTag()+" server: "+guild.getName(), successTag);
     }
 
     @Override
@@ -32,10 +32,18 @@ public class NowPlayingCommand implements Command {
         if(author.getVoiceState().inAudioChannel()){
             if(guild.getSelfMember().getVoiceState().inAudioChannel()){
                 AudioTrack track = MusicBot.getBots().get(guild).getCurrentTrack();
+                successTag = true;
                 return "Currently playing track: " + "["+track.getInfo().title+"]("+track.getInfo().uri+")";
             }
+            else{
+                successTag = false;
+                return "Error: bot is not in a channel!";
+            }
         }
-        return null;
+        else{
+            successTag = false;
+            return "Error: you are not in a voicechannel!";
+        }
     }
 
     @Override
