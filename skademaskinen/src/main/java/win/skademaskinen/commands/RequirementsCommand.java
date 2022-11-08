@@ -53,7 +53,7 @@ public class RequirementsCommand implements Command{
                     return "Successfully removed requirement!";
                 case "list":
                     builder.setTitle("Raid team requirements!");
-                    JSONObject raidForm = Config.getFile("files/team_requirements.json").getJSONObject("raid_form");
+                    JSONObject raidForm = Config.readJSON("files/team_requirements.json").getJSONObject("raid_form");
                     String filled = "";
                     for(Object role : raidForm.getJSONArray("filled_roles")){
                         filled+=role.toString()+"\n";
@@ -80,7 +80,7 @@ public class RequirementsCommand implements Command{
                     successTag = true;
                     return "Successfully set ilvl!";
                 case "form":
-                    JSONObject raidForm1 = Config.getFile("files/team_requirements.json").getJSONObject("raid_form");
+                    JSONObject raidForm1 = Config.readJSON("files/team_requirements.json").getJSONObject("raid_form");
                     String filled1 = "";
                     for(Object role :  raidForm1.getJSONArray("filled_roles")){
                         filled1+=role.toString()+", ";

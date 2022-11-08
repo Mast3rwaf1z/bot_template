@@ -213,7 +213,7 @@ public class Shell{
 	}
 	private static void team(String[] arguments, String line){
 		JSONObject team;
-		team = Config.getFile("files/team.json");
+		team = Config.readJSON("files/team.json");
 		switch(arguments[1]){
 			case "help":
 				teamHelp();
@@ -326,7 +326,7 @@ public class Shell{
 	}
 	private static void requirementsList(){
 		JSONObject raidForm;
-		raidForm = (JSONObject) Config.getFile("files/team_requirements.json").get("raid_form");
+		raidForm = (JSONObject) Config.readJSON("files/team_requirements.json").get("raid_form");
 		printer(Colors.yellow("Filled roles:"));
 		for(Object role : (JSONArray) raidForm.get("filled_roles")){
 			printer("\t"+role.toString());

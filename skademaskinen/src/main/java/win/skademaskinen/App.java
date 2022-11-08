@@ -38,7 +38,7 @@ public class App implements Loggable
 {
     static public JDA jda;
     static private boolean successTag = false;
-    static private JSONObject config;
+    static private Config config;
 
     public static void main(String[] args) {
         App app = new App();
@@ -58,7 +58,7 @@ public class App implements Loggable
         Shell.printer(Colors.yellow("Starting bot"));
         System.out.print(Colors.GREEN);
         config = Config.getConfig();
-        jda = JDABuilder.createDefault(config.get("token").toString())
+        jda = JDABuilder.createDefault(config.getToken())
             .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
             .build();
         jda.awaitReady();

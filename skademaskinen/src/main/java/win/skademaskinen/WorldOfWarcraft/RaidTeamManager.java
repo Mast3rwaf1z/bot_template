@@ -28,7 +28,7 @@ public class RaidTeamManager {
 	static private String teamPath = "files/team.json";
 	public static void update(Guild guild){
 		try {
-			if(!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("Skademaskinen")){
+			if(!InetAddress.getLocalHost().getHostName().equalsIgnoreCase(Config.getConfig().getDeploymentHost())){
 				Shell.printer(Colors.red("\nRaid team update blocked: Bot is not deployed!"));
 				return;
 			}
@@ -38,7 +38,7 @@ public class RaidTeamManager {
 		Message message = guild.getId().equals("642852517197250560") ? 
 			guild.getTextChannelById("987475931004284978").getHistoryAround("987484728724705360", 1).complete().getMessageById("987484728724705360") :
 			guild.getTextChannelById("889964274229854248").getHistoryAround("1011047944075628714", 1).complete().getMessageById("1011047944075628714");
-		JSONObject team = (JSONObject) Config.getFile(teamPath);
+		JSONObject team = (JSONObject) Config.readJSON(teamPath);
 		EmbedBuilder builder = new EmbedBuilder()
 			.setTitle("Raid Team")
 			.setDescription("This is the raid team, this message will get updated with raid team members!")
@@ -134,9 +134,8 @@ public class RaidTeamManager {
 	static public String get_wow_api_token(){
 		String token = "";
 		try {
-			JSONObject api = (JSONObject) Config.getConfig().get("wow_api");
-			String id = (String) api.get("client_id");
-			String secret = (String) api.get("client_secret");
+			String id = Config.getConfig().getClientId();
+			String secret = Config.getConfig().getClientSecret();
 			String command = "curl -u"+id+":"+secret+" -d grant_type=client_credentials https://eu.battle.net/oauth/token";
 			Runtime runtime = Runtime.getRuntime();
 			Process process = runtime.exec(command);
@@ -234,21 +233,21 @@ public class RaidTeamManager {
 
 	
 	public static void removeRaider(Member member) {
-		JSONObject team = Config.getFile(teamPath);
+		JSONObject team = Config.readJSON(teamPath);
 		team.remove(member.getId());
-		Config.writeFile(teamPath, team);
+		Config.writeJSON(teamPath, team);
 		update(member.getGuild());
 		
 	}
 	public static void removeRaider(User user, Guild guild) {
-		JSONObject team = Config.getFile(teamPath);
+		JSONObject team = Config.readJSON(teamPath);
 		team.remove(user.getId());
-		Config.writeFile(teamPath, team);
+		Config.writeJSON(teamPath, team);
 		update(guild);
 		
 	}
 	public static void addRaider(String name, String server, String role, String id, Guild guild) {
-		JSONObject team = Config.getFile(teamPath);
+		JSONObject team = Config.readJSON(teamPath);
 		HashMap<String, Object> raider = new HashMap<String, Object>();
 		String cap = name.substring(0, 1).toUpperCase() + name.substring(1);
 		raider.put("name", cap);
@@ -259,7 +258,7 @@ public class RaidTeamManager {
 		raider.put("ilvl", get_ilvl((String)raider.get("name"), (String)raider.get("server")));
 		raider.put("avg_ilvl", get_avg_ilvl((String)raider.get("name"), (String)raider.get("server")));
 		team.put(id, raider);
-		Config.writeFile(teamPath, team);
+		Config.writeJSON(teamPath, team);
 		update(guild);
 	}
 	@SuppressWarnings("unchecked")
@@ -277,13 +276,13 @@ public class RaidTeamManager {
 			case "preferred roles":
 				type = "preferred_roles";
 		}
-		JSONObject file = Config.getFile(requirementsPath);
+		JSONObject file = Config.readJSON(requirementsPath);
 		HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 		ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
 		requirement.add(value);
 		requirements.put(type, requirement);
 		file.put("raid_form", requirements);
-		Config.writeFile(requirementsPath, file);
+		Config.writeJSON(requirementsPath, file);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -301,22 +300,22 @@ public class RaidTeamManager {
 			case "preferred roles":
 				type = "preferred_roles";
 		}
-		JSONObject file = Config.getFile(requirementsPath);
+		JSONObject file = Config.readJSON(requirementsPath);
 		HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 		ArrayList<String> requirement = (ArrayList<String>) requirements.get(type);
 		requirement.remove(value);
 		requirements.put(type, requirement);
 		file.put("raid_form", requirements);
-		Config.writeFile(requirementsPath, file);
+		Config.writeJSON(requirementsPath, file);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static void setIlvlRequirement(int ilvl){
-		JSONObject file = Config.getFile(requirementsPath);
+		JSONObject file = Config.readJSON(requirementsPath);
 		HashMap<String, Object> requirements = (HashMap<String, Object>) file.get("raid_form");
 		requirements.put("minimum_ilvl", ilvl);
 		file.put("raid_form", requirements);
-		Config.writeFile(requirementsPath, file);
+		Config.writeJSON(requirementsPath, file);
 			
 	}
 	public static void printRaider(JSONObject raider, String name, Guild guild){

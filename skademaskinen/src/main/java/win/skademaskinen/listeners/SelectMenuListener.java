@@ -126,7 +126,7 @@ public class SelectMenuListener extends ListenerAdapter{
 				options.add(option.getValue());
 			}
 				try {
-					JSONObject polls = Config.getFile("polls.json");
+					JSONObject polls = Config.readJSON("polls.json");
 					if(!polls.has(pollId)){
 						polls.put(pollId, new HashMap<>());
 					}

@@ -77,7 +77,7 @@ public class ModalListener extends ListenerAdapter{
                     builder.addField("Will you be able to raid on Wednesdays and Sundays at 19:30 - 22:30 server time?", "No", false);
                 }
                 int score = 0;
-                JSONObject applicationData = Config.getFile("files/team_requirements.json").getJSONObject("raid_form");
+                JSONObject applicationData = Config.readJSON("files/team_requirements.json").getJSONObject("raid_form");
                 long reqIlvl =  applicationData.getLong("minimum_ilvl");
                 JSONArray filledRoles = applicationData.getJSONArray("filled_roles");
                 JSONArray preferredRoles = applicationData.getJSONArray("preferred_roles");
@@ -267,7 +267,7 @@ public class ModalListener extends ListenerAdapter{
                 }
                 break;
             case "requirements_modal":
-                JSONObject form = Config.getFile("files/team_requirements.json").getJSONObject("raid_form");
+                JSONObject form = Config.readJSON("files/team_requirements.json").getJSONObject("raid_form");
                 for(ModalMapping data : event.getValues()){
                     if(data.getAsString().equals("")){
                         form.put(data.getId(), new JsonArray());
@@ -280,9 +280,9 @@ public class ModalListener extends ListenerAdapter{
                     String[] values = data.getAsString().strip().split(", ");
                     form.put(data.getId(), values);
                 }
-                JSONObject file = Config.getFile("files/team_requirements.json");
+                JSONObject file = Config.readJSON("files/team_requirements.json");
                 file.put("raid_form", form);
-                Config.writeFile("files/team_requirements.json", file);
+                Config.writeJSON("files/team_requirements.json", file);
                 event.reply("Successfully updated raid team!").setEphemeral(true).queue();
                 break;
                 

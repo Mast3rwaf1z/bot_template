@@ -101,7 +101,7 @@ public class ButtonListener extends ListenerAdapter{
             case "poll_button":
                 builder.setTitle("Poll results:");
                 HashMap<String, Integer> amounts = new HashMap<String, Integer>();
-                HashMap<String, Object> poll = (HashMap<String, Object>) Config.getFile("polls.json").get(event.getMessageId());
+                HashMap<String, Object> poll = (HashMap<String, Object>) Config.readJSON("polls.json").get(event.getMessageId());
                 int i = 0;
                 for(String key : poll.keySet()){
                     i++;
