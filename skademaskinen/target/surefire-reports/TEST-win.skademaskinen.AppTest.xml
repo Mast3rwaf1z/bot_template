@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="win.skademaskinen.AppTest" time="0.016" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="win.skademaskinen.AppTest" time="0.027" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="19"/>
-    <property name="sun.jnu.encoding" value="ANSI_X3.4-1968"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="java.class.path" value="/home/mast3r/git/bots/skademaskinen/target/test-classes:/home/mast3r/git/bots/skademaskinen/target/classes:/home/mast3r/.m2/repository/org/json/json/20220924/json-20220924.jar:/home/mast3r/.m2/repository/net/dv8tion/JDA/5.0.0-alpha.21/JDA-5.0.0-alpha.21.jar:/home/mast3r/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/mast3r/.m2/repository/com/neovisionaries/nv-websocket-client/2.14/nv-websocket-client-2.14.jar:/home/mast3r/.m2/repository/com/squareup/okhttp3/okhttp/4.9.3/okhttp-4.9.3.jar:/home/mast3r/.m2/repository/com/squareup/okio/okio/2.8.0/okio-2.8.0.jar:/home/mast3r/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.4.0/kotlin-stdlib-common-1.4.0.jar:/home/mast3r/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.4.10/kotlin-stdlib-1.4.10.jar:/home/mast3r/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/home/mast3r/.m2/repository/club/minnced/opus-java/1.1.1/opus-java-1.1.1.jar:/home/mast3r/.m2/repository/club/minnced/opus-java-api/1.1.1/opus-java-api-1.1.1.jar:/home/mast3r/.m2/repository/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar:/home/mast3r/.m2/repository/club/minnced/opus-java-natives/1.1.1/opus-java-natives-1.1.1.jar:/home/mast3r/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar:/home/mast3r/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.2/jackson-core-2.13.2.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.2.2/jackson-databind-2.13.2.2.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.2/jackson-annotations-2.13.2.jar:/home/mast3r/.m2/repository/org/jline/jline/3.21.0/jline-3.21.0.jar:/home/mast3r/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/home/mast3r/.m2/repository/junit/junit/4.10/junit-4.10.jar:/home/mast3r/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/home/mast3r/.m2/repository/mysql/mysql-connector-java/8.0.29/mysql-connector-java-8.0.29.jar:/home/mast3r/.m2/repository/com/google/protobuf/protobuf-java/3.19.4/protobuf-java-3.19.4.jar:/home/mast3r/.m2/repository/com/sedmelluq/lavaplayer/1.3.77/lavaplayer-1.3.77.jar:/home/mast3r/.m2/repository/com/sedmelluq/lava-common/1.1.2/lava-common-1.1.2.jar:/home/mast3r/.m2/repository/org/apache/httpcomponents/httpclient/4.5.10/httpclient-4.5.10.jar:/home/mast3r/.m2/repository/org/apache/httpcomponents/httpcore/4.4.12/httpcore-4.4.12.jar:/home/mast3r/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/mast3r/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/home/mast3r/.m2/repository/com/sedmelluq/lavaplayer-natives/1.3.14/lavaplayer-natives-1.3.14.jar:/home/mast3r/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/home/mast3r/.m2/repository/org/jsoup/jsoup/1.12.1/jsoup-1.12.1.jar:/home/mast3r/.m2/repository/net/iharder/base64/2.3.9/base64-2.3.9.jar:"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
@@ -10,9 +10,9 @@
     <property name="os.name" value="Linux"/>
     <property name="java.vm.specification.version" value="19"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
-    <property name="user.country" value="US"/>
+    <property name="user.country" value="DK"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-19-openjdk/lib"/>
-    <property name="sun.java.command" value="/home/mast3r/git/bots/skademaskinen/target/surefire/surefirebooter8128157464702893874.jar /home/mast3r/git/bots/skademaskinen/target/surefire 2022-11-06T12-19-20_277-jvmRun1 surefire15568753509053236594tmp surefire_015811663392316023348tmp"/>
+    <property name="sun.java.command" value="/home/mast3r/git/bots/skademaskinen/target/surefire/surefirebooter17809261302730742291.jar /home/mast3r/git/bots/skademaskinen/target/surefire 2022-11-07T13-24-26_837-jvmRun1 surefire16439590107847590203tmp surefire_016111138504840963733tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/mast3r/git/bots/skademaskinen/target/test-classes:/home/mast3r/git/bots/skademaskinen/target/classes:/home/mast3r/.m2/repository/org/json/json/20220924/json-20220924.jar:/home/mast3r/.m2/repository/net/dv8tion/JDA/5.0.0-alpha.21/JDA-5.0.0-alpha.21.jar:/home/mast3r/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/mast3r/.m2/repository/com/neovisionaries/nv-websocket-client/2.14/nv-websocket-client-2.14.jar:/home/mast3r/.m2/repository/com/squareup/okhttp3/okhttp/4.9.3/okhttp-4.9.3.jar:/home/mast3r/.m2/repository/com/squareup/okio/okio/2.8.0/okio-2.8.0.jar:/home/mast3r/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.4.0/kotlin-stdlib-common-1.4.0.jar:/home/mast3r/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.4.10/kotlin-stdlib-1.4.10.jar:/home/mast3r/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/home/mast3r/.m2/repository/club/minnced/opus-java/1.1.1/opus-java-1.1.1.jar:/home/mast3r/.m2/repository/club/minnced/opus-java-api/1.1.1/opus-java-api-1.1.1.jar:/home/mast3r/.m2/repository/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar:/home/mast3r/.m2/repository/club/minnced/opus-java-natives/1.1.1/opus-java-natives-1.1.1.jar:/home/mast3r/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar:/home/mast3r/.m2/repository/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.2/jackson-core-2.13.2.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.2.2/jackson-databind-2.13.2.2.jar:/home/mast3r/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.2/jackson-annotations-2.13.2.jar:/home/mast3r/.m2/repository/org/jline/jline/3.21.0/jline-3.21.0.jar:/home/mast3r/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/home/mast3r/.m2/repository/junit/junit/4.10/junit-4.10.jar:/home/mast3r/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/home/mast3r/.m2/repository/mysql/mysql-connector-java/8.0.29/mysql-connector-java-8.0.29.jar:/home/mast3r/.m2/repository/com/google/protobuf/protobuf-java/3.19.4/protobuf-java-3.19.4.jar:/home/mast3r/.m2/repository/com/sedmelluq/lavaplayer/1.3.77/lavaplayer-1.3.77.jar:/home/mast3r/.m2/repository/com/sedmelluq/lava-common/1.1.2/lava-common-1.1.2.jar:/home/mast3r/.m2/repository/org/apache/httpcomponents/httpclient/4.5.10/httpclient-4.5.10.jar:/home/mast3r/.m2/repository/org/apache/httpcomponents/httpcore/4.4.12/httpcore-4.4.12.jar:/home/mast3r/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/mast3r/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/home/mast3r/.m2/repository/com/sedmelluq/lavaplayer-natives/1.3.14/lavaplayer-natives-1.3.14.jar:/home/mast3r/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/home/mast3r/.m2/repository/org/jsoup/jsoup/1.12.1/jsoup-1.12.1.jar:/home/mast3r/.m2/repository/net/iharder/base64/2.3.9/base64-2.3.9.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -27,13 +27,13 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/home/mast3r/git/bots/skademaskinen/target/surefire/surefirebooter8128157464702893874.jar"/>
+    <property name="surefire.real.class.path" value="/home/mast3r/git/bots/skademaskinen/target/surefire/surefirebooter17809261302730742291.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="19.0.1+10"/>
     <property name="user.name" value="mast3r"/>
-    <property name="stdout.encoding" value="ANSI_X3.4-1968"/>
+    <property name="stdout.encoding" value="UTF-8"/>
     <property name="path.separator" value=":"/>
-    <property name="os.version" value="6.0.7-arch1-1"/>
+    <property name="os.version" value="6.0.3-arch3-1"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
@@ -44,14 +44,14 @@
     <property name="user.dir" value="/home/mast3r/git/bots/skademaskinen"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="native.encoding" value="ANSI_X3.4-1968"/>
+    <property name="native.encoding" value="UTF-8"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
     <property name="java.vm.info" value="mixed mode"/>
-    <property name="stderr.encoding" value="ANSI_X3.4-1968"/>
+    <property name="stderr.encoding" value="UTF-8"/>
     <property name="java.vendor" value="N/A"/>
     <property name="java.vm.version" value="19.0.1+10"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="63.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="win.skademaskinen.AppTest" time="0.002"/>
+  <testcase name="shouldAnswerWithTrue" classname="win.skademaskinen.AppTest" time="0.004"/>
 </testsuite>

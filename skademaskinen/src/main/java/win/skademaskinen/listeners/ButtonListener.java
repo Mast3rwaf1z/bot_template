@@ -14,6 +14,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -21,7 +22,9 @@ import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.internal.interactions.component.ModalImpl;
 import win.skademaskinen.WorldOfWarcraft.RaidTeamManager;
+import win.skademaskinen.commands.SpawnMessageCommand;
 import win.skademaskinen.musicbot.MusicBot;
 import win.skademaskinen.utils.Config;
 import win.skademaskinen.utils.ModalData;
@@ -31,6 +34,27 @@ public class ButtonListener extends ListenerAdapter{
 
     @SuppressWarnings("unchecked")
 	public void onButtonInteraction(ButtonInteractionEvent event){
+        String commandId = event.getButton().getId().split("::")[0];
+        Object result = null;
+        switch(commandId){
+            case "SpawnMessageCommand":
+                result = SpawnMessageCommand.buttonHandler(event);
+                break;
+            default:
+        }
+        if(result != null){
+            if (result.getClass().equals(ModalImpl.class)){
+                event.replyModal((Modal)result).queue();
+            }
+            else if(result.getClass().equals(MessageEmbed.class)){
+                event.replyEmbeds((MessageEmbed)result).queue();
+            }
+            else if(result.getClass().equals(String.class)){
+                event.reply((String)result).queue();
+            }
+        }
+
+        //old
         EmbedBuilder builder = new EmbedBuilder();
         Guild guild = event.getGuild();
 

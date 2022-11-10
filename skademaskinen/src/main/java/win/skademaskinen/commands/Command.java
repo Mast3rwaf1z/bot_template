@@ -27,6 +27,10 @@ public interface Command extends Loggable{
     public boolean shouldEphemeral();
 
     public List<ActionRow> getActionRows();
+
+    default public String buttonIdBuilder(String customId, String metadata){
+        return getClass().getSimpleName()+"::"+customId+" "+metadata;
+    }
     
 
 }
