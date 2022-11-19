@@ -69,6 +69,7 @@ public class RaidTeamManager {
 		String tanksMessage = "";
 		for(String key : tanks){
 			JSONObject raider = (JSONObject) team.get(key);
+			System.out.println(raider.get("name"));
 			tanksMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 			tanksMessage+= "\n" + raider.get("name");
 			if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
@@ -84,6 +85,7 @@ public class RaidTeamManager {
 		String healersMessage = "";
 		for(String key : healers){
 			JSONObject raider = (JSONObject) team.get(key);
+			System.out.println(raider.get("name"));
 			healersMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 			healersMessage+= "\n" + raider.get("name");
 			if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
@@ -100,6 +102,7 @@ public class RaidTeamManager {
 		String rangedMessage = "";
 		for(String key : ranged){
 			JSONObject raider = (JSONObject) team.get(key);
+			System.out.println(raider.get("name"));
 			rangedMessage+= "\n\n" + guild.retrieveMemberById(key).complete().getAsMention();
 			rangedMessage+= "\n" + raider.get("name");
 			if(!raider.get("server").toString().equalsIgnoreCase("argent-dawn")){
